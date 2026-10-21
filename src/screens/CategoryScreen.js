@@ -23,7 +23,7 @@ import { fontFamily } from '../common/fonts';
 import { spacing } from '../styles/spacing';
 
 const CategoryScreen = ({ route }) => {
-  const { params = {} } = route;
+  const params = route?.params || {};
   const categoryName = params.categoryName || 'General';
 
   const navigation = useNavigation();
