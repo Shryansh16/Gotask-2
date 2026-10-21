@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,19 +11,22 @@ import {
   Keyboard,
   Image,
 } from 'react-native';
-import {spacing} from '../styles/spacing';
-import {textScale} from '../styles/responsiveStyles';
-const NoteModel = ({visible, onClose, onsubmit}) => {
+import { spacing } from '../styles/spacing';
+import { textScale } from '../styles/responsiveStyles';
+const NoteModel = ({ visible, onClose, onsubmit }) => {
   const [desc, setdesc] = useState();
+
   const handleOnChangeText = (text, valueFor) => {
     if (valueFor === 'desc') setdesc(text);
   };
+
   const handleSubmit = () => {
     if (!desc.trim()) return onClose();
     onsubmit(desc);
     setdesc(' ');
     onClose();
   };
+
   const closeModal = () => {
     // onsubmit(desc);
     setdesc(' ');

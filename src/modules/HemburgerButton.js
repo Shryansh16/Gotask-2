@@ -1,36 +1,46 @@
-import React from "react";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
-import { spacing } from "../styles/spacing";
+// src/modules/HemburgerButton.js
+import React from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useTheme } from '../context/ThemeContext';
+import { spacing } from '../styles/spacing';
+
 const HemburgerButton = ({ onPressButton }) => {
-    return (
-        <View style={styles.MainBox}>
-            <TouchableOpacity style={styles.mainContainer} onPress={() => onPressButton()} >
-                <Image style={styles.HemburgerImage}
-                    source={require("../assets/hemburger_button2_image.jpg")}
-                />
+  const { theme } = useTheme();
 
-            </TouchableOpacity>
-        </View>
-    )
-}
+  return (
+    <TouchableOpacity
+      activeOpacity={0.7}
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.surfaceSecondary,
+          borderColor: theme.border,
+        },
+      ]}
+      onPress={onPressButton}
+    >
+      <View style={[styles.bar, { backgroundColor: theme.textPrimary, width: 18 }]} />
+      <View style={[styles.bar, { backgroundColor: theme.primary, width: 13 }]} />
+      <View style={[styles.bar, { backgroundColor: theme.textPrimary, width: 16 }]} />
+    </TouchableOpacity>
+  );
+};
+
 const styles = StyleSheet.create({
-    mainContainer: {
-        borderWidth: 1,
-        borderColor: 'lightgray',
-        height: spacing.HEIGHT_34,
-        width: spacing.WIDTH_34,
-        borderRadius: spacing.RADIUS_10,
-        marginLeft: spacing.MARGIN_16,
-        marginTop: spacing.MARGIN_10,
-        marginBottom: spacing.MARGIN_10,
-    },
-    HemburgerImage: {
-        height: spacing.HEIGHT_14,
-        width: spacing.WIDTH_20,
-        marginTop: spacing.MARGIN_8,
-        alignSelf: 'center',
-    }
-})
+  container: {
+    height: 40,
+    width: 40,
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.MARGIN_12,
+  },
+  bar: {
+    height: 2.5,
+    borderRadius: 2,
+    marginVertical: 1.8,
+  },
+});
 
-
-export default HemburgerButton
+export default HemburgerButton;

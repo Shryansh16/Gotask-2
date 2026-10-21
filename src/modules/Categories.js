@@ -1,82 +1,95 @@
+// src/modules/Categories.js
 import React from 'react';
-import {useNavigation} from '@react-navigation/native';
-import {StyleSheet, Text, View, FlatList} from 'react-native';
-import CategoriesRaw from '../row/CategoriesRaw';
-import {spacing} from '../styles/spacing';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useTasks } from '../context/TaskContext';
+import { useTheme } from '../context/ThemeContext';
+import CategoryCard from '../components/CategoryCard';
+import { textScale } from '../styles/responsiveStyles';
+import { fontFamily } from '../common/fonts';
+import { spacing } from '../styles/spacing';
 
-const Categories = ({categoryName}) => {
+export const Categories = () => {
   const navigation = useNavigation();
+  const { theme } = useTheme();
+  const { categories, selectedCategory, setSelectedCategory, getCategoryStats } = useTasks();
 
-  const DATA = [
-    {
-      id: 1,
-      Image: require('../assets/suitcase.png'),
-      Category_Name: 'Work',
-    },
-    {
-      id: 2,
-      Image: require('../assets/man.png'),
-      Category_Name: 'Personal',
-    },
-    {
-      id: 3,
-      Image: require('../assets/shopping-cart.png'),
-      Category_Name: 'Shopping',
-    },
-    {
-      id: 4,
-      Image: require('../assets/heart-beat.png'),
-      Category_Name: 'Health',
-    },
-    {
-      id: 5,
-      Image: require('../assets/suitcase.png'),
-      Category_Name: 'Work',
-    },
-    {
-      id: 6,
-      Image: require('../assets/man.png'),
-      Category_Name: 'Personal',
-    },
-    {
-      id: 7,
-      Image: require('../assets/shopping-cart.png'),
-      Category_Name: 'Shopping',
-    },
-    {
-      id: 8,
-      Image: require('../assets/heart-beat.png'),
-      Category_Name: 'Health',
-    },
-  ];
-  function onPressCategory(item) {
-    navigation.navigate('CategoryScreen', {categoryName: item.Category_Name});
-  }
+  const handleCategoryPress = (cat) => {
+    setSelectedCategory(cat);
+  };
+
+  const handleOpenCategoryScreen = (cat) => {
+    navigation.navigate('CategoryScreen', { categoryName: cat });
+  };
+
   return (
-    <View style={styles.mainContainer}>
-      <FlatList
-        data={DATA}
-        renderItem={({item, index}) => {
-          return (
-            <CategoriesRaw
-              item={item}
-              index={index}
-              onPressCategory={onPressCategory}
-            />
-          );
-        }}
+    <View style={styles.container}>
+      <View style={styles.headerRow}>
+        <Text style={[styles.sectionTitle, { color: theme.textPrimary }]}>
+          Categories
+        </Text>
+        {selectedCategory !== 'All' && (
+          <TouchableOpacity
+            onPress={() => handleOpenCategoryScreen(selectedCategory)}
+            style={styles.viewDetailBtn}
+          >
+            <Text style={[styles.viewDetailText, { color: theme.primary }]}>
+              Open {selectedCategory} →
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-      />
+        contentContainerStyle={styles.scrollContent}
+      >
+        {categories.map((cat) => {
+          const stats = getCategoryStats(cat);
+          const isSelected = selectedCategory === cat;
+
+          return (
+            <CategoryCard
+              key={cat}
+              category={cat}
+              isSelected={isSelected}
+              taskCount={stats.total}
+              pendingCount={stats.pending}
+              onPress={() => handleCategoryPress(cat)}
+            />
+          );
+        })}
+      </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    marginTop: spacing.MARGIN_20,
-    // paddingRight: spacing.PADDING_10,
-    // paddingLeft: spacing.PADDING_10,
+  container: {
+    marginVertical: spacing.MARGIN_8,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: spacing.PADDING_16,
+    marginBottom: spacing.MARGIN_10,
+  },
+  sectionTitle: {
+    fontSize: textScale(18),
+    fontFamily: fontFamily.bold,
+  },
+  viewDetailBtn: {
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+  },
+  viewDetailText: {
+    fontSize: textScale(12),
+    fontFamily: fontFamily.bold,
+  },
+  scrollContent: {
+    paddingHorizontal: spacing.PADDING_16,
   },
 });
 

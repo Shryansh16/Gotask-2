@@ -1,24 +1,37 @@
-import React from "react";
-import { StatusBar, StyleSheet, Text, View } from "react-native";
-import Navigation from "./navigation/navigation";
-import WelcomeScreen from "./screens/welcomeScreen";
+import React from 'react';
+import { StatusBar, StyleSheet, View } from 'react-native';
+import Navigation from './navigation/navigation';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { TaskProvider } from './context/TaskContext';
+
+const MainApp = () => {
+  const { theme, isDark } = useTheme();
+
+  return (
+    <View style={[styles.mainContainer, { backgroundColor: theme.background }]}>
+      <StatusBar
+        backgroundColor={theme.background}
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+      />
+      <Navigation />
+    </View>
+  );
+};
+
 const App = () => {
-    return (
-        <View style={styles.mainContainer}>
-            <StatusBar backgroundColor={'#fff'}
-                barStyle={'dark-content'}
-            />
-            {/* <WelcomeScreen /> */}
-            <Navigation />
-        </View>
-    )
-}
+  return (
+    <ThemeProvider>
+      <TaskProvider>
+        <MainApp />
+      </TaskProvider>
+    </ThemeProvider>
+  );
+};
+
 const styles = StyleSheet.create({
-    mainContainer: {
-        flex: 1,
-        backgroundColor: '#fff',
-    }
-})
+  mainContainer: {
+    flex: 1,
+  },
+});
 
-
-export default App
+export default App;

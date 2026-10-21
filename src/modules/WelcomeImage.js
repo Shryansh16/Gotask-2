@@ -1,27 +1,33 @@
-import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
-import { spacing } from "../styles/spacing";
+// src/modules/WelcomeImage.js
+import React from 'react';
+import { Image, StyleSheet, View, Dimensions } from 'react-native';
+import { spacing } from '../styles/spacing';
+
+const { width } = Dimensions.get('window');
+const IMAGE_SIZE = Math.min(width * 0.75, 280);
+
 const WelcomeImage = () => {
-    return (
-        <View style={styles.ImageContainer}>
-            <Image style={styles.MainImage}
-                source={require("../assets/GOTaskWelcomeImage.webp")}
-            />
-        </View>
-    )
-}
+  return (
+    <View style={styles.imageContainer}>
+      <Image
+        style={[styles.mainImage, { width: IMAGE_SIZE, height: IMAGE_SIZE }]}
+        source={require('../assets/GOTaskWelcomeImage.webp')}
+        resizeMode="contain"
+      />
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
-    ImageContainer: {
-        alignSelf: 'center',
-        marginTop: spacing.MARGIN_84,
-        marginBottom: 0,
-        // borderWidth: 2,
-    },
-    MainImage: {
-        height: spacing.HEIGHT_270,
-        width: spacing.HEIGHT_350,
-    }
-})
+  imageContainer: {
+    alignSelf: 'center',
+    marginVertical: spacing.MARGIN_20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mainImage: {
+    borderRadius: 20,
+  },
+});
 
-
-export default WelcomeImage
+export default WelcomeImage;

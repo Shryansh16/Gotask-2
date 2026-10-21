@@ -1,0 +1,78 @@
+{
+  "profile": {
+    "name": "Shryansh Shree",
+    "email": "shryansh@example.com",
+    "role": "Productivity Enthusiast",
+    "dailyGoal": 5,
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80"
+  },
+  "categories": [
+    { "id": "cat_1", "name": "Work", "color": "#4F46E5", "icon": "briefcase" },
+    { "id": "cat_2", "name": "Personal", "color": "#06B6D4", "icon": "user" },
+    { "id": "cat_3", "name": "Shopping", "color": "#EC4899", "icon": "shopping-cart" },
+    { "id": "cat_4", "name": "Health", "color": "#10B981", "icon": "heartbeat" },
+    { "id": "cat_5", "name": "Study", "color": "#8B5CF6", "icon": "book" },
+    { "id": "cat_6", "name": "Finance", "color": "#F59E0B", "icon": "dollar-sign" }
+  ],
+  "tasks": [
+    {
+      "id": "task_1",
+      "title": "Review Mobile App UI Design System",
+      "description": "Inspect color contrast, typography consistency, and touch targets across screens.",
+      "category": "Work",
+      "priority": "high",
+      "completed": false,
+      "dueDate": "Today",
+      "isPinned": true,
+      "subtasks": [
+        { "id": "sub_1", "title": "Check Poppins typography weights", "completed": true },
+        { "id": "sub_2", "title": "Validate contrast on dark mode", "completed": false },
+        { "id": "sub_3", "title": "Ensure responsive layout scaling", "completed": true }
+      ],
+      "createdAt": 1729510000000,
+      "updatedAt": 1729510000000
+    },
+    {
+      "id": "task_2",
+      "title": "Morning 30-minute cardio & stretch",
+      "description": "Stay energized and maintain healthy routine.",
+      "category": "Health",
+      "priority": "medium",
+      "completed": true,
+      "dueDate": "Today",
+      "isPinned": false,
+      "subtasks": [],
+      "createdAt": 1729500000000,
+      "updatedAt": 1729505000000
+    },
+    {
+      "id": "task_3",
+      "title": "Grocery Run - Organic vegetables & oats",
+      "description": "Pick up fresh spinach, almond milk, and whole grains for meal prep.",
+      "category": "Shopping",
+      "priority": "low",
+      "completed": false,
+      "dueDate": "Tomorrow",
+      "isPinned": false,
+      "subtasks": [
+        { "id": "sub_4", "title": "Spinach & Kale", "completed": false },
+        { "id": "sub_5", "title": "Almond milk & Oats", "completed": false }
+      ],
+      "createdAt": 1729490000000,
+      "updatedAt": 1729490000000
+    },
+    {
+      "id": "task_4",
+      "title": "Read Chapter 4 of Clean Architecture",
+      "description": "Take notes on boundary decoupling and dependency inversion principles.",
+      "category": "Study",
+      "priority": "medium",
+      "completed": false,
+      "dueDate": "This Week",
+      "isPinned": true,
+      "subtasks": [],
+      "createdAt": 1729480000000,
+      "updatedAt": 1729480000000
+    }
+  ]
+}
