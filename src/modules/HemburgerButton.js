@@ -1,11 +1,11 @@
 // src/modules/HemburgerButton.js
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useTheme } from '../context/ThemeContext';
-import { spacing } from '../styles/spacing';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {useTheme} from '../context/ThemeContext';
+import {spacing} from '../styles/spacing';
 
-const HemburgerButton = ({ onPressButton }) => {
-  const { theme } = useTheme();
+const HemburgerButton = ({onPressButton}) => {
+  const {theme} = useTheme();
 
   return (
     <TouchableOpacity
@@ -17,11 +17,14 @@ const HemburgerButton = ({ onPressButton }) => {
           borderColor: theme.border,
         },
       ]}
-      onPress={onPressButton}
-    >
-      <View style={[styles.bar, { backgroundColor: theme.textPrimary, width: 18 }]} />
-      <View style={[styles.bar, { backgroundColor: theme.primary, width: 13 }]} />
-      <View style={[styles.bar, { backgroundColor: theme.textPrimary, width: 16 }]} />
+      onPress={onPressButton}>
+      <View
+        style={[styles.bar, {backgroundColor: theme.textPrimary, width: 18}]}
+      />
+      <View style={[styles.bar, {backgroundColor: theme.primary, width: 13}]} />
+      <View
+        style={[styles.bar, {backgroundColor: theme.textPrimary, width: 16}]}
+      />
     </TouchableOpacity>
   );
 };

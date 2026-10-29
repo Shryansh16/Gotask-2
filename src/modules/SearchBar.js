@@ -1,14 +1,20 @@
 // src/modules/SearchBar.js
 import React from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { useTheme } from '../context/ThemeContext';
-import { useTasks } from '../context/TaskContext';
-import { textScale } from '../styles/responsiveStyles';
-import { fontFamily } from '../common/fonts';
-import { spacing } from '../styles/spacing';
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+} from 'react-native';
+import {useTheme} from '../context/ThemeContext';
+import {useTasks} from '../context/TaskContext';
+import {textScale} from '../styles/responsiveStyles';
+import {fontFamily} from '../common/fonts';
+import {spacing} from '../styles/spacing';
 
 export const SearchBar = () => {
-  const { theme } = useTheme();
+  const {theme} = useTheme();
   const {
     searchQuery,
     setSearchQuery,
@@ -19,13 +25,13 @@ export const SearchBar = () => {
   } = useTasks();
 
   const statusChips = [
-    { label: 'All', value: 'all', type: 'status' },
-    { label: 'Pending', value: 'active', type: 'status' },
-    { label: 'Done', value: 'completed', type: 'status' },
-    { label: '🔥 Urgent', value: 'high', type: 'priority' },
+    {label: 'All', value: 'all', type: 'status'},
+    {label: 'Pending', value: 'active', type: 'status'},
+    {label: 'Done', value: 'completed', type: 'status'},
+    {label: '🔥 Urgent', value: 'high', type: 'priority'},
   ];
 
-  const handleChipPress = (chip) => {
+  const handleChipPress = chip => {
     if (chip.type === 'status') {
       setFilterStatus(chip.value);
     } else if (chip.type === 'priority') {
@@ -43,30 +49,28 @@ export const SearchBar = () => {
             backgroundColor: theme.surfaceSecondary,
             borderColor: theme.border,
           },
-        ]}
-      >
-        <Text style={[styles.searchIcon, { color: theme.textMuted }]}>🔍</Text>
+        ]}>
+        <Text style={[styles.searchIcon, {color: theme.textMuted}]}>🔍</Text>
         <TextInput
           placeholder="Search your tasks..."
           placeholderTextColor={theme.textMuted}
           value={searchQuery}
           onChangeText={setSearchQuery}
-          style={[styles.input, { color: theme.textPrimary }]}
+          style={[styles.input, {color: theme.textPrimary}]}
           returnKeyType="search"
         />
         {Boolean(searchQuery) && (
           <TouchableOpacity
             onPress={() => setSearchQuery('')}
-            style={styles.clearBtn}
-          >
-            <Text style={[styles.clearIcon, { color: theme.textMuted }]}>✕</Text>
+            style={styles.clearBtn}>
+            <Text style={[styles.clearIcon, {color: theme.textMuted}]}>✕</Text>
           </TouchableOpacity>
         )}
       </View>
 
       {/* Filter Status Pills */}
       <View style={styles.chipsRow}>
-        {statusChips.map((chip) => {
+        {statusChips.map(chip => {
           const isSelected =
             chip.type === 'status'
               ? filterStatus === chip.value
@@ -79,17 +83,17 @@ export const SearchBar = () => {
               style={[
                 styles.chip,
                 {
-                  backgroundColor: isSelected ? theme.primary : theme.surfaceSecondary,
+                  backgroundColor: isSelected
+                    ? theme.primary
+                    : theme.surfaceSecondary,
                   borderColor: isSelected ? theme.primary : theme.border,
                 },
-              ]}
-            >
+              ]}>
               <Text
                 style={[
                   styles.chipText,
-                  { color: isSelected ? '#FFFFFF' : theme.textSecondary },
-                ]}
-              >
+                  {color: isSelected ? '#FFFFFF' : theme.textSecondary},
+                ]}>
                 {chip.label}
               </Text>
             </TouchableOpacity>

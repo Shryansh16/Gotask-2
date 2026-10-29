@@ -1,5 +1,5 @@
 // src/screens/Settings.js
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -13,18 +13,18 @@ import {
   Switch,
   Platform,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useTheme } from '../context/ThemeContext';
-import { useTasks } from '../context/TaskContext';
+import {useNavigation} from '@react-navigation/native';
+import {useTheme} from '../context/ThemeContext';
+import {useTasks} from '../context/TaskContext';
 import HemburgerButton from '../modules/HemburgerButton';
 import apiService from '../services/apiService';
-import { textScale } from '../styles/responsiveStyles';
-import { fontFamily } from '../common/fonts';
-import { spacing } from '../styles/spacing';
+import {textScale} from '../styles/responsiveStyles';
+import {fontFamily} from '../common/fonts';
+import {spacing} from '../styles/spacing';
 
 const Settings = () => {
   const navigation = useNavigation();
-  const { theme, isDark, themeMode, setThemeMode } = useTheme();
+  const {theme, isDark, themeMode, setThemeMode} = useTheme();
   const {
     tasks,
     syncStatus,
@@ -63,11 +63,14 @@ const Settings = () => {
       const isUp = await apiService.checkServerHealth();
       setServerStatus(isUp ? 'online' : 'offline');
       if (isUp) {
-        Alert.alert('Connected! 🎉', 'Backend server is reachable and responsive.');
+        Alert.alert(
+          'Connected! 🎉',
+          'Backend server is reachable and responsive.',
+        );
       } else {
         Alert.alert(
           'Connection Failed ⚠️',
-          `Cannot reach ${serverUrl}.\n\nTips:\n- Ensure "node backend/server.js" is running.\n- For Android emulator, use "http://10.0.2.2:5000".\n- For physical phones, use your computer\'s Wi-Fi IP.`
+          `Cannot reach ${serverUrl}.\n\nTips:\n- Ensure "node backend/server.js" is running.\n- For Android emulator, use "http://10.0.2.2:5000".\n- For physical phones, use your computer\'s Wi-Fi IP.`,
         );
       }
     } catch (e) {
@@ -78,24 +81,29 @@ const Settings = () => {
     }
   };
 
-  const handleSetQuickUrl = async (url) => {
+  const handleSetQuickUrl = async url => {
     setServerUrl(url);
     await apiService.setServerUrl(url);
   };
 
   const handleClearCompleted = () => {
-    const completedCount = tasks.filter((t) => t.completed).length;
+    const completedCount = tasks.filter(t => t.completed).length;
     if (completedCount === 0) {
-      Alert.alert('No Completed Tasks', 'There are no finished tasks to clean up.');
+      Alert.alert(
+        'No Completed Tasks',
+        'There are no finished tasks to clean up.',
+      );
       return;
     }
     Alert.alert(
       'Clear Completed Tasks',
-      `Remove ${completedCount} completed ${completedCount === 1 ? 'task' : 'tasks'} from your active list?`,
+      `Remove ${completedCount} completed ${
+        completedCount === 1 ? 'task' : 'tasks'
+      } from your active list?`,
       [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Clear', style: 'destructive', onPress: clearCompleted },
-      ]
+        {text: 'Cancel', style: 'cancel'},
+        {text: 'Clear', style: 'destructive', onPress: clearCompleted},
+      ],
     );
   };
 
@@ -104,7 +112,7 @@ const Settings = () => {
       '⚠️ Reset All Data',
       'This will delete all local tasks and profile data. This action cannot be undone.',
       [
-        { text: 'Cancel', style: 'cancel' },
+        {text: 'Cancel', style: 'cancel'},
         {
           text: 'Reset Everything',
           style: 'destructive',
@@ -113,51 +121,50 @@ const Settings = () => {
             Alert.alert('Data Reset', 'All tasks have been wiped clean.');
           },
         },
-      ]
+      ],
     );
   };
 
   return (
-    <SafeAreaView style={[styles.mainContainer, { backgroundColor: theme.background }]}>
+    <SafeAreaView
+      style={[styles.mainContainer, {backgroundColor: theme.background}]}>
       <StatusBar
         backgroundColor={theme.background}
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
 
       {/* Header */}
-      <View style={[styles.header, { borderBottomColor: theme.divider }]}>
+      <View style={[styles.header, {borderBottomColor: theme.divider}]}>
         <HemburgerButton onPressButton={() => navigation.openDrawer()} />
-        <Text style={[styles.headerTitle, { color: theme.textPrimary }]}>
+        <Text style={[styles.headerTitle, {color: theme.textPrimary}]}>
           Settings & Sync
         </Text>
-        <View style={{ width: 40 }} />
+        <View style={{width: 40}} />
       </View>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+        contentContainerStyle={styles.scrollContent}>
         {/* Appearance / Theme Selector */}
         <View
           style={[
             styles.card,
-            { backgroundColor: theme.surface, borderColor: theme.border },
+            {backgroundColor: theme.surface, borderColor: theme.border},
             theme.cardShadow,
-          ]}
-        >
-          <Text style={[styles.cardTitle, { color: theme.textPrimary }]}>
+          ]}>
+          <Text style={[styles.cardTitle, {color: theme.textPrimary}]}>
             🎨 Appearance
           </Text>
-          <Text style={[styles.cardSubtitle, { color: theme.textMuted }]}>
+          <Text style={[styles.cardSubtitle, {color: theme.textMuted}]}>
             Customize the look and feel of GOTask
           </Text>
 
           <View style={styles.themeOptionsRow}>
             {[
-              { id: 'light', label: '☀️ Light', sub: 'Bright & Crisp' },
-              { id: 'dark', label: '🌙 Dark', sub: 'Deep & Sleek' },
-              { id: 'system', label: '⚙️ Auto', sub: 'System sync' },
-            ].map((opt) => {
+              {id: 'light', label: '☀️ Light', sub: 'Bright & Crisp'},
+              {id: 'dark', label: '🌙 Dark', sub: 'Deep & Sleek'},
+              {id: 'system', label: '⚙️ Auto', sub: 'System sync'},
+            ].map(opt => {
               const isSelected = themeMode === opt.id;
               return (
                 <TouchableOpacity
@@ -172,22 +179,19 @@ const Settings = () => {
                         : theme.surfaceSecondary,
                       borderColor: isSelected ? theme.primary : theme.border,
                     },
-                  ]}
-                >
+                  ]}>
                   <Text
                     style={[
                       styles.themeOptionLabel,
-                      { color: isSelected ? theme.primary : theme.textPrimary },
-                    ]}
-                  >
+                      {color: isSelected ? theme.primary : theme.textPrimary},
+                    ]}>
                     {opt.label}
                   </Text>
                   <Text
                     style={[
                       styles.themeOptionSub,
-                      { color: isSelected ? theme.primary : theme.textMuted },
-                    ]}
-                  >
+                      {color: isSelected ? theme.primary : theme.textMuted},
+                    ]}>
                     {opt.sub}
                   </Text>
                 </TouchableOpacity>
@@ -200,12 +204,11 @@ const Settings = () => {
         <View
           style={[
             styles.card,
-            { backgroundColor: theme.surface, borderColor: theme.border },
+            {backgroundColor: theme.surface, borderColor: theme.border},
             theme.cardShadow,
-          ]}
-        >
+          ]}>
           <View style={styles.cardHeaderRow}>
-            <Text style={[styles.cardTitle, { color: theme.textPrimary }]}>
+            <Text style={[styles.cardTitle, {color: theme.textPrimary}]}>
               🌐 Cloud Sync & Backend API
             </Text>
             {serverStatus && (
@@ -218,28 +221,28 @@ const Settings = () => {
                         ? theme.successLight
                         : theme.dangerLight,
                   },
-                ]}
-              >
+                ]}>
                 <Text
                   style={[
                     styles.statusBadgeText,
                     {
                       color:
-                        serverStatus === 'online' ? theme.success : theme.danger,
+                        serverStatus === 'online'
+                          ? theme.success
+                          : theme.danger,
                     },
-                  ]}
-                >
+                  ]}>
                   {serverStatus === 'online' ? 'Online ●' : 'Offline ✕'}
                 </Text>
               </View>
             )}
           </View>
 
-          <Text style={[styles.cardSubtitle, { color: theme.textMuted }]}>
+          <Text style={[styles.cardSubtitle, {color: theme.textMuted}]}>
             Connect to GOTask REST Server for bidirectional sync
           </Text>
 
-          <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+          <Text style={[styles.inputLabel, {color: theme.textSecondary}]}>
             Server Endpoint URL
           </Text>
           <TextInput
@@ -266,21 +269,27 @@ const Settings = () => {
                 handleSetQuickUrl(
                   Platform.OS === 'android'
                     ? 'http://10.0.2.2:5000'
-                    : 'http://localhost:5000'
+                    : 'http://localhost:5000',
                 )
               }
-              style={[styles.presetBtn, { backgroundColor: theme.surfaceSecondary }]}
-            >
-              <Text style={[styles.presetText, { color: theme.textSecondary }]}>
-                {Platform.OS === 'android' ? '📱 Emulator (10.0.2.2)' : '💻 Localhost'}
+              style={[
+                styles.presetBtn,
+                {backgroundColor: theme.surfaceSecondary},
+              ]}>
+              <Text style={[styles.presetText, {color: theme.textSecondary}]}>
+                {Platform.OS === 'android'
+                  ? '📱 Emulator (10.0.2.2)'
+                  : '💻 Localhost'}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() => handleSetQuickUrl('http://192.168.1.100:5000')}
-              style={[styles.presetBtn, { backgroundColor: theme.surfaceSecondary }]}
-            >
-              <Text style={[styles.presetText, { color: theme.textSecondary }]}>
+              style={[
+                styles.presetBtn,
+                {backgroundColor: theme.surfaceSecondary},
+              ]}>
+              <Text style={[styles.presetText, {color: theme.textSecondary}]}>
                 📶 Wi-Fi LAN
               </Text>
             </TouchableOpacity>
@@ -294,10 +303,12 @@ const Settings = () => {
               disabled={isTestingServer}
               style={[
                 styles.actionBtn,
-                { backgroundColor: theme.surfaceSecondary, borderColor: theme.border },
-              ]}
-            >
-              <Text style={[styles.actionBtnText, { color: theme.textPrimary }]}>
+                {
+                  backgroundColor: theme.surfaceSecondary,
+                  borderColor: theme.border,
+                },
+              ]}>
+              <Text style={[styles.actionBtnText, {color: theme.textPrimary}]}>
                 {isTestingServer ? 'Pinging...' : 'Test Connection 🔍'}
               </Text>
             </TouchableOpacity>
@@ -305,9 +316,8 @@ const Settings = () => {
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={handleSaveServerUrl}
-              style={[styles.actionBtn, { backgroundColor: theme.primary }]}
-            >
-              <Text style={[styles.actionBtnText, { color: '#FFFFFF' }]}>
+              style={[styles.actionBtn, {backgroundColor: theme.primary}]}>
+              <Text style={[styles.actionBtnText, {color: '#FFFFFF'}]}>
                 Save URL 💾
               </Text>
             </TouchableOpacity>
@@ -317,9 +327,8 @@ const Settings = () => {
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={triggerSync}
-            style={[styles.fullSyncBtn, { backgroundColor: theme.primaryLight }]}
-          >
-            <Text style={[styles.fullSyncText, { color: theme.primary }]}>
+            style={[styles.fullSyncBtn, {backgroundColor: theme.primaryLight}]}>
+            <Text style={[styles.fullSyncText, {color: theme.primary}]}>
               {syncStatus === 'syncing' ? 'Syncing...' : '🔄 Sync Tasks Now'}
             </Text>
           </TouchableOpacity>
@@ -329,63 +338,62 @@ const Settings = () => {
         <View
           style={[
             styles.card,
-            { backgroundColor: theme.surface, borderColor: theme.border },
+            {backgroundColor: theme.surface, borderColor: theme.border},
             theme.cardShadow,
-          ]}
-        >
-          <Text style={[styles.cardTitle, { color: theme.textPrimary }]}>
+          ]}>
+          <Text style={[styles.cardTitle, {color: theme.textPrimary}]}>
             🔔 Preferences
           </Text>
 
           <View style={styles.toggleRow}>
             <View>
-              <Text style={[styles.toggleTitle, { color: theme.textPrimary }]}>
+              <Text style={[styles.toggleTitle, {color: theme.textPrimary}]}>
                 Sound & Completion Chimes
               </Text>
-              <Text style={[styles.toggleSub, { color: theme.textMuted }]}>
+              <Text style={[styles.toggleSub, {color: theme.textMuted}]}>
                 Play audio feedback on task complete
               </Text>
             </View>
             <Switch
               value={soundEnabled}
               onValueChange={setSoundEnabled}
-              trackColor={{ false: theme.border, true: theme.primary }}
+              trackColor={{false: theme.border, true: theme.primary}}
             />
           </View>
 
-          <View style={[styles.sep, { backgroundColor: theme.divider }]} />
+          <View style={[styles.sep, {backgroundColor: theme.divider}]} />
 
           <View style={styles.toggleRow}>
             <View>
-              <Text style={[styles.toggleTitle, { color: theme.textPrimary }]}>
+              <Text style={[styles.toggleTitle, {color: theme.textPrimary}]}>
                 Haptic Feedback
               </Text>
-              <Text style={[styles.toggleSub, { color: theme.textMuted }]}>
+              <Text style={[styles.toggleSub, {color: theme.textMuted}]}>
                 Vibrate gently when toggling checkboxes
               </Text>
             </View>
             <Switch
               value={hapticEnabled}
               onValueChange={setHapticEnabled}
-              trackColor={{ false: theme.border, true: theme.primary }}
+              trackColor={{false: theme.border, true: theme.primary}}
             />
           </View>
 
-          <View style={[styles.sep, { backgroundColor: theme.divider }]} />
+          <View style={[styles.sep, {backgroundColor: theme.divider}]} />
 
           <View style={styles.toggleRow}>
             <View>
-              <Text style={[styles.toggleTitle, { color: theme.textPrimary }]}>
+              <Text style={[styles.toggleTitle, {color: theme.textPrimary}]}>
                 Auto-Sync on Launch
               </Text>
-              <Text style={[styles.toggleSub, { color: theme.textMuted }]}>
+              <Text style={[styles.toggleSub, {color: theme.textMuted}]}>
                 Fetch newest tasks when app starts
               </Text>
             </View>
             <Switch
               value={autoSyncOnLaunch}
               onValueChange={setAutoSyncOnLaunch}
-              trackColor={{ false: theme.border, true: theme.primary }}
+              trackColor={{false: theme.border, true: theme.primary}}
             />
           </View>
         </View>
@@ -394,19 +402,20 @@ const Settings = () => {
         <View
           style={[
             styles.card,
-            { backgroundColor: theme.surface, borderColor: theme.border },
+            {backgroundColor: theme.surface, borderColor: theme.border},
             theme.cardShadow,
-          ]}
-        >
-          <Text style={[styles.cardTitle, { color: theme.textPrimary }]}>
+          ]}>
+          <Text style={[styles.cardTitle, {color: theme.textPrimary}]}>
             🗄️ Data Management
           </Text>
 
           <TouchableOpacity
             onPress={handleClearCompleted}
-            style={[styles.manageBtn, { backgroundColor: theme.surfaceSecondary }]}
-          >
-            <Text style={[styles.manageBtnText, { color: theme.warning }]}>
+            style={[
+              styles.manageBtn,
+              {backgroundColor: theme.surfaceSecondary},
+            ]}>
+            <Text style={[styles.manageBtnText, {color: theme.warning}]}>
               🧹 Clear Completed Tasks
             </Text>
           </TouchableOpacity>
@@ -415,10 +424,9 @@ const Settings = () => {
             onPress={seedSampleTasks}
             style={[
               styles.manageBtn,
-              { backgroundColor: theme.surfaceSecondary, marginTop: 8 },
-            ]}
-          >
-            <Text style={[styles.manageBtnText, { color: theme.primary }]}>
+              {backgroundColor: theme.surfaceSecondary, marginTop: 8},
+            ]}>
+            <Text style={[styles.manageBtnText, {color: theme.primary}]}>
               📦 Restore Demo Tasks
             </Text>
           </TouchableOpacity>
@@ -427,10 +435,9 @@ const Settings = () => {
             onPress={handleResetData}
             style={[
               styles.manageBtn,
-              { backgroundColor: theme.dangerLight, marginTop: 8 },
-            ]}
-          >
-            <Text style={[styles.manageBtnText, { color: theme.danger }]}>
+              {backgroundColor: theme.dangerLight, marginTop: 8},
+            ]}>
+            <Text style={[styles.manageBtnText, {color: theme.danger}]}>
               🗑️ Reset All Local Data
             </Text>
           </TouchableOpacity>
@@ -438,12 +445,15 @@ const Settings = () => {
 
         {/* About App Info */}
         <View style={styles.aboutContainer}>
-          <Text style={[styles.aboutBrand, { color: theme.primary }]}>GoTask Mobile</Text>
-          <Text style={[styles.aboutVersion, { color: theme.textMuted }]}>
+          <Text style={[styles.aboutBrand, {color: theme.primary}]}>
+            GoTask Mobile
+          </Text>
+          <Text style={[styles.aboutVersion, {color: theme.textMuted}]}>
             Version 2.0.0 • Architecture Revamp
           </Text>
-          <Text style={[styles.aboutDesc, { color: theme.textMuted }]}>
-            Crafted for speed, clean Poppins typography, offline-first reliability, and seamless multi-device sync.
+          <Text style={[styles.aboutDesc, {color: theme.textMuted}]}>
+            Crafted for speed, clean Poppins typography, offline-first
+            reliability, and seamless multi-device sync.
           </Text>
         </View>
       </ScrollView>

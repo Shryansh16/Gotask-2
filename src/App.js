@@ -1,14 +1,14 @@
 import React from 'react';
-import { StatusBar, StyleSheet, View } from 'react-native';
+import {StatusBar, StyleSheet, View} from 'react-native';
 import Navigation from './navigation/navigation';
-import { ThemeProvider, useTheme } from './context/ThemeContext';
-import { TaskProvider } from './context/TaskContext';
+import {ThemeProvider, useTheme} from './context/ThemeContext';
+import {TaskProvider} from './context/TaskContext';
 
 const MainApp = () => {
-  const { theme, isDark } = useTheme();
+  const {theme, isDark} = useTheme();
 
   return (
-    <View style={[styles.mainContainer, { backgroundColor: theme.background }]}>
+    <View style={[styles.mainContainer, {backgroundColor: theme.background}]}>
       <StatusBar
         backgroundColor={theme.background}
         barStyle={isDark ? 'light-content' : 'dark-content'}

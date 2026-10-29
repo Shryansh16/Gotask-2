@@ -1,18 +1,49 @@
 {
   "profile": {
     "name": "Shryansh Shree",
-    "email": "shryansh@example.com",
-    "role": "Productivity Enthusiast",
+    "email": "shryansh.gangwal@example.com",
+    "role": "Productivity Architect",
     "dailyGoal": 5,
-    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80"
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80",
+    "joinedDate": "October 2026"
   },
   "categories": [
-    { "id": "cat_1", "name": "Work", "color": "#4F46E5", "icon": "briefcase" },
-    { "id": "cat_2", "name": "Personal", "color": "#06B6D4", "icon": "user" },
-    { "id": "cat_3", "name": "Shopping", "color": "#EC4899", "icon": "shopping-cart" },
-    { "id": "cat_4", "name": "Health", "color": "#10B981", "icon": "heartbeat" },
-    { "id": "cat_5", "name": "Study", "color": "#8B5CF6", "icon": "book" },
-    { "id": "cat_6", "name": "Finance", "color": "#F59E0B", "icon": "dollar-sign" }
+    {
+      "id": "cat_1",
+      "name": "Work",
+      "color": "#4F46E5",
+      "icon": "briefcase"
+    },
+    {
+      "id": "cat_2",
+      "name": "Personal",
+      "color": "#06B6D4",
+      "icon": "user"
+    },
+    {
+      "id": "cat_3",
+      "name": "Shopping",
+      "color": "#EC4899",
+      "icon": "shopping-cart"
+    },
+    {
+      "id": "cat_4",
+      "name": "Health",
+      "color": "#10B981",
+      "icon": "heartbeat"
+    },
+    {
+      "id": "cat_5",
+      "name": "Study",
+      "color": "#8B5CF6",
+      "icon": "book"
+    },
+    {
+      "id": "cat_6",
+      "name": "Finance",
+      "color": "#F59E0B",
+      "icon": "dollar-sign"
+    }
   ],
   "tasks": [
     {
@@ -25,9 +56,21 @@
       "dueDate": "Today",
       "isPinned": true,
       "subtasks": [
-        { "id": "sub_1", "title": "Check Poppins typography weights", "completed": true },
-        { "id": "sub_2", "title": "Validate contrast on dark mode", "completed": false },
-        { "id": "sub_3", "title": "Ensure responsive layout scaling", "completed": true }
+        {
+          "id": "sub_1",
+          "title": "Check Poppins typography weights",
+          "completed": true
+        },
+        {
+          "id": "sub_2",
+          "title": "Validate contrast on dark mode",
+          "completed": false
+        },
+        {
+          "id": "sub_3",
+          "title": "Ensure responsive layout scaling",
+          "completed": true
+        }
       ],
       "createdAt": 1729510000000,
       "updatedAt": 1729510000000
@@ -55,8 +98,16 @@
       "dueDate": "Tomorrow",
       "isPinned": false,
       "subtasks": [
-        { "id": "sub_4", "title": "Spinach & Kale", "completed": false },
-        { "id": "sub_5", "title": "Almond milk & Oats", "completed": false }
+        {
+          "id": "sub_4",
+          "title": "Spinach & Kale",
+          "completed": false
+        },
+        {
+          "id": "sub_5",
+          "title": "Almond milk & Oats",
+          "completed": false
+        }
       ],
       "createdAt": 1729490000000,
       "updatedAt": 1729490000000
@@ -73,6 +124,458 @@
       "subtasks": [],
       "createdAt": 1729480000000,
       "updatedAt": 1729480000000
+    },
+    {
+      "id": "sample_1",
+      "title": "Complete Mobile App Architecture Revamp",
+      "description": "Ensure offline-first sync, clean Poppins typography, and modern cards are ready.",
+      "category": "Work",
+      "priority": "high",
+      "completed": false,
+      "dueDate": "Today",
+      "isPinned": true,
+      "subtasks": [
+        {
+          "id": "s1",
+          "title": "Verify responsive font scaling",
+          "completed": true
+        },
+        {
+          "id": "s2",
+          "title": "Test dark mode theme switching",
+          "completed": true
+        },
+        {
+          "id": "s3",
+          "title": "Integrate offline-first task context",
+          "completed": true
+        },
+        {
+          "id": "s4",
+          "title": "Test category filters & search",
+          "completed": false
+        }
+      ],
+      "createdAt": 1792595021085,
+      "updatedAt": 1792609421085
+    },
+    {
+      "id": "sample_2",
+      "title": "Daily 30-min HIIT & Stretches",
+      "description": "Stay focused and energetic throughout the afternoon sprint.",
+      "category": "Health",
+      "priority": "medium",
+      "completed": true,
+      "dueDate": "Today",
+      "isPinned": false,
+      "subtasks": [
+        {
+          "id": "s2_1",
+          "title": "Warmup mobility",
+          "completed": true
+        },
+        {
+          "id": "s2_2",
+          "title": "Core & cardio circuits",
+          "completed": true
+        }
+      ],
+      "createdAt": 1792580621085,
+      "updatedAt": 1792602221085,
+      "completedAt": 1792602221085
+    },
+    {
+      "id": "sample_3",
+      "title": "Organic groceries for week meal prep",
+      "description": "Buy fresh veggies, Greek yogurt, berries, and chia seeds.",
+      "category": "Shopping",
+      "priority": "low",
+      "completed": false,
+      "dueDate": "Tomorrow",
+      "isPinned": false,
+      "subtasks": [
+        {
+          "id": "s3_1",
+          "title": "Spinach & Avocados",
+          "completed": false
+        },
+        {
+          "id": "s3_2",
+          "title": "Almond milk & Greek Yogurt",
+          "completed": false
+        }
+      ],
+      "createdAt": 1792566221085,
+      "updatedAt": 1792566221085
+    },
+    {
+      "id": "sample_4",
+      "title": "Review Machine Learning System Design",
+      "description": "Study feature stores, latency budgets, and model monitoring architectures.",
+      "category": "Study",
+      "priority": "high",
+      "completed": false,
+      "dueDate": "This Week",
+      "isPinned": true,
+      "subtasks": [
+        {
+          "id": "s4_1",
+          "title": "Read chapter 3 notes",
+          "completed": true
+        },
+        {
+          "id": "s4_2",
+          "title": "Draft diagram for inference pipeline",
+          "completed": false
+        }
+      ],
+      "createdAt": 1792537421085,
+      "updatedAt": 1792537421085
+    },
+    {
+      "id": "sample_5",
+      "title": "Organize workspace & review monthly subscriptions",
+      "description": "Audit recurring cloud and software bills to optimize personal finance.",
+      "category": "Finance",
+      "priority": "low",
+      "completed": true,
+      "dueDate": "Yesterday",
+      "isPinned": false,
+      "subtasks": [],
+      "createdAt": 1792501421085,
+      "updatedAt": 1792573421085,
+      "completedAt": 1792573421085
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "audit_1793281455818_ffeb8",
+      "timestamp": "2026-10-29T13:44:15.818Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "agent_task_1793281455806",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793281455816_epnuf",
+      "timestamp": "2026-10-29T13:44:15.816Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "task_1793281455796_t3y5",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793281455807_2j6tq",
+      "timestamp": "2026-10-29T13:44:15.807Z",
+      "action": "agent_dispatch_create",
+      "entityType": "task",
+      "entityId": "agent_task_1793281455806",
+      "actor": "DevOps Orchestrator",
+      "details": {
+        "agentName": "DevOps Orchestrator",
+        "title": "Review production security headers and logs"
+      }
+    },
+    {
+      "id": "audit_1793281455802_0fa23",
+      "timestamp": "2026-10-29T13:44:15.802Z",
+      "action": "update_task",
+      "entityType": "task",
+      "entityId": "task_1793281455796_t3y5",
+      "actor": "human",
+      "details": {
+        "completed": true,
+        "description": "Updated via test suite"
+      }
+    },
+    {
+      "id": "audit_1793281455798_dhiit",
+      "timestamp": "2026-10-29T13:44:15.798Z",
+      "action": "create_task",
+      "entityType": "task",
+      "entityId": "task_1793281455796_t3y5",
+      "actor": "human",
+      "details": {
+        "title": "Automated E2E Verification Task"
+      }
+    },
+    {
+      "id": "audit_1793281381083_49253",
+      "timestamp": "2026-10-29T13:43:01.083Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "agent_task_1793281381072",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793281381081_zh3nh",
+      "timestamp": "2026-10-29T13:43:01.081Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "task_1793281381044_ss55",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793281381073_fj4q4",
+      "timestamp": "2026-10-29T13:43:01.073Z",
+      "action": "agent_dispatch_create",
+      "entityType": "task",
+      "entityId": "agent_task_1793281381072",
+      "actor": "DevOps Orchestrator",
+      "details": {
+        "agentName": "DevOps Orchestrator",
+        "title": "Review production security headers and logs"
+      }
+    },
+    {
+      "id": "audit_1793281381068_lbhss",
+      "timestamp": "2026-10-29T13:43:01.068Z",
+      "action": "update_task",
+      "entityType": "task",
+      "entityId": "task_1793281381044_ss55",
+      "actor": "human",
+      "details": {
+        "completed": true,
+        "description": "Updated via test suite"
+      }
+    },
+    {
+      "id": "audit_1793281381064_p4xkc",
+      "timestamp": "2026-10-29T13:43:01.064Z",
+      "action": "create_task",
+      "entityType": "task",
+      "entityId": "task_1793281381044_ss55",
+      "actor": "human",
+      "details": {
+        "title": "Automated E2E Verification Task"
+      }
+    },
+    {
+      "id": "audit_1792609570200_s52uq",
+      "timestamp": "2026-10-21T19:06:10.200Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "agent_task_1792609570188",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1792609570197_ei00e",
+      "timestamp": "2026-10-21T19:06:10.197Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "task_1792609570180_ozj3",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1792609570189_zi0jz",
+      "timestamp": "2026-10-21T19:06:10.189Z",
+      "action": "agent_dispatch_create",
+      "entityType": "task",
+      "entityId": "agent_task_1792609570188",
+      "actor": "DevOps Orchestrator",
+      "details": {
+        "agentName": "DevOps Orchestrator",
+        "title": "Review production security headers and logs"
+      }
+    },
+    {
+      "id": "audit_1792609570184_8fk1r",
+      "timestamp": "2026-10-21T19:06:10.184Z",
+      "action": "update_task",
+      "entityType": "task",
+      "entityId": "task_1792609570180_ozj3",
+      "actor": "human",
+      "details": {
+        "completed": true,
+        "description": "Updated via test suite"
+      }
+    },
+    {
+      "id": "audit_1792609570181_ihpxu",
+      "timestamp": "2026-10-21T19:06:10.181Z",
+      "action": "create_task",
+      "entityType": "task",
+      "entityId": "task_1792609570180_ozj3",
+      "actor": "human",
+      "details": {
+        "title": "Automated E2E Verification Task"
+      }
+    },
+    {
+      "id": "audit_1792609442712_zumnt",
+      "timestamp": "2026-10-21T19:04:02.712Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "agent_task_1792609442693",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1792609442708_g6zh1",
+      "timestamp": "2026-10-21T19:04:02.708Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "task_1792609442679_z63r",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1792609442694_mf2cs",
+      "timestamp": "2026-10-21T19:04:02.694Z",
+      "action": "agent_dispatch_create",
+      "entityType": "task",
+      "entityId": "agent_task_1792609442693",
+      "actor": "DevOps Orchestrator",
+      "details": {
+        "agentName": "DevOps Orchestrator",
+        "title": "Review production security headers and logs"
+      }
+    },
+    {
+      "id": "audit_1792609442686_c0a2w",
+      "timestamp": "2026-10-21T19:04:02.686Z",
+      "action": "update_task",
+      "entityType": "task",
+      "entityId": "task_1792609442679_z63r",
+      "actor": "human",
+      "details": {
+        "completed": true,
+        "description": "Updated via test suite"
+      }
+    },
+    {
+      "id": "audit_1792609442681_dfpza",
+      "timestamp": "2026-10-21T19:04:02.681Z",
+      "action": "create_task",
+      "entityType": "task",
+      "entityId": "task_1792609442679_z63r",
+      "actor": "human",
+      "details": {
+        "title": "Automated E2E Verification Task"
+      }
+    },
+    {
+      "id": "audit_1792609421592_3bohd",
+      "timestamp": "2026-10-21T19:03:41.592Z",
+      "action": "client_sync",
+      "entityType": "system",
+      "entityId": "sync",
+      "actor": "human",
+      "details": {
+        "mergedCount": 9
+      }
+    },
+    {
+      "id": "audit_1792609420055_yejze",
+      "timestamp": "2026-10-21T19:03:40.055Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "agent_task_1792609420023",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1792609420044_nkksj",
+      "timestamp": "2026-10-21T19:03:40.044Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "task_1792609419997_ihs5",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1792609420025_pjvak",
+      "timestamp": "2026-10-21T19:03:40.025Z",
+      "action": "agent_dispatch_create",
+      "entityType": "task",
+      "entityId": "agent_task_1792609420023",
+      "actor": "DevOps Orchestrator",
+      "details": {
+        "agentName": "DevOps Orchestrator",
+        "title": "Review production security headers and logs"
+      }
+    },
+    {
+      "id": "audit_1792609420016_ec9xq",
+      "timestamp": "2026-10-21T19:03:40.016Z",
+      "action": "update_task",
+      "entityType": "task",
+      "entityId": "task_1792609419997_ihs5",
+      "actor": "human",
+      "details": {
+        "completed": true,
+        "description": "Updated via test suite"
+      }
+    },
+    {
+      "id": "audit_1792609420010_77bxx",
+      "timestamp": "2026-10-21T19:03:40.010Z",
+      "action": "create_task",
+      "entityType": "task",
+      "entityId": "task_1792609419997_ihs5",
+      "actor": "human",
+      "details": {
+        "title": "Automated E2E Verification Task"
+      }
+    },
+    {
+      "id": "audit_1792609183840_bhpwf",
+      "timestamp": "2026-10-21T18:59:43.840Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "agent_task_1792609183825",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1792609183836_dwvxi",
+      "timestamp": "2026-10-21T18:59:43.836Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "task_1792609183814_oxh3",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1792609183826_znngs",
+      "timestamp": "2026-10-21T18:59:43.826Z",
+      "action": "agent_dispatch_create",
+      "entityType": "task",
+      "entityId": "agent_task_1792609183825",
+      "actor": "DevOps Orchestrator",
+      "details": {
+        "agentName": "DevOps Orchestrator",
+        "title": "Review production security headers and logs"
+      }
+    },
+    {
+      "id": "audit_1792609183820_30xex",
+      "timestamp": "2026-10-21T18:59:43.820Z",
+      "action": "update_task",
+      "entityType": "task",
+      "entityId": "task_1792609183814_oxh3",
+      "actor": "human",
+      "details": {
+        "completed": true,
+        "description": "Updated via test suite"
+      }
+    },
+    {
+      "id": "audit_1792609183815_e6fux",
+      "timestamp": "2026-10-21T18:59:43.815Z",
+      "action": "create_task",
+      "entityType": "task",
+      "entityId": "task_1792609183814_oxh3",
+      "actor": "human",
+      "details": {
+        "title": "Automated E2E Verification Task"
+      }
     }
   ]
 }

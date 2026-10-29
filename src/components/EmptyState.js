@@ -1,10 +1,10 @@
 // src/components/EmptyState.js
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useTheme } from '../context/ThemeContext';
-import { textScale } from '../styles/responsiveStyles';
-import { fontFamily } from '../common/fonts';
-import { spacing } from '../styles/spacing';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {useTheme} from '../context/ThemeContext';
+import {textScale} from '../styles/responsiveStyles';
+import {fontFamily} from '../common/fonts';
+import {spacing} from '../styles/spacing';
 
 export const EmptyState = ({
   icon = '✨',
@@ -13,15 +13,15 @@ export const EmptyState = ({
   buttonText,
   onButtonPress,
 }) => {
-  const { theme } = useTheme();
+  const {theme} = useTheme();
 
   return (
     <View style={styles.container}>
-      <View style={[styles.iconCircle, { backgroundColor: theme.primaryLight }]}>
+      <View style={[styles.iconCircle, {backgroundColor: theme.primaryLight}]}>
         <Text style={styles.iconText}>{icon}</Text>
       </View>
-      <Text style={[styles.title, { color: theme.textPrimary }]}>{title}</Text>
-      <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
+      <Text style={[styles.title, {color: theme.textPrimary}]}>{title}</Text>
+      <Text style={[styles.subtitle, {color: theme.textSecondary}]}>
         {subtitle}
       </Text>
 
@@ -29,8 +29,7 @@ export const EmptyState = ({
         <TouchableOpacity
           activeOpacity={0.85}
           onPress={onButtonPress}
-          style={[styles.button, { backgroundColor: theme.primary }]}
-        >
+          style={[styles.button, {backgroundColor: theme.primary}]}>
           <Text style={styles.buttonText}>{buttonText}</Text>
         </TouchableOpacity>
       )}

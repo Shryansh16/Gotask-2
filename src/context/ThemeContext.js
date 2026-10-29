@@ -1,13 +1,13 @@
 // src/context/ThemeContext.js
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useColorScheme } from 'react-native';
+import React, {createContext, useContext, useState, useEffect} from 'react';
+import {useColorScheme} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { lightTheme, darkTheme } from '../styles/theme';
+import {lightTheme, darkTheme} from '../styles/theme';
 
 const ThemeContext = createContext();
 const THEME_STORAGE_KEY = '@gotask_theme_mode';
 
-export const ThemeProvider = ({ children }) => {
+export const ThemeProvider = ({children}) => {
   const systemScheme = useColorScheme();
   const [themeMode, setThemeModeState] = useState('system'); // 'light' | 'dark' | 'system'
   const [isLoaded, setIsLoaded] = useState(false);
@@ -29,7 +29,7 @@ export const ThemeProvider = ({ children }) => {
     }
   };
 
-  const setThemeMode = async (mode) => {
+  const setThemeMode = async mode => {
     setThemeModeState(mode);
     try {
       await AsyncStorage.setItem(THEME_STORAGE_KEY, mode);
@@ -40,7 +40,8 @@ export const ThemeProvider = ({ children }) => {
 
   const toggleTheme = () => {
     const isCurrentlyDark =
-      themeMode === 'dark' || (themeMode === 'system' && systemScheme === 'dark');
+      themeMode === 'dark' ||
+      (themeMode === 'system' && systemScheme === 'dark');
     setThemeMode(isCurrentlyDark ? 'light' : 'dark');
   };
 
@@ -57,8 +58,7 @@ export const ThemeProvider = ({ children }) => {
         themeMode,
         setThemeMode,
         toggleTheme,
-      }}
-    >
+      }}>
       {children}
     </ThemeContext.Provider>
   );

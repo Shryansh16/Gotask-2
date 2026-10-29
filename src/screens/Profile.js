@@ -1,5 +1,5 @@
 // src/screens/Profile.js
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -13,17 +13,17 @@ import {
   StatusBar,
   Alert,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useTheme } from '../context/ThemeContext';
-import { useTasks } from '../context/TaskContext';
+import {useNavigation} from '@react-navigation/native';
+import {useTheme} from '../context/ThemeContext';
+import {useTasks} from '../context/TaskContext';
 import HemburgerButton from '../modules/HemburgerButton';
-import { textScale } from '../styles/responsiveStyles';
-import { fontFamily } from '../common/fonts';
-import { spacing } from '../styles/spacing';
+import {textScale} from '../styles/responsiveStyles';
+import {fontFamily} from '../common/fonts';
+import {spacing} from '../styles/spacing';
 
 const Profile = () => {
   const navigation = useNavigation();
-  const { theme, isDark } = useTheme();
+  const {theme, isDark} = useTheme();
   const {
     profile,
     updateProfile,
@@ -63,7 +63,7 @@ const Profile = () => {
 
   const avatarSource =
     profile?.avatar && profile.avatar.startsWith('http')
-      ? { uri: profile.avatar }
+      ? {uri: profile.avatar}
       : require('../assets/man.png');
 
   // Achievement logic
@@ -99,55 +99,58 @@ const Profile = () => {
   ];
 
   return (
-    <SafeAreaView style={[styles.mainContainer, { backgroundColor: theme.background }]}>
+    <SafeAreaView
+      style={[styles.mainContainer, {backgroundColor: theme.background}]}>
       <StatusBar
         backgroundColor={theme.background}
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
 
       {/* Header */}
-      <View style={[styles.header, { borderBottomColor: theme.divider }]}>
+      <View style={[styles.header, {borderBottomColor: theme.divider}]}>
         <HemburgerButton onPressButton={() => navigation.openDrawer()} />
-        <Text style={[styles.headerTitle, { color: theme.textPrimary }]}>My Profile</Text>
+        <Text style={[styles.headerTitle, {color: theme.textPrimary}]}>
+          My Profile
+        </Text>
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={handleOpenEdit}
-          style={[styles.editHeaderBtn, { backgroundColor: theme.primaryLight }]}
-        >
-          <Text style={[styles.editHeaderText, { color: theme.primary }]}>Edit</Text>
+          style={[styles.editHeaderBtn, {backgroundColor: theme.primaryLight}]}>
+          <Text style={[styles.editHeaderText, {color: theme.primary}]}>
+            Edit
+          </Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+        contentContainerStyle={styles.scrollContent}>
         {/* Profile Card Hero */}
         <View
           style={[
             styles.profileCard,
-            { backgroundColor: theme.surface, borderColor: theme.border },
+            {backgroundColor: theme.surface, borderColor: theme.border},
             theme.cardShadow,
-          ]}
-        >
+          ]}>
           <View style={styles.avatarContainer}>
             <Image
               source={avatarSource}
-              style={[styles.avatar, { borderColor: theme.primary }]}
+              style={[styles.avatar, {borderColor: theme.primary}]}
               defaultSource={require('../assets/man.png')}
             />
-            <View style={[styles.avatarBadge, { backgroundColor: theme.success }]}>
+            <View
+              style={[styles.avatarBadge, {backgroundColor: theme.success}]}>
               <Text style={styles.avatarBadgeText}>✓</Text>
             </View>
           </View>
 
-          <Text style={[styles.userName, { color: theme.textPrimary }]}>
+          <Text style={[styles.userName, {color: theme.textPrimary}]}>
             {profile?.name || 'User'}
           </Text>
-          <Text style={[styles.userRole, { color: theme.primary }]}>
+          <Text style={[styles.userRole, {color: theme.primary}]}>
             {profile?.role || 'Productivity Enthusiast'}
           </Text>
-          <Text style={[styles.userEmail, { color: theme.textMuted }]}>
+          <Text style={[styles.userEmail, {color: theme.textMuted}]}>
             {profile?.email || 'shryansh@example.com'}
           </Text>
 
@@ -155,41 +158,46 @@ const Profile = () => {
           <View
             style={[
               styles.metricsStrip,
-              { backgroundColor: theme.surfaceSecondary },
-            ]}
-          >
+              {backgroundColor: theme.surfaceSecondary},
+            ]}>
             <View style={styles.metricColumn}>
-              <Text style={[styles.metricNumber, { color: theme.textPrimary }]}>
+              <Text style={[styles.metricNumber, {color: theme.textPrimary}]}>
                 {stats.total}
               </Text>
-              <Text style={[styles.metricLabel, { color: theme.textMuted }]}>
+              <Text style={[styles.metricLabel, {color: theme.textMuted}]}>
                 Total
               </Text>
             </View>
-            <View style={[styles.metricSep, { backgroundColor: theme.divider }]} />
+            <View
+              style={[styles.metricSep, {backgroundColor: theme.divider}]}
+            />
             <View style={styles.metricColumn}>
-              <Text style={[styles.metricNumber, { color: theme.success }]}>
+              <Text style={[styles.metricNumber, {color: theme.success}]}>
                 {stats.completed}
               </Text>
-              <Text style={[styles.metricLabel, { color: theme.textMuted }]}>
+              <Text style={[styles.metricLabel, {color: theme.textMuted}]}>
                 Done
               </Text>
             </View>
-            <View style={[styles.metricSep, { backgroundColor: theme.divider }]} />
+            <View
+              style={[styles.metricSep, {backgroundColor: theme.divider}]}
+            />
             <View style={styles.metricColumn}>
-              <Text style={[styles.metricNumber, { color: theme.warning }]}>
+              <Text style={[styles.metricNumber, {color: theme.warning}]}>
                 {stats.pending}
               </Text>
-              <Text style={[styles.metricLabel, { color: theme.textMuted }]}>
+              <Text style={[styles.metricLabel, {color: theme.textMuted}]}>
                 Pending
               </Text>
             </View>
-            <View style={[styles.metricSep, { backgroundColor: theme.divider }]} />
+            <View
+              style={[styles.metricSep, {backgroundColor: theme.divider}]}
+            />
             <View style={styles.metricColumn}>
-              <Text style={[styles.metricNumber, { color: theme.primary }]}>
+              <Text style={[styles.metricNumber, {color: theme.primary}]}>
                 {stats.streak}d
               </Text>
-              <Text style={[styles.metricLabel, { color: theme.textMuted }]}>
+              <Text style={[styles.metricLabel, {color: theme.textMuted}]}>
                 Streak
               </Text>
             </View>
@@ -200,25 +208,25 @@ const Profile = () => {
         <View
           style={[
             styles.sectionCard,
-            { backgroundColor: theme.surface, borderColor: theme.border },
+            {backgroundColor: theme.surface, borderColor: theme.border},
             theme.cardShadow,
-          ]}
-        >
+          ]}>
           <View style={styles.sectionHeaderRow}>
             <View>
-              <Text style={[styles.sectionTitle, { color: theme.textPrimary }]}>
+              <Text style={[styles.sectionTitle, {color: theme.textPrimary}]}>
                 Daily Task Target
               </Text>
-              <Text style={[styles.sectionSubtitle, { color: theme.textMuted }]}>
+              <Text style={[styles.sectionSubtitle, {color: theme.textMuted}]}>
                 Goal: {profile?.dailyGoal || 5} tasks completed / day
               </Text>
             </View>
-            <Text style={[styles.goalPercentText, { color: theme.primary }]}>
+            <Text style={[styles.goalPercentText, {color: theme.primary}]}>
               {Math.min(
                 100,
                 Math.round(
-                  (stats.completed / Math.max(profile?.dailyGoal || 5, 1)) * 100
-                )
+                  (stats.completed / Math.max(profile?.dailyGoal || 5, 1)) *
+                    100,
+                ),
               )}
               %
             </Text>
@@ -227,9 +235,8 @@ const Profile = () => {
           <View
             style={[
               styles.progressBarTrack,
-              { backgroundColor: theme.surfaceSecondary },
-            ]}
-          >
+              {backgroundColor: theme.surfaceSecondary},
+            ]}>
             <View
               style={[
                 styles.progressBarFill,
@@ -238,9 +245,10 @@ const Profile = () => {
                   width: `${Math.min(
                     100,
                     Math.max(
-                      (stats.completed / Math.max(profile?.dailyGoal || 5, 1)) * 100,
-                      4
-                    )
+                      (stats.completed / Math.max(profile?.dailyGoal || 5, 1)) *
+                        100,
+                      4,
+                    ),
                   )}%`,
                 },
               ]}
@@ -250,12 +258,16 @@ const Profile = () => {
 
         {/* Productivity Badges & Achievements */}
         <View style={styles.achievementsSection}>
-          <Text style={[styles.sectionTitle, { color: theme.textPrimary, marginBottom: 12 }]}>
+          <Text
+            style={[
+              styles.sectionTitle,
+              {color: theme.textPrimary, marginBottom: 12},
+            ]}>
             Productivity Badges
           </Text>
 
           <View style={styles.badgesGrid}>
-            {achievements.map((item) => (
+            {achievements.map(item => (
               <View
                 key={item.id}
                 style={[
@@ -266,19 +278,16 @@ const Profile = () => {
                     opacity: item.unlocked ? 1 : 0.55,
                   },
                   item.unlocked ? theme.cardShadow : null,
-                ]}
-              >
+                ]}>
                 <Text style={styles.badgeIcon}>{item.icon}</Text>
                 <Text
-                  style={[styles.badgeTitle, { color: theme.textPrimary }]}
-                  numberOfLines={1}
-                >
+                  style={[styles.badgeTitle, {color: theme.textPrimary}]}
+                  numberOfLines={1}>
                   {item.title}
                 </Text>
                 <Text
-                  style={[styles.badgeDesc, { color: theme.textMuted }]}
-                  numberOfLines={2}
-                >
+                  style={[styles.badgeDesc, {color: theme.textMuted}]}
+                  numberOfLines={2}>
                   {item.desc}
                 </Text>
                 <View
@@ -289,14 +298,12 @@ const Profile = () => {
                         ? theme.successLight
                         : theme.surfaceSecondary,
                     },
-                  ]}
-                >
+                  ]}>
                   <Text
                     style={[
                       styles.statusPillText,
-                      { color: item.unlocked ? theme.success : theme.textMuted },
-                    ]}
-                  >
+                      {color: item.unlocked ? theme.success : theme.textMuted},
+                    ]}>
                     {item.unlocked ? 'Unlocked 🌟' : 'In Progress'}
                   </Text>
                 </View>
@@ -309,15 +316,14 @@ const Profile = () => {
         <View
           style={[
             styles.syncCard,
-            { backgroundColor: theme.surface, borderColor: theme.border },
+            {backgroundColor: theme.surface, borderColor: theme.border},
             theme.cardShadow,
-          ]}
-        >
+          ]}>
           <View style={styles.syncLeft}>
-            <Text style={[styles.syncTitle, { color: theme.textPrimary }]}>
+            <Text style={[styles.syncTitle, {color: theme.textPrimary}]}>
               Cloud Backup & Sync
             </Text>
-            <Text style={[styles.syncSubtitle, { color: theme.textMuted }]}>
+            <Text style={[styles.syncSubtitle, {color: theme.textMuted}]}>
               Status:{' '}
               {syncStatus === 'synced'
                 ? 'Fully Synchronized'
@@ -330,8 +336,7 @@ const Profile = () => {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={triggerSync}
-            style={[styles.syncBtn, { backgroundColor: theme.primary }]}
-          >
+            style={[styles.syncBtn, {backgroundColor: theme.primary}]}>
             <Text style={styles.syncBtnText}>Sync Now 🔄</Text>
           </TouchableOpacity>
         </View>
@@ -344,17 +349,19 @@ const Profile = () => {
               'Seed Sample Tasks',
               'Load standard sample tasks for high productivity demonstration?',
               [
-                { text: 'Cancel', style: 'cancel' },
-                { text: 'Load Data', onPress: () => seedSampleTasks() },
-              ]
+                {text: 'Cancel', style: 'cancel'},
+                {text: 'Load Data', onPress: () => seedSampleTasks()},
+              ],
             );
           }}
           style={[
             styles.sampleDataBtn,
-            { backgroundColor: theme.surfaceSecondary, borderColor: theme.border },
-          ]}
-        >
-          <Text style={[styles.sampleDataText, { color: theme.primary }]}>
+            {
+              backgroundColor: theme.surfaceSecondary,
+              borderColor: theme.border,
+            },
+          ]}>
+          <Text style={[styles.sampleDataText, {color: theme.primary}]}>
             📥 Load Sample Demo Tasks
           </Text>
         </TouchableOpacity>
@@ -365,20 +372,18 @@ const Profile = () => {
         visible={isEditModalOpen}
         animationType="slide"
         transparent
-        onRequestClose={() => setIsEditModalOpen(false)}
-      >
+        onRequestClose={() => setIsEditModalOpen(false)}>
         <View style={styles.modalOverlay}>
           <View
             style={[
               styles.modalContent,
-              { backgroundColor: theme.surface, borderColor: theme.border },
-            ]}
-          >
-            <Text style={[styles.modalTitle, { color: theme.textPrimary }]}>
+              {backgroundColor: theme.surface, borderColor: theme.border},
+            ]}>
+            <Text style={[styles.modalTitle, {color: theme.textPrimary}]}>
               Edit Profile
             </Text>
 
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+            <Text style={[styles.inputLabel, {color: theme.textSecondary}]}>
               Full Name
             </Text>
             <TextInput
@@ -396,7 +401,7 @@ const Profile = () => {
               placeholderTextColor={theme.textMuted}
             />
 
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+            <Text style={[styles.inputLabel, {color: theme.textSecondary}]}>
               Role / Title
             </Text>
             <TextInput
@@ -414,7 +419,7 @@ const Profile = () => {
               placeholderTextColor={theme.textMuted}
             />
 
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+            <Text style={[styles.inputLabel, {color: theme.textSecondary}]}>
               Email
             </Text>
             <TextInput
@@ -433,7 +438,7 @@ const Profile = () => {
               placeholderTextColor={theme.textMuted}
             />
 
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+            <Text style={[styles.inputLabel, {color: theme.textSecondary}]}>
               Daily Target (Tasks)
             </Text>
             <TextInput
@@ -457,18 +462,20 @@ const Profile = () => {
                 onPress={() => setIsEditModalOpen(false)}
                 style={[
                   styles.modalCancelBtn,
-                  { backgroundColor: theme.surfaceSecondary },
-                ]}
-              >
-                <Text style={[styles.modalCancelText, { color: theme.textSecondary }]}>
+                  {backgroundColor: theme.surfaceSecondary},
+                ]}>
+                <Text
+                  style={[
+                    styles.modalCancelText,
+                    {color: theme.textSecondary},
+                  ]}>
                   Cancel
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={handleSaveProfile}
-                style={[styles.modalSaveBtn, { backgroundColor: theme.primary }]}
-              >
+                style={[styles.modalSaveBtn, {backgroundColor: theme.primary}]}>
                 <Text style={styles.modalSaveText}>Save Changes</Text>
               </TouchableOpacity>
             </View>

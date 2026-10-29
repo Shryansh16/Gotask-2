@@ -11,33 +11,32 @@ import {
   DrawerContentScrollView,
   DrawerItemList,
 } from '@react-navigation/drawer';
-import { useTheme } from '../context/ThemeContext';
-import { useTasks } from '../context/TaskContext';
-import { spacing } from '../styles/spacing';
-import { textScale } from '../styles/responsiveStyles';
-import { fontFamily } from '../common/fonts';
+import {useTheme} from '../context/ThemeContext';
+import {useTasks} from '../context/TaskContext';
+import {spacing} from '../styles/spacing';
+import {textScale} from '../styles/responsiveStyles';
+import {fontFamily} from '../common/fonts';
 
-const DrawerComponent = (props) => {
-  const { theme, isDark, toggleTheme } = useTheme();
-  const { profile, stats, syncStatus } = useTasks();
+const DrawerComponent = props => {
+  const {theme, isDark, toggleTheme} = useTheme();
+  const {profile, stats, syncStatus} = useTasks();
 
   const avatarSource =
     profile?.avatar && profile.avatar.startsWith('http')
-      ? { uri: profile.avatar }
+      ? {uri: profile.avatar}
       : require('../assets/man.png');
 
   return (
-    <View style={[styles.mainContainer, { backgroundColor: theme.background }]}>
+    <View style={[styles.mainContainer, {backgroundColor: theme.background}]}>
       {/* Header Profile Hero */}
       <View>
         <ImageBackground
           source={require('../assets/background-blue.jpg')}
-          style={styles.imageBackground}
-        >
+          style={styles.imageBackground}>
           <View style={styles.avatarRow}>
             <Image
               source={avatarSource}
-              style={[styles.profileImage, { borderColor: theme.surface }]}
+              style={[styles.profileImage, {borderColor: theme.surface}]}
               defaultSource={require('../assets/man.png')}
             />
             {stats.streak > 0 && (
@@ -57,15 +56,17 @@ const DrawerComponent = (props) => {
           {/* Quick Metrics Bar */}
           <View style={styles.metricsSummary}>
             <Text style={styles.metricsText}>
-              ✓ {stats.completed} Done  •  ⏳ {stats.pending} Left
+              ✓ {stats.completed} Done • ⏳ {stats.pending} Left
             </Text>
           </View>
         </ImageBackground>
       </View>
 
       {/* Navigation List */}
-      <View style={{ flex: 1, backgroundColor: theme.background }}>
-        <DrawerContentScrollView {...props} contentContainerStyle={styles.drawerList}>
+      <View style={{flex: 1, backgroundColor: theme.background}}>
+        <DrawerContentScrollView
+          {...props}
+          contentContainerStyle={styles.drawerList}>
           <DrawerItemList {...props} />
         </DrawerContentScrollView>
       </View>
@@ -78,15 +79,13 @@ const DrawerComponent = (props) => {
             backgroundColor: theme.surfaceSecondary,
             borderTopColor: theme.divider,
           },
-        ]}
-      >
+        ]}>
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={toggleTheme}
-          style={styles.themeToggleBtn}
-        >
+          style={styles.themeToggleBtn}>
           <Text style={styles.themeToggleIcon}>{isDark ? '☀️' : '🌙'}</Text>
-          <Text style={[styles.themeToggleText, { color: theme.textPrimary }]}>
+          <Text style={[styles.themeToggleText, {color: theme.textPrimary}]}>
             {isDark ? 'Light Mode' : 'Dark Mode'}
           </Text>
         </TouchableOpacity>
@@ -105,7 +104,7 @@ const DrawerComponent = (props) => {
               },
             ]}
           />
-          <Text style={[styles.versionText, { color: theme.textMuted }]}>
+          <Text style={[styles.versionText, {color: theme.textMuted}]}>
             GOTask v2.0 • {syncStatus === 'synced' ? 'Online' : 'Offline'}
           </Text>
         </View>

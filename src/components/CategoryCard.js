@@ -1,11 +1,11 @@
 // src/components/CategoryCard.js
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { useTheme } from '../context/ThemeContext';
-import { categoryMeta } from '../styles/theme';
-import { textScale } from '../styles/responsiveStyles';
-import { fontFamily } from '../common/fonts';
-import { spacing } from '../styles/spacing';
+import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import {useTheme} from '../context/ThemeContext';
+import {categoryMeta} from '../styles/theme';
+import {textScale} from '../styles/responsiveStyles';
+import {fontFamily} from '../common/fonts';
+import {spacing} from '../styles/spacing';
 
 const CATEGORY_ASSET_IMAGES = {
   Work: require('../assets/suitcase.png'),
@@ -32,7 +32,7 @@ export const CategoryCard = ({
   pendingCount = 0,
   onPress,
 }) => {
-  const { theme } = useTheme();
+  const {theme} = useTheme();
   const meta = categoryMeta[category] || {
     color: theme.primary,
     bgColor: theme.primaryLight,
@@ -52,23 +52,20 @@ export const CategoryCard = ({
           borderColor: isSelected ? meta.color : theme.border,
         },
         theme.cardShadow,
-      ]}
-    >
+      ]}>
       <View
         style={[
           styles.iconBox,
           {
-            backgroundColor: isSelected ? 'rgba(255,255,255,0.25)' : meta.bgColor,
+            backgroundColor: isSelected
+              ? 'rgba(255,255,255,0.25)'
+              : meta.bgColor,
           },
-        ]}
-      >
+        ]}>
         {imageSource ? (
           <Image
             source={imageSource}
-            style={[
-              styles.iconImage,
-              isSelected && { tintColor: '#FFFFFF' },
-            ]}
+            style={[styles.iconImage, isSelected && {tintColor: '#FFFFFF'}]}
             resizeMode="contain"
           />
         ) : (
@@ -80,18 +77,16 @@ export const CategoryCard = ({
         numberOfLines={1}
         style={[
           styles.categoryTitle,
-          { color: isSelected ? '#FFFFFF' : theme.textPrimary },
-        ]}
-      >
+          {color: isSelected ? '#FFFFFF' : theme.textPrimary},
+        ]}>
         {category}
       </Text>
 
       <Text
         style={[
           styles.taskCount,
-          { color: isSelected ? 'rgba(255,255,255,0.85)' : theme.textMuted },
-        ]}
-      >
+          {color: isSelected ? 'rgba(255,255,255,0.85)' : theme.textMuted},
+        ]}>
         {taskCount} {taskCount === 1 ? 'task' : 'tasks'}
       </Text>
     </TouchableOpacity>

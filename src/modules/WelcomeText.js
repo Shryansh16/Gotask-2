@@ -1,37 +1,41 @@
 // src/modules/WelcomeText.js
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { textScale } from '../styles/responsiveStyles';
-import { spacing } from '../styles/spacing';
-import { fontFamily } from '../common/fonts';
-import { useTheme } from '../context/ThemeContext';
+import {StyleSheet, Text, View} from 'react-native';
+import {textScale} from '../styles/responsiveStyles';
+import {spacing} from '../styles/spacing';
+import {fontFamily} from '../common/fonts';
+import {useTheme} from '../context/ThemeContext';
 
 const WelcomeText = () => {
-  const { theme } = useTheme();
+  const {theme} = useTheme();
 
   return (
     <View style={styles.mainContainer}>
-      <Text style={[styles.Heading, { color: theme.textPrimary }]}>
+      <Text style={[styles.Heading, {color: theme.textPrimary}]}>
         Welcome to GoTask
       </Text>
-      <Text style={[styles.Paragraph, { color: theme.textSecondary }]}>
-        Stay organized, focus on what matters, and accomplish your daily tasks much faster.
+      <Text style={[styles.Paragraph, {color: theme.textSecondary}]}>
+        Stay organized, focus on what matters, and accomplish your daily tasks
+        much faster.
       </Text>
 
       {/* Feature Highlights */}
       <View style={styles.featuresRow}>
-        <View style={[styles.featurePill, { backgroundColor: theme.primaryLight }]}>
-          <Text style={[styles.featureText, { color: theme.primary }]}>
+        <View
+          style={[styles.featurePill, {backgroundColor: theme.primaryLight}]}>
+          <Text style={[styles.featureText, {color: theme.primary}]}>
             ⚡ Offline First
           </Text>
         </View>
-        <View style={[styles.featurePill, { backgroundColor: theme.successLight }]}>
-          <Text style={[styles.featureText, { color: theme.success }]}>
+        <View
+          style={[styles.featurePill, {backgroundColor: theme.successLight}]}>
+          <Text style={[styles.featureText, {color: theme.success}]}>
             🎯 Smart Focus
           </Text>
         </View>
-        <View style={[styles.featurePill, { backgroundColor: theme.secondaryLight }]}>
-          <Text style={[styles.featureText, { color: theme.secondary }]}>
+        <View
+          style={[styles.featurePill, {backgroundColor: theme.secondaryLight}]}>
+          <Text style={[styles.featureText, {color: theme.secondary}]}>
             📊 Analytics
           </Text>
         </View>

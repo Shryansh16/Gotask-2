@@ -1,6 +1,6 @@
 // src/styles/typography.js
-import { textScale } from './responsiveStyles';
-import { fontFamily } from '../common/fonts';
+import {textScale} from './responsiveStyles';
+import {fontFamily} from '../common/fonts';
 
 export const fontNames = {
   FONT_FAMILY_LIGHT: fontFamily.light,

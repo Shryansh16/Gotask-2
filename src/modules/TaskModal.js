@@ -1,5 +1,5 @@
 // src/modules/TaskModal.js
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   Modal,
   View,
@@ -14,12 +14,13 @@ import {
   Keyboard,
   Alert,
 } from 'react-native';
-import { useTheme } from '../context/ThemeContext';
-import { useTasks } from '../context/TaskContext';
-import { textScale } from '../styles/responsiveStyles';
-import { fontFamily } from '../common/fonts';
-import { spacing } from '../styles/spacing';
-import { categoryMeta, priorityMeta } from '../styles/theme';
+import {useTheme} from '../context/ThemeContext';
+import {useTasks} from '../context/TaskContext';
+import {textScale} from '../styles/responsiveStyles';
+import {fontFamily} from '../common/fonts';
+import {spacing} from '../styles/spacing';
+import {categoryMeta, priorityMeta} from '../styles/theme';
+import {apiService} from '../services/apiService';
 
 export const TaskModal = ({
   visible,
@@ -27,8 +28,8 @@ export const TaskModal = ({
   initialTask = null,
   initialCategory = null,
 }) => {
-  const { theme } = useTheme();
-  const { addTask, updateTask, categories } = useTasks();
+  const {theme} = useTheme();
+  const {addTask, updateTask, categories} = useTasks();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -40,6 +41,21 @@ export const TaskModal = ({
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
 
   const isEdit = Boolean(initialTask);
+
+  const resetForm = useCallback(() => {
+    setTitle('');
+    setDescription('');
+    setCategory(
+      initialCategory && initialCategory !== 'All'
+        ? initialCategory
+        : 'Personal',
+    );
+    setPriority('medium');
+    setDueDate('Today');
+    setIsPinned(false);
+    setSubtasks([]);
+    setNewSubtaskTitle('');
+  }, [initialCategory]);
 
   useEffect(() => {
     if (initialTask) {
@@ -56,21 +72,12 @@ export const TaskModal = ({
         setCategory(initialCategory);
       }
     }
-  }, [initialTask, initialCategory, visible]);
-
-  const resetForm = () => {
-    setTitle('');
-    setDescription('');
-    setCategory(initialCategory && initialCategory !== 'All' ? initialCategory : 'Personal');
-    setPriority('medium');
-    setDueDate('Today');
-    setIsPinned(false);
-    setSubtasks([]);
-    setNewSubtaskTitle('');
-  };
+  }, [initialTask, initialCategory, visible, resetForm]);
 
   const handleAddSubtask = () => {
-    if (!newSubtaskTitle.trim()) return;
+    if (!newSubtaskTitle.trim()) {
+      return;
+    }
     const item = {
       id: `sub_${Date.now()}_${Math.random()}`,
       title: newSubtaskTitle.trim(),
@@ -80,13 +87,35 @@ export const TaskModal = ({
     setNewSubtaskTitle('');
   };
 
-  const handleRemoveSubtask = (id) => {
-    setSubtasks(subtasks.filter((s) => s.id !== id));
+  const handleRemoveSubtask = id => {
+    setSubtasks(subtasks.filter(s => s.id !== id));
+  };
+
+  const handleSmartParse = async () => {
+    if (!title.trim()) {
+      return;
+    }
+    const parsed = await apiService.parseNaturalLanguageTask(title);
+    if (parsed) {
+      setTitle(parsed.title);
+      if (parsed.priority) {
+        setPriority(parsed.priority);
+      }
+      if (parsed.dueDate) {
+        setDueDate(parsed.dueDate);
+      }
+      if (parsed.category) {
+        setCategory(parsed.category);
+      }
+    }
   };
 
   const handleSubmit = async () => {
     if (!title.trim()) {
-      Alert.alert('Task Title Required', 'Please provide a title for this task.');
+      Alert.alert(
+        'Task Title Required',
+        'Please provide a title for this task.',
+      );
       return;
     }
 
@@ -110,7 +139,7 @@ export const TaskModal = ({
     onClose();
   };
 
-  const selectableCategories = categories.filter((c) => c !== 'All');
+  const selectableCategories = categories.filter(c => c !== 'All');
   const dueOptions = ['Today', 'Tomorrow', 'This Week', 'Someday'];
 
   return (
@@ -118,38 +147,50 @@ export const TaskModal = ({
       visible={visible}
       animationType="slide"
       transparent={true}
-      onRequestClose={onClose}
-    >
+      onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.modalOverlay}>
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            style={styles.keyboardContainer}
-          >
+            style={styles.keyboardContainer}>
             <View
-              style={[
-                styles.modalContainer,
-                { backgroundColor: theme.surface },
-              ]}
-            >
+              style={[styles.modalContainer, {backgroundColor: theme.surface}]}>
               {/* Header Bar */}
-              <View style={[styles.header, { borderBottomColor: theme.divider }]}>
-                <Text style={[styles.headerTitle, { color: theme.textPrimary }]}>
+              <View style={[styles.header, {borderBottomColor: theme.divider}]}>
+                <Text style={[styles.headerTitle, {color: theme.textPrimary}]}>
                   {isEdit ? 'Edit Task' : 'New Task'}
                 </Text>
                 <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-                  <Text style={[styles.closeIcon, { color: theme.textMuted }]}>✕</Text>
+                  <Text style={[styles.closeIcon, {color: theme.textMuted}]}>
+                    ✕
+                  </Text>
                 </TouchableOpacity>
               </View>
 
               <ScrollView
                 style={styles.formScroll}
-                showsVerticalScrollIndicator={false}
-              >
+                showsVerticalScrollIndicator={false}>
                 {/* Title Input */}
-                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
-                  Title
-                </Text>
+                <View style={styles.titleLabelRow}>
+                  <Text
+                    style={[styles.inputLabel, {color: theme.textSecondary}]}>
+                    Title
+                  </Text>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={handleSmartParse}
+                    style={[
+                      styles.aiParsePill,
+                      {
+                        backgroundColor: theme.surfaceSecondary,
+                        borderColor: theme.border,
+                      },
+                    ]}>
+                    <Text style={[styles.aiParseText, {color: theme.primary}]}>
+                      ✨ AI Parse
+                    </Text>
+                  </TouchableOpacity>
+                </View>
                 <TextInput
                   placeholder="What needs to be done?"
                   placeholderTextColor={theme.textMuted}
@@ -166,7 +207,7 @@ export const TaskModal = ({
                 />
 
                 {/* Description Input */}
-                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+                <Text style={[styles.inputLabel, {color: theme.textSecondary}]}>
                   Notes / Description (Optional)
                 </Text>
                 <TextInput
@@ -187,17 +228,16 @@ export const TaskModal = ({
                 />
 
                 {/* Category Selector */}
-                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+                <Text style={[styles.inputLabel, {color: theme.textSecondary}]}>
                   Category
                 </Text>
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
-                  style={styles.horizontalScroll}
-                >
-                  {selectableCategories.map((cat) => {
+                  style={styles.horizontalScroll}>
+                  {selectableCategories.map(cat => {
                     const isSelected = category === cat;
-                    const meta = categoryMeta[cat] || { color: theme.primary };
+                    const meta = categoryMeta[cat] || {color: theme.primary};
                     return (
                       <TouchableOpacity
                         key={cat}
@@ -205,17 +245,21 @@ export const TaskModal = ({
                         style={[
                           styles.chip,
                           {
-                            backgroundColor: isSelected ? meta.color : theme.surfaceSecondary,
+                            backgroundColor: isSelected
+                              ? meta.color
+                              : theme.surfaceSecondary,
                             borderColor: isSelected ? meta.color : theme.border,
                           },
-                        ]}
-                      >
+                        ]}>
                         <Text
                           style={[
                             styles.chipText,
-                            { color: isSelected ? '#FFFFFF' : theme.textSecondary },
-                          ]}
-                        >
+                            {
+                              color: isSelected
+                                ? '#FFFFFF'
+                                : theme.textSecondary,
+                            },
+                          ]}>
                           {cat}
                         </Text>
                       </TouchableOpacity>
@@ -224,11 +268,11 @@ export const TaskModal = ({
                 </ScrollView>
 
                 {/* Priority Selector */}
-                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+                <Text style={[styles.inputLabel, {color: theme.textSecondary}]}>
                   Priority
                 </Text>
                 <View style={styles.rowSelector}>
-                  {Object.keys(priorityMeta).map((pKey) => {
+                  {Object.keys(priorityMeta).map(pKey => {
                     const meta = priorityMeta[pKey];
                     const isSelected = priority === pKey;
                     return (
@@ -238,21 +282,28 @@ export const TaskModal = ({
                         style={[
                           styles.priorityChip,
                           {
-                            backgroundColor: isSelected ? meta.bgColor : theme.surfaceSecondary,
+                            backgroundColor: isSelected
+                              ? meta.bgColor
+                              : theme.surfaceSecondary,
                             borderColor: isSelected ? meta.color : theme.border,
                             borderWidth: isSelected ? 1.5 : 1,
                           },
-                        ]}
-                      >
+                        ]}>
                         <View
-                          style={[styles.priorityDot, { backgroundColor: meta.color }]}
+                          style={[
+                            styles.priorityDot,
+                            {backgroundColor: meta.color},
+                          ]}
                         />
                         <Text
                           style={[
                             styles.priorityChipText,
-                            { color: isSelected ? meta.color : theme.textSecondary },
-                          ]}
-                        >
+                            {
+                              color: isSelected
+                                ? meta.color
+                                : theme.textSecondary,
+                            },
+                          ]}>
                           {meta.label}
                         </Text>
                       </TouchableOpacity>
@@ -261,11 +312,11 @@ export const TaskModal = ({
                 </View>
 
                 {/* Due Date Selector */}
-                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+                <Text style={[styles.inputLabel, {color: theme.textSecondary}]}>
                   Due Date
                 </Text>
                 <View style={styles.rowSelector}>
-                  {dueOptions.map((opt) => {
+                  {dueOptions.map(opt => {
                     const isSelected = dueDate === opt;
                     return (
                       <TouchableOpacity
@@ -274,17 +325,23 @@ export const TaskModal = ({
                         style={[
                           styles.dueChip,
                           {
-                            backgroundColor: isSelected ? theme.primary : theme.surfaceSecondary,
-                            borderColor: isSelected ? theme.primary : theme.border,
+                            backgroundColor: isSelected
+                              ? theme.primary
+                              : theme.surfaceSecondary,
+                            borderColor: isSelected
+                              ? theme.primary
+                              : theme.border,
                           },
-                        ]}
-                      >
+                        ]}>
                         <Text
                           style={[
                             styles.dueChipText,
-                            { color: isSelected ? '#FFFFFF' : theme.textSecondary },
-                          ]}
-                        >
+                            {
+                              color: isSelected
+                                ? '#FFFFFF'
+                                : theme.textSecondary,
+                            },
+                          ]}>
                           {opt}
                         </Text>
                       </TouchableOpacity>
@@ -302,22 +359,26 @@ export const TaskModal = ({
                       backgroundColor: theme.surfaceSecondary,
                       borderColor: isPinned ? theme.primary : theme.border,
                     },
-                  ]}
-                >
-                  <Text style={[styles.pinToggleText, { color: theme.textPrimary }]}>
+                  ]}>
+                  <Text
+                    style={[styles.pinToggleText, {color: theme.textPrimary}]}>
                     Pin task to top
                   </Text>
-                  <Text style={[styles.pinToggleIcon, { color: isPinned ? theme.primary : theme.textMuted }]}>
+                  <Text
+                    style={[
+                      styles.pinToggleIcon,
+                      {color: isPinned ? theme.primary : theme.textMuted},
+                    ]}>
                     {isPinned ? '★ Pinned' : '☆ Pin'}
                   </Text>
                 </TouchableOpacity>
 
                 {/* Checklist / Subtasks */}
-                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+                <Text style={[styles.inputLabel, {color: theme.textSecondary}]}>
                   Checklist Items ({subtasks.length})
                 </Text>
 
-                {subtasks.map((sub) => (
+                {subtasks.map(sub => (
                   <View
                     key={sub.id}
                     style={[
@@ -326,19 +387,20 @@ export const TaskModal = ({
                         backgroundColor: theme.surfaceSecondary,
                         borderColor: theme.border,
                       },
-                    ]}
-                  >
+                    ]}>
                     <Text
                       numberOfLines={1}
-                      style={[styles.subtaskText, { color: theme.textPrimary }]}
-                    >
+                      style={[styles.subtaskText, {color: theme.textPrimary}]}>
                       • {sub.title}
                     </Text>
                     <TouchableOpacity
                       onPress={() => handleRemoveSubtask(sub.id)}
-                      style={styles.subtaskDeleteBtn}
-                    >
-                      <Text style={[styles.subtaskDeleteIcon, { color: theme.danger }]}>
+                      style={styles.subtaskDeleteBtn}>
+                      <Text
+                        style={[
+                          styles.subtaskDeleteIcon,
+                          {color: theme.danger},
+                        ]}>
                         ✕
                       </Text>
                     </TouchableOpacity>
@@ -363,28 +425,32 @@ export const TaskModal = ({
                   />
                   <TouchableOpacity
                     onPress={handleAddSubtask}
-                    style={[styles.addSubtaskBtn, { backgroundColor: theme.primary }]}
-                  >
+                    style={[
+                      styles.addSubtaskBtn,
+                      {backgroundColor: theme.primary},
+                    ]}>
                     <Text style={styles.addSubtaskBtnText}>+ Add</Text>
                   </TouchableOpacity>
                 </View>
               </ScrollView>
 
               {/* Action Buttons */}
-              <View style={[styles.footer, { borderTopColor: theme.divider }]}>
+              <View style={[styles.footer, {borderTopColor: theme.divider}]}>
                 <TouchableOpacity
                   onPress={onClose}
-                  style={[styles.cancelBtn, { borderColor: theme.border }]}
-                >
-                  <Text style={[styles.cancelBtnText, { color: theme.textSecondary }]}>
+                  style={[styles.cancelBtn, {borderColor: theme.border}]}>
+                  <Text
+                    style={[
+                      styles.cancelBtnText,
+                      {color: theme.textSecondary},
+                    ]}>
                     Cancel
                   </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={handleSubmit}
-                  style={[styles.submitBtn, { backgroundColor: theme.primary }]}
-                >
+                  style={[styles.submitBtn, {backgroundColor: theme.primary}]}>
                   <Text style={styles.submitBtnText}>
                     {isEdit ? 'Save Changes' : 'Create Task'}
                   </Text>
@@ -437,6 +503,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.PADDING_20,
     paddingVertical: spacing.PADDING_12,
     maxHeight: 460,
+  },
+  titleLabelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: spacing.MARGIN_12,
+    marginBottom: spacing.MARGIN_6,
+  },
+  aiParsePill: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  aiParseText: {
+    fontSize: textScale(11),
+    fontFamily: fontFamily.bold,
   },
   inputLabel: {
     fontSize: textScale(12),

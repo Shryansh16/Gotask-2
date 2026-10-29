@@ -1,5 +1,5 @@
 // src/screens/FunctionScreen.js
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -9,9 +9,9 @@ import {
   TouchableOpacity,
   StatusBar,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useTheme } from '../context/ThemeContext';
-import { useTasks } from '../context/TaskContext';
+import {useNavigation} from '@react-navigation/native';
+import {useTheme} from '../context/ThemeContext';
+import {useTasks} from '../context/TaskContext';
 import HemburgerButton from '../modules/HemburgerButton';
 import StatsOverview from '../modules/StatsOverview';
 import SearchBar from '../modules/SearchBar';
@@ -19,14 +19,14 @@ import QuotesBanner from '../modules/QuotesBanner';
 import Categories from '../modules/Categories';
 import YourTask from '../modules/YourTask';
 import TaskModal from '../modules/TaskModal';
-import { textScale } from '../styles/responsiveStyles';
-import { fontFamily } from '../common/fonts';
-import { spacing } from '../styles/spacing';
+import {textScale} from '../styles/responsiveStyles';
+import {fontFamily} from '../common/fonts';
+import {spacing} from '../styles/spacing';
 
 const FunctionScreen = () => {
   const navigation = useNavigation();
-  const { theme, isDark, toggleTheme } = useTheme();
-  const { syncStatus, triggerSync } = useTasks();
+  const {theme, isDark, toggleTheme} = useTheme();
+  const {syncStatus, triggerSync} = useTasks();
 
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
 
@@ -35,18 +35,22 @@ const FunctionScreen = () => {
   }
 
   return (
-    <SafeAreaView style={[styles.mainContainer, { backgroundColor: theme.background }]}>
+    <SafeAreaView
+      style={[styles.mainContainer, {backgroundColor: theme.background}]}>
       <StatusBar
         backgroundColor={theme.background}
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
 
       {/* Top Navigation Bar */}
-      <View style={[styles.headerContainer, { borderBottomColor: theme.divider }]}>
+      <View
+        style={[styles.headerContainer, {borderBottomColor: theme.divider}]}>
         <View style={styles.headerLeft}>
           <HemburgerButton onPressButton={onPressDrawer} />
           <View>
-            <Text style={[styles.brandTitle, { color: theme.primary }]}>GoTask</Text>
+            <Text style={[styles.brandTitle, {color: theme.primary}]}>
+              GoTask
+            </Text>
             <View style={styles.syncRow}>
               <View
                 style={[
@@ -61,7 +65,7 @@ const FunctionScreen = () => {
                   },
                 ]}
               />
-              <Text style={[styles.syncText, { color: theme.textMuted }]}>
+              <Text style={[styles.syncText, {color: theme.textMuted}]}>
                 {syncStatus === 'synced'
                   ? 'Cloud Synced'
                   : syncStatus === 'syncing'
@@ -76,16 +80,20 @@ const FunctionScreen = () => {
           {/* Quick Theme Toggle */}
           <TouchableOpacity
             onPress={toggleTheme}
-            style={[styles.iconButton, { backgroundColor: theme.surfaceSecondary }]}
-          >
+            style={[
+              styles.iconButton,
+              {backgroundColor: theme.surfaceSecondary},
+            ]}>
             <Text style={styles.themeIcon}>{isDark ? '☀️' : '🌙'}</Text>
           </TouchableOpacity>
 
           {/* Cloud Sync Button */}
           <TouchableOpacity
             onPress={triggerSync}
-            style={[styles.iconButton, { backgroundColor: theme.surfaceSecondary, marginLeft: 8 }]}
-          >
+            style={[
+              styles.iconButton,
+              {backgroundColor: theme.surfaceSecondary, marginLeft: 8},
+            ]}>
             <Text style={styles.themeIcon}>🔄</Text>
           </TouchableOpacity>
         </View>
@@ -94,8 +102,7 @@ const FunctionScreen = () => {
       {/* Scrollable Dashboard Body */}
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+        contentContainerStyle={styles.scrollContent}>
         {/* Productivity Summary Card */}
         <StatsOverview />
 
@@ -118,10 +125,9 @@ const FunctionScreen = () => {
         onPress={() => setIsCreateModalVisible(true)}
         style={[
           styles.fab,
-          { backgroundColor: theme.primary },
+          {backgroundColor: theme.primary},
           theme.glowShadow,
-        ]}
-      >
+        ]}>
         <Text style={styles.fabPlus}>+</Text>
       </TouchableOpacity>
 

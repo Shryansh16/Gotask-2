@@ -1,30 +1,26 @@
 // src/modules/YourTask.js
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useTasks } from '../context/TaskContext';
-import { useTheme } from '../context/ThemeContext';
+import React, {useState} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {useTasks} from '../context/TaskContext';
+import {useTheme} from '../context/ThemeContext';
 import TaskCard from '../components/TaskCard';
 import EmptyState from '../components/EmptyState';
 import TaskModal from './TaskModal';
-import { textScale } from '../styles/responsiveStyles';
-import { fontFamily } from '../common/fonts';
-import { spacing } from '../styles/spacing';
+import {textScale} from '../styles/responsiveStyles';
+import {fontFamily} from '../common/fonts';
+import {spacing} from '../styles/spacing';
 
-export const YourTask = ({ onOpenCreateModal }) => {
-  const { theme } = useTheme();
-  const {
-    filteredTasks,
-    selectedCategory,
-    clearCompleted,
-    searchQuery,
-  } = useTasks();
+export const YourTask = ({onOpenCreateModal}) => {
+  const {theme} = useTheme();
+  const {filteredTasks, selectedCategory, clearCompleted, searchQuery} =
+    useTasks();
 
   const [editingTask, setEditingTask] = useState(null);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
 
-  const hasCompleted = filteredTasks.some((t) => t.completed);
+  const hasCompleted = filteredTasks.some(t => t.completed);
 
-  const handleEditTask = (task) => {
+  const handleEditTask = task => {
     setEditingTask(task);
     setIsEditModalVisible(true);
   };
@@ -39,11 +35,14 @@ export const YourTask = ({ onOpenCreateModal }) => {
       {/* Header Row */}
       <View style={styles.headerRow}>
         <View style={styles.titleWithCount}>
-          <Text style={[styles.sectionTitle, { color: theme.textPrimary }]}>
-            {selectedCategory === 'All' ? 'Your Tasks' : `${selectedCategory} Tasks`}
+          <Text style={[styles.sectionTitle, {color: theme.textPrimary}]}>
+            {selectedCategory === 'All'
+              ? 'Your Tasks'
+              : `${selectedCategory} Tasks`}
           </Text>
-          <View style={[styles.countBadge, { backgroundColor: theme.primaryLight }]}>
-            <Text style={[styles.countText, { color: theme.primary }]}>
+          <View
+            style={[styles.countBadge, {backgroundColor: theme.primaryLight}]}>
+            <Text style={[styles.countText, {color: theme.primary}]}>
               {filteredTasks.length}
             </Text>
           </View>
@@ -51,7 +50,7 @@ export const YourTask = ({ onOpenCreateModal }) => {
 
         {hasCompleted && (
           <TouchableOpacity onPress={clearCompleted} style={styles.clearBtn}>
-            <Text style={[styles.clearBtnText, { color: theme.danger }]}>
+            <Text style={[styles.clearBtnText, {color: theme.danger}]}>
               Clear Done
             </Text>
           </TouchableOpacity>
@@ -73,12 +72,8 @@ export const YourTask = ({ onOpenCreateModal }) => {
         />
       ) : (
         <View style={styles.taskList}>
-          {filteredTasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onEdit={handleEditTask}
-            />
+          {filteredTasks.map(task => (
+            <TaskCard key={task.id} task={task} onEdit={handleEditTask} />
           ))}
         </View>
       )}

@@ -1,5 +1,5 @@
 // src/modules/QuotesBanner.js
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -8,46 +8,46 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
-import { useTheme } from '../context/ThemeContext';
-import { textScale } from '../styles/responsiveStyles';
-import { fontFamily } from '../common/fonts';
-import { spacing } from '../styles/spacing';
+import {useTheme} from '../context/ThemeContext';
+import {textScale} from '../styles/responsiveStyles';
+import {fontFamily} from '../common/fonts';
+import {spacing} from '../styles/spacing';
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 const CARD_WIDTH = width - spacing.PADDING_16 * 2;
 
 const QUOTES = [
   {
-    quote: "The secret of getting ahead is getting started.",
-    author: "Mark Twain",
+    quote: 'The secret of getting ahead is getting started.',
+    author: 'Mark Twain',
     themeColor: '#4F46E5',
     emoji: '🚀',
   },
   {
-    quote: "Focus on being productive instead of busy.",
-    author: "Tim Ferriss",
+    quote: 'Focus on being productive instead of busy.',
+    author: 'Tim Ferriss',
     themeColor: '#06B6D4',
     emoji: '🎯',
   },
   {
-    quote: "Small daily improvements over time lead to stunning results.",
-    author: "Robin Sharma",
+    quote: 'Small daily improvements over time lead to stunning results.',
+    author: 'Robin Sharma',
     themeColor: '#10B981',
     emoji: '🌱',
   },
   {
-    quote: "Action is the foundational key to all success.",
-    author: "Pablo Picasso",
+    quote: 'Action is the foundational key to all success.',
+    author: 'Pablo Picasso',
     themeColor: '#8B5CF6',
     emoji: '⚡',
   },
 ];
 
 export const QuotesBanner = () => {
-  const { theme, isDark } = useTheme();
+  const {theme, isDark} = useTheme();
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const handleScroll = (event) => {
+  const handleScroll = event => {
     const scrollPosition = event.nativeEvent.contentOffset.x;
     const index = Math.round(scrollPosition / CARD_WIDTH);
     if (index !== activeIndex && index >= 0 && index < QUOTES.length) {
@@ -63,8 +63,7 @@ export const QuotesBanner = () => {
         showsHorizontalScrollIndicator={false}
         onMomentumScrollEnd={handleScroll}
         decelerationRate="fast"
-        contentContainerStyle={styles.scrollContent}
-      >
+        contentContainerStyle={styles.scrollContent}>
         {QUOTES.map((item, index) => (
           <View
             key={index}
@@ -76,33 +75,27 @@ export const QuotesBanner = () => {
                 borderColor: theme.border,
               },
               theme.cardShadow,
-            ]}
-          >
+            ]}>
             <View style={styles.quoteTopRow}>
               <Text style={styles.emoji}>{item.emoji}</Text>
               <View
                 style={[
                   styles.badge,
-                  { backgroundColor: `${item.themeColor}15` },
-                ]}
-              >
-                <Text style={[styles.badgeText, { color: item.themeColor }]}>
+                  {backgroundColor: `${item.themeColor}15`},
+                ]}>
+                <Text style={[styles.badgeText, {color: item.themeColor}]}>
                   Daily Spark
                 </Text>
               </View>
             </View>
 
             <Text
-              style={[
-                styles.quoteText,
-                { color: theme.textPrimary },
-              ]}
-              numberOfLines={3}
-            >
+              style={[styles.quoteText, {color: theme.textPrimary}]}
+              numberOfLines={3}>
               "{item.quote}"
             </Text>
 
-            <Text style={[styles.authorText, { color: theme.textMuted }]}>
+            <Text style={[styles.authorText, {color: theme.textMuted}]}>
               — {item.author}
             </Text>
           </View>

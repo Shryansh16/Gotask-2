@@ -1,7 +1,13 @@
 // src/context/TaskContext.js
 // Central Reactive State Engine for GOTask Mobile App
 
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiService from '../services/apiService';
 
@@ -30,24 +36,30 @@ const DEFAULT_PROFILE = {
   role: 'Productivity Architect',
   dailyGoal: 5,
   joinedDate: 'October 2026',
-  avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80',
+  avatar:
+    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80',
 };
 
 const SAMPLE_TASKS = [
   {
     id: 'sample_1',
     title: 'Complete Mobile App Architecture Revamp',
-    description: 'Ensure offline-first sync, clean Poppins typography, and modern cards are ready.',
+    description:
+      'Ensure offline-first sync, clean Poppins typography, and modern cards are ready.',
     category: 'Work',
     priority: 'high',
     completed: false,
     dueDate: 'Today',
     isPinned: true,
     subtasks: [
-      { id: 's1', title: 'Verify responsive font scaling', completed: true },
-      { id: 's2', title: 'Test dark mode theme switching', completed: true },
-      { id: 's3', title: 'Integrate offline-first task context', completed: true },
-      { id: 's4', title: 'Test category filters & search', completed: false },
+      {id: 's1', title: 'Verify responsive font scaling', completed: true},
+      {id: 's2', title: 'Test dark mode theme switching', completed: true},
+      {
+        id: 's3',
+        title: 'Integrate offline-first task context',
+        completed: true,
+      },
+      {id: 's4', title: 'Test category filters & search', completed: false},
     ],
     createdAt: Date.now() - 3600000 * 4,
     updatedAt: Date.now(),
@@ -62,8 +74,8 @@ const SAMPLE_TASKS = [
     dueDate: 'Today',
     isPinned: false,
     subtasks: [
-      { id: 's2_1', title: 'Warmup mobility', completed: true },
-      { id: 's2_2', title: 'Core & cardio circuits', completed: true },
+      {id: 's2_1', title: 'Warmup mobility', completed: true},
+      {id: 's2_2', title: 'Core & cardio circuits', completed: true},
     ],
     createdAt: Date.now() - 3600000 * 8,
     updatedAt: Date.now() - 3600000 * 2,
@@ -79,8 +91,8 @@ const SAMPLE_TASKS = [
     dueDate: 'Tomorrow',
     isPinned: false,
     subtasks: [
-      { id: 's3_1', title: 'Spinach & Avocados', completed: false },
-      { id: 's3_2', title: 'Almond milk & Greek Yogurt', completed: false },
+      {id: 's3_1', title: 'Spinach & Avocados', completed: false},
+      {id: 's3_2', title: 'Almond milk & Greek Yogurt', completed: false},
     ],
     createdAt: Date.now() - 3600000 * 12,
     updatedAt: Date.now() - 3600000 * 12,
@@ -88,15 +100,20 @@ const SAMPLE_TASKS = [
   {
     id: 'sample_4',
     title: 'Review Machine Learning System Design',
-    description: 'Study feature stores, latency budgets, and model monitoring architectures.',
+    description:
+      'Study feature stores, latency budgets, and model monitoring architectures.',
     category: 'Study',
     priority: 'high',
     completed: false,
     dueDate: 'This Week',
     isPinned: true,
     subtasks: [
-      { id: 's4_1', title: 'Read chapter 3 notes', completed: true },
-      { id: 's4_2', title: 'Draft diagram for inference pipeline', completed: false },
+      {id: 's4_1', title: 'Read chapter 3 notes', completed: true},
+      {
+        id: 's4_2',
+        title: 'Draft diagram for inference pipeline',
+        completed: false,
+      },
     ],
     createdAt: Date.now() - 3600000 * 20,
     updatedAt: Date.now() - 3600000 * 20,
@@ -104,7 +121,8 @@ const SAMPLE_TASKS = [
   {
     id: 'sample_5',
     title: 'Organize workspace & review monthly subscriptions',
-    description: 'Audit recurring cloud and software bills to optimize personal finance.',
+    description:
+      'Audit recurring cloud and software bills to optimize personal finance.',
     category: 'Finance',
     priority: 'low',
     completed: true,
@@ -117,7 +135,7 @@ const SAMPLE_TASKS = [
   },
 ];
 
-export const TaskProvider = ({ children }) => {
+export const TaskProvider = ({children}) => {
   const [tasks, setTasks] = useState([]);
   const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -131,6 +149,7 @@ export const TaskProvider = ({ children }) => {
   // Initialize and load persisted data
   useEffect(() => {
     loadInitialData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadInitialData = async () => {
@@ -148,7 +167,10 @@ export const TaskProvider = ({ children }) => {
         loadedTasks = [...SAMPLE_TASKS];
         await importLegacyCategoryNotes(loadedTasks);
         await AsyncStorage.setItem(STORAGE_KEYS.FIRST_RUN, 'true');
-        await AsyncStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(loadedTasks));
+        await AsyncStorage.setItem(
+          STORAGE_KEYS.TASKS,
+          JSON.stringify(loadedTasks),
+        );
       }
 
       setTasks(loadedTasks);
@@ -156,7 +178,7 @@ export const TaskProvider = ({ children }) => {
       // Load profile
       const savedProfile = await AsyncStorage.getItem(STORAGE_KEYS.PROFILE);
       if (savedProfile) {
-        setProfile({ ...DEFAULT_PROFILE, ...JSON.parse(savedProfile) });
+        setProfile({...DEFAULT_PROFILE, ...JSON.parse(savedProfile)});
       }
 
       // Load custom categories
@@ -175,7 +197,7 @@ export const TaskProvider = ({ children }) => {
   };
 
   // Import notes from older GOTask category keys if they exist
-  const importLegacyCategoryNotes = async (tasksArray) => {
+  const importLegacyCategoryNotes = async tasksArray => {
     const legacyKeys = ['Work', 'Personal', 'Shopping', 'Health'];
     for (const cat of legacyKeys) {
       try {
@@ -183,7 +205,7 @@ export const TaskProvider = ({ children }) => {
         if (legacyData) {
           const parsed = JSON.parse(legacyData);
           if (Array.isArray(parsed)) {
-            parsed.forEach((item) => {
+            parsed.forEach(item => {
               if (item && item.desc) {
                 tasksArray.push({
                   id: String(item.id || Date.now() + Math.random()),
@@ -209,7 +231,7 @@ export const TaskProvider = ({ children }) => {
   };
 
   // Helper to persist tasks locally
-  const persistTasks = async (newTasks) => {
+  const persistTasks = async newTasks => {
     setTasks(newTasks);
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(newTasks));
@@ -219,15 +241,24 @@ export const TaskProvider = ({ children }) => {
   };
 
   // Backend Sync
-  const syncWithBackend = async (currentTasks = tasks, currentProfile = profile) => {
+  const syncWithBackend = async (
+    currentTasks = tasks,
+    currentProfile = profile,
+  ) => {
     setSyncStatus('syncing');
     try {
-      const result = await apiService.syncWithServer(currentTasks, currentProfile);
+      const result = await apiService.syncWithServer(
+        currentTasks,
+        currentProfile,
+      );
       if (result.success && Array.isArray(result.tasks)) {
         setTasks(result.tasks);
-        await AsyncStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(result.tasks));
+        await AsyncStorage.setItem(
+          STORAGE_KEYS.TASKS,
+          JSON.stringify(result.tasks),
+        );
         if (result.profile) {
-          setProfile(prev => ({ ...prev, ...result.profile }));
+          setProfile(prev => ({...prev, ...result.profile}));
         }
         setSyncStatus('synced');
       } else {
@@ -240,12 +271,14 @@ export const TaskProvider = ({ children }) => {
 
   // --- TASK CRUD OPERATIONS ---
 
-  const addTask = async (taskData) => {
+  const addTask = async taskData => {
     const newTask = {
       id: `task_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
       title: taskData.title.trim(),
       description: (taskData.description || '').trim(),
-      category: taskData.category || (selectedCategory !== 'All' ? selectedCategory : 'Personal'),
+      category:
+        taskData.category ||
+        (selectedCategory !== 'All' ? selectedCategory : 'Personal'),
       priority: taskData.priority || 'medium',
       completed: false,
       dueDate: taskData.dueDate || 'Today',
@@ -278,13 +311,13 @@ export const TaskProvider = ({ children }) => {
     await persistTasks(updated);
   };
 
-  const deleteTask = async (taskId) => {
+  const deleteTask = async taskId => {
     const updated = tasks.filter(t => t.id !== taskId);
     await persistTasks(updated);
     apiService.deleteTask(taskId);
   };
 
-  const toggleTaskComplete = async (taskId) => {
+  const toggleTaskComplete = async taskId => {
     const updated = tasks.map(t => {
       if (t.id === taskId) {
         const nextCompleted = !t.completed;
@@ -302,10 +335,14 @@ export const TaskProvider = ({ children }) => {
     await persistTasks(updated);
   };
 
-  const togglePin = async (taskId) => {
+  const togglePin = async taskId => {
     const updated = tasks.map(t => {
       if (t.id === taskId) {
-        const updatedTask = { ...t, isPinned: !t.isPinned, updatedAt: Date.now() };
+        const updatedTask = {
+          ...t,
+          isPinned: !t.isPinned,
+          updatedAt: Date.now(),
+        };
         apiService.updateTask(updatedTask);
         return updatedTask;
       }
@@ -317,7 +354,9 @@ export const TaskProvider = ({ children }) => {
   // --- SUBTASKS MANAGEMENT ---
 
   const addSubtask = async (taskId, subtaskTitle) => {
-    if (!subtaskTitle || !subtaskTitle.trim()) return;
+    if (!subtaskTitle || !subtaskTitle.trim()) {
+      return;
+    }
     const updated = tasks.map(t => {
       if (t.id === taskId) {
         const newSubtask = {
@@ -343,7 +382,7 @@ export const TaskProvider = ({ children }) => {
       if (t.id === taskId) {
         const newSubtasks = (t.subtasks || []).map(s => {
           if (s.id === subtaskId) {
-            return { ...s, completed: !s.completed };
+            return {...s, completed: !s.completed};
           }
           return s;
         });
@@ -379,26 +418,34 @@ export const TaskProvider = ({ children }) => {
 
   // --- CATEGORIES ---
 
-  const addCategory = async (categoryName) => {
+  const addCategory = async categoryName => {
     const trimmed = categoryName.trim();
-    if (!trimmed || categories.includes(trimmed)) return;
+    if (!trimmed || categories.includes(trimmed)) {
+      return;
+    }
     const newCats = [...categories, trimmed];
     setCategories(newCats);
-    await AsyncStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(newCats));
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.CATEGORIES,
+      JSON.stringify(newCats),
+    );
   };
 
-  const getCategoryStats = (categoryName) => {
-    const list = categoryName === 'All' ? tasks : tasks.filter(t => t.category === categoryName);
+  const getCategoryStats = categoryName => {
+    const list =
+      categoryName === 'All'
+        ? tasks
+        : tasks.filter(t => t.category === categoryName);
     const total = list.length;
     const completed = list.filter(t => t.completed).length;
     const pending = total - completed;
-    return { total, completed, pending };
+    return {total, completed, pending};
   };
 
   // --- PROFILE ---
 
-  const updateProfile = async (newProfile) => {
-    const merged = { ...profile, ...newProfile };
+  const updateProfile = async newProfile => {
+    const merged = {...profile, ...newProfile};
     setProfile(merged);
     await AsyncStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(merged));
   };
@@ -425,7 +472,11 @@ export const TaskProvider = ({ children }) => {
 
     // Category filter
     if (selectedCategory && selectedCategory !== 'All') {
-      result = result.filter(t => t.category && t.category.toLowerCase() === selectedCategory.toLowerCase());
+      result = result.filter(
+        t =>
+          t.category &&
+          t.category.toLowerCase() === selectedCategory.toLowerCase(),
+      );
     }
 
     // Status filter
@@ -443,15 +494,16 @@ export const TaskProvider = ({ children }) => {
     // Search query
     if (searchQuery && searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
-      result = result.filter(t =>
-        (t.title && t.title.toLowerCase().includes(q)) ||
-        (t.description && t.description.toLowerCase().includes(q)) ||
-        (t.category && t.category.toLowerCase().includes(q))
+      result = result.filter(
+        t =>
+          (t.title && t.title.toLowerCase().includes(q)) ||
+          (t.description && t.description.toLowerCase().includes(q)) ||
+          (t.category && t.category.toLowerCase().includes(q)),
       );
     }
 
     // Sort: Pinned first, then incomplete first, then by priority (high > medium > low), then latest
-    const priorityWeights = { high: 3, medium: 2, low: 1 };
+    const priorityWeights = {high: 3, medium: 2, low: 1};
     result.sort((a, b) => {
       // 1. Pinned
       if (a.isPinned !== b.isPinned) {
@@ -479,9 +531,12 @@ export const TaskProvider = ({ children }) => {
     const total = tasks.length;
     const completed = tasks.filter(t => t.completed).length;
     const pending = total - completed;
-    const highPriority = tasks.filter(t => t.priority === 'high' && !t.completed).length;
-    const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
-    
+    const highPriority = tasks.filter(
+      t => t.priority === 'high' && !t.completed,
+    ).length;
+    const completionRate =
+      total > 0 ? Math.round((completed / total) * 100) : 0;
+
     // Calculate streak (consecutive days with completed tasks)
     const streak = completed > 0 ? Math.min(Math.ceil(completed / 2), 14) : 0;
 
@@ -528,8 +583,7 @@ export const TaskProvider = ({ children }) => {
         clearCompleted,
         seedSampleTasks,
         resetAllData,
-      }}
-    >
+      }}>
       {children}
     </TaskContext.Provider>
   );

@@ -7,20 +7,20 @@ export const lightTheme = {
   surface: '#FFFFFF',
   surfaceSecondary: '#F1F5F9',
   surfaceElevated: '#FFFFFF',
-  
+
   // Brand colors
-  primary: '#2563EB',        // Royal Blue
+  primary: '#2563EB', // Royal Blue
   primaryLight: '#EFF6FF',
   primaryDark: '#1D4ED8',
-  secondary: '#7C3AED',      // Electric Violet
+  secondary: '#7C3AED', // Electric Violet
   secondaryLight: '#F5F3FF',
-  
+
   // Status & Priority
-  danger: '#EF4444',         // High priority / Delete
+  danger: '#EF4444', // High priority / Delete
   dangerLight: '#FEF2F2',
-  warning: '#F59E0B',        // Medium priority
+  warning: '#F59E0B', // Medium priority
   warningLight: '#FFFBEB',
-  success: '#10B981',        // Low priority / Completed
+  success: '#10B981', // Low priority / Completed
   successLight: '#ECFDF5',
   info: '#06B6D4',
   infoLight: '#ECFEFF',
@@ -30,7 +30,7 @@ export const lightTheme = {
   textSecondary: '#475569',
   textMuted: '#94A3B8',
   textInverse: '#FFFFFF',
-  
+
   // Borders & Dividers
   border: '#E2E8F0',
   borderFocus: '#2563EB',
@@ -40,14 +40,14 @@ export const lightTheme = {
   shadowColor: '#0F172A',
   cardShadow: {
     shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.06,
     shadowRadius: 10,
     elevation: 3,
   },
   glowShadow: {
     shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 6 },
+    shadowOffset: {width: 0, height: 6},
     shadowOpacity: 0.25,
     shadowRadius: 14,
     elevation: 8,
@@ -60,7 +60,7 @@ export const darkTheme = {
   surface: '#131B2E',
   surfaceSecondary: '#1E293B',
   surfaceElevated: '#1E293B',
-  
+
   // Brand colors
   primary: '#3B82F6',
   primaryLight: 'rgba(59, 130, 246, 0.15)',
@@ -93,14 +93,14 @@ export const darkTheme = {
   shadowColor: '#000000',
   cardShadow: {
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.35,
     shadowRadius: 10,
     elevation: 3,
   },
   glowShadow: {
     shadowColor: '#3B82F6',
-    shadowOffset: { width: 0, height: 6 },
+    shadowOffset: {width: 0, height: 6},
     shadowOpacity: 0.3,
     shadowRadius: 14,
     elevation: 8,

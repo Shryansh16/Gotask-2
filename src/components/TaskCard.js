@@ -1,22 +1,24 @@
 // src/components/TaskCard.js
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useTheme } from '../context/ThemeContext';
-import { useTasks } from '../context/TaskContext';
-import { PriorityBadge, CategoryBadge } from './Badge';
-import { categoryMeta } from '../styles/theme';
-import { textScale } from '../styles/responsiveStyles';
-import { fontFamily } from '../common/fonts';
-import { spacing } from '../styles/spacing';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {useTheme} from '../context/ThemeContext';
+import {useTasks} from '../context/TaskContext';
+import {PriorityBadge, CategoryBadge} from './Badge';
+import {categoryMeta} from '../styles/theme';
+import {textScale} from '../styles/responsiveStyles';
+import {fontFamily} from '../common/fonts';
+import {spacing} from '../styles/spacing';
 
-export const TaskCard = ({ task, onPress, onEdit }) => {
-  const { theme, isDark } = useTheme();
-  const { toggleTaskComplete, togglePin, deleteTask } = useTasks();
+export const TaskCard = ({task, onPress, onEdit}) => {
+  const {theme, isDark} = useTheme();
+  const {toggleTaskComplete, togglePin, deleteTask} = useTasks();
 
   const subtasks = task.subtasks || [];
   const completedSubtasks = subtasks.filter(s => s.completed).length;
   const hasSubtasks = subtasks.length > 0;
-  const subtaskProgress = hasSubtasks ? (completedSubtasks / subtasks.length) * 100 : 0;
+  const subtaskProgress = hasSubtasks
+    ? (completedSubtasks / subtasks.length) * 100
+    : 0;
 
   const catMeta = categoryMeta[task.category] || {
     color: theme.primary,
@@ -35,8 +37,7 @@ export const TaskCard = ({ task, onPress, onEdit }) => {
           borderWidth: task.isPinned ? 1.5 : 1,
         },
         theme.cardShadow,
-      ]}
-    >
+      ]}>
       {/* Top Meta Row */}
       <View style={styles.topRow}>
         <View style={styles.badgesRow}>
@@ -51,11 +52,14 @@ export const TaskCard = ({ task, onPress, onEdit }) => {
 
         <View style={styles.actionsRow}>
           <TouchableOpacity
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
             onPress={() => togglePin(task.id)}
-            style={styles.pinButton}
-          >
-            <Text style={[styles.pinIcon, { color: task.isPinned ? theme.primary : theme.textMuted }]}>
+            style={styles.pinButton}>
+            <Text
+              style={[
+                styles.pinIcon,
+                {color: task.isPinned ? theme.primary : theme.textMuted},
+              ]}>
               {task.isPinned ? '★' : '☆'}
             </Text>
           </TouchableOpacity>
@@ -74,11 +78,8 @@ export const TaskCard = ({ task, onPress, onEdit }) => {
               borderColor: task.completed ? theme.success : theme.border,
               backgroundColor: task.completed ? theme.success : 'transparent',
             },
-          ]}
-        >
-          {task.completed && (
-            <Text style={styles.checkmarkText}>✓</Text>
-          )}
+          ]}>
+          {task.completed && <Text style={styles.checkmarkText}>✓</Text>}
         </TouchableOpacity>
 
         {/* Title and Description */}
@@ -87,10 +88,9 @@ export const TaskCard = ({ task, onPress, onEdit }) => {
             numberOfLines={2}
             style={[
               styles.title,
-              { color: task.completed ? theme.textMuted : theme.textPrimary },
+              {color: task.completed ? theme.textMuted : theme.textPrimary},
               task.completed && styles.strikethrough,
-            ]}
-          >
+            ]}>
             {task.title}
           </Text>
 
@@ -99,10 +99,9 @@ export const TaskCard = ({ task, onPress, onEdit }) => {
               numberOfLines={2}
               style={[
                 styles.description,
-                { color: theme.textSecondary },
+                {color: theme.textSecondary},
                 task.completed && styles.strikethrough,
-              ]}
-            >
+              ]}>
               {task.description}
             </Text>
           )}
@@ -113,20 +112,25 @@ export const TaskCard = ({ task, onPress, onEdit }) => {
       {hasSubtasks && (
         <View style={styles.subtaskSection}>
           <View style={styles.subtaskHeader}>
-            <Text style={[styles.subtaskLabel, { color: theme.textMuted }]}>
+            <Text style={[styles.subtaskLabel, {color: theme.textMuted}]}>
               Checklist: {completedSubtasks}/{subtasks.length}
             </Text>
-            <Text style={[styles.subtaskPercent, { color: theme.textSecondary }]}>
+            <Text style={[styles.subtaskPercent, {color: theme.textSecondary}]}>
               {Math.round(subtaskProgress)}%
             </Text>
           </View>
-          <View style={[styles.progressBarBg, { backgroundColor: theme.surfaceSecondary }]}>
+          <View
+            style={[
+              styles.progressBarBg,
+              {backgroundColor: theme.surfaceSecondary},
+            ]}>
             <View
               style={[
                 styles.progressBarFill,
                 {
                   width: `${subtaskProgress}%`,
-                  backgroundColor: subtaskProgress === 100 ? theme.success : theme.primary,
+                  backgroundColor:
+                    subtaskProgress === 100 ? theme.success : theme.primary,
                 },
               ]}
             />
@@ -135,10 +139,10 @@ export const TaskCard = ({ task, onPress, onEdit }) => {
       )}
 
       {/* Bottom Footer Row */}
-      <View style={[styles.footerRow, { borderTopColor: theme.divider }]}>
+      <View style={[styles.footerRow, {borderTopColor: theme.divider}]}>
         <View style={styles.dueContainer}>
-          <Text style={[styles.dueIcon, { color: theme.textMuted }]}>📅</Text>
-          <Text style={[styles.dueText, { color: theme.textSecondary }]}>
+          <Text style={[styles.dueIcon, {color: theme.textMuted}]}>📅</Text>
+          <Text style={[styles.dueText, {color: theme.textSecondary}]}>
             {task.dueDate || 'Today'}
           </Text>
         </View>
@@ -146,16 +150,24 @@ export const TaskCard = ({ task, onPress, onEdit }) => {
         <View style={styles.footerButtons}>
           <TouchableOpacity
             onPress={() => (onEdit ? onEdit(task) : null)}
-            style={[styles.smallBtn, { backgroundColor: theme.surfaceSecondary }]}
-          >
-            <Text style={[styles.smallBtnText, { color: theme.primary }]}>Edit</Text>
+            style={[
+              styles.smallBtn,
+              {backgroundColor: theme.surfaceSecondary},
+            ]}>
+            <Text style={[styles.smallBtnText, {color: theme.primary}]}>
+              Edit
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => deleteTask(task.id)}
-            style={[styles.smallBtn, { backgroundColor: theme.dangerLight, marginLeft: 8 }]}
-          >
-            <Text style={[styles.smallBtnText, { color: theme.danger }]}>Delete</Text>
+            style={[
+              styles.smallBtn,
+              {backgroundColor: theme.dangerLight, marginLeft: 8},
+            ]}>
+            <Text style={[styles.smallBtnText, {color: theme.danger}]}>
+              Delete
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

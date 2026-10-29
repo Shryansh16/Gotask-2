@@ -1,5 +1,5 @@
 // src/screens/CategoryScreen.js
-import React, { useState, useMemo } from 'react';
+import React, {useState, useMemo} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -11,24 +11,24 @@ import {
   StatusBar,
   Image,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useTheme } from '../context/ThemeContext';
-import { useTasks } from '../context/TaskContext';
+import {useNavigation} from '@react-navigation/native';
+import {useTheme} from '../context/ThemeContext';
+import {useTasks} from '../context/TaskContext';
 import TaskCard from '../components/TaskCard';
 import EmptyState from '../components/EmptyState';
 import TaskModal from '../modules/TaskModal';
-import { categoryMeta } from '../styles/theme';
-import { textScale } from '../styles/responsiveStyles';
-import { fontFamily } from '../common/fonts';
-import { spacing } from '../styles/spacing';
+import {categoryMeta} from '../styles/theme';
+import {textScale} from '../styles/responsiveStyles';
+import {fontFamily} from '../common/fonts';
+import {spacing} from '../styles/spacing';
 
-const CategoryScreen = ({ route }) => {
+const CategoryScreen = ({route}) => {
   const params = route?.params || {};
   const categoryName = params.categoryName || 'General';
 
   const navigation = useNavigation();
-  const { theme, isDark } = useTheme();
-  const { tasks, getCategoryStats } = useTasks();
+  const {theme, isDark} = useTheme();
+  const {tasks, getCategoryStats} = useTasks();
 
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('all'); // 'all' | 'pending' | 'completed'
@@ -41,40 +41,46 @@ const CategoryScreen = ({ route }) => {
   };
 
   const stats = getCategoryStats(categoryName);
-  const progressPercent = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
+  const progressPercent =
+    stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
 
   // Filter tasks in this category
   const categoryTasks = useMemo(() => {
     let list = tasks.filter(
-      (t) => t.category && t.category.toLowerCase() === categoryName.toLowerCase()
+      t =>
+        t.category && t.category.toLowerCase() === categoryName.toLowerCase(),
     );
 
     if (filterStatus === 'pending') {
-      list = list.filter((t) => !t.completed);
+      list = list.filter(t => !t.completed);
     } else if (filterStatus === 'completed') {
-      list = list.filter((t) => t.completed);
+      list = list.filter(t => t.completed);
     }
 
     if (search.trim()) {
       const q = search.toLowerCase().trim();
       list = list.filter(
-        (t) =>
+        t =>
           (t.title && t.title.toLowerCase().includes(q)) ||
-          (t.description && t.description.toLowerCase().includes(q))
+          (t.description && t.description.toLowerCase().includes(q)),
       );
     }
 
     // Sort: pinned first, then incomplete first
     list.sort((a, b) => {
-      if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
-      if (a.completed !== b.completed) return a.completed ? 1 : -1;
+      if (a.isPinned !== b.isPinned) {
+        return a.isPinned ? -1 : 1;
+      }
+      if (a.completed !== b.completed) {
+        return a.completed ? 1 : -1;
+      }
       return (b.createdAt || 0) - (a.createdAt || 0);
     });
 
     return list;
   }, [tasks, categoryName, filterStatus, search]);
 
-  const handleEdit = (task) => {
+  const handleEdit = task => {
     setEditingTask(task);
     setIsModalVisible(true);
   };
@@ -85,65 +91,63 @@ const CategoryScreen = ({ route }) => {
   };
 
   return (
-    <SafeAreaView style={[styles.mainContainer, { backgroundColor: theme.background }]}>
+    <SafeAreaView
+      style={[styles.mainContainer, {backgroundColor: theme.background}]}>
       <StatusBar
         backgroundColor={theme.background}
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
 
       {/* Top Header Bar */}
-      <View style={[styles.topBar, { borderBottomColor: theme.divider }]}>
+      <View style={[styles.topBar, {borderBottomColor: theme.divider}]}>
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => navigation.goBack()}
-          style={[styles.backBtn, { backgroundColor: theme.surfaceSecondary }]}
-        >
-          <Text style={[styles.backIcon, { color: theme.textPrimary }]}>←</Text>
+          style={[styles.backBtn, {backgroundColor: theme.surfaceSecondary}]}>
+          <Text style={[styles.backIcon, {color: theme.textPrimary}]}>←</Text>
         </TouchableOpacity>
 
-        <Text style={[styles.navTitle, { color: theme.textPrimary }]}>
+        <Text style={[styles.navTitle, {color: theme.textPrimary}]}>
           {categoryName}
         </Text>
 
         <TouchableOpacity
           onPress={() => setIsModalVisible(true)}
-          style={[styles.addNavBtn, { backgroundColor: meta.color }]}
-        >
+          style={[styles.addNavBtn, {backgroundColor: meta.color}]}>
           <Text style={styles.addNavBtnText}>+ Add</Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+        contentContainerStyle={styles.scrollContent}>
         {/* Category Hero Banner */}
         <View
           style={[
             styles.heroBanner,
-            { backgroundColor: meta.bgColor, borderColor: meta.color },
-          ]}
-        >
+            {backgroundColor: meta.bgColor, borderColor: meta.color},
+          ]}>
           <View style={styles.heroTop}>
             <View>
-              <Text style={[styles.heroTitle, { color: meta.color }]}>
+              <Text style={[styles.heroTitle, {color: meta.color}]}>
                 {categoryName}
               </Text>
-              <Text style={[styles.heroSubtitle, { color: theme.textSecondary }]}>
+              <Text style={[styles.heroSubtitle, {color: theme.textSecondary}]}>
                 {stats.completed} of {stats.total} tasks completed
               </Text>
             </View>
-            <View style={[styles.percentBadge, { backgroundColor: meta.color }]}>
+            <View style={[styles.percentBadge, {backgroundColor: meta.color}]}>
               <Text style={styles.percentText}>{progressPercent}%</Text>
             </View>
           </View>
 
           {/* Progress Bar */}
-          <View style={[styles.progressBg, { backgroundColor: 'rgba(0,0,0,0.06)' }]}>
+          <View
+            style={[styles.progressBg, {backgroundColor: 'rgba(0,0,0,0.06)'}]}>
             <View
               style={[
                 styles.progressFill,
-                { width: `${progressPercent}%`, backgroundColor: meta.color },
+                {width: `${progressPercent}%`, backgroundColor: meta.color},
               ]}
             />
           </View>
@@ -157,26 +161,27 @@ const CategoryScreen = ({ route }) => {
               backgroundColor: theme.surfaceSecondary,
               borderColor: theme.border,
             },
-          ]}
-        >
+          ]}>
           <Text style={styles.searchIcon}>🔍</Text>
           <TextInput
             placeholder={`Search ${categoryName} tasks...`}
             placeholderTextColor={theme.textMuted}
             value={search}
             onChangeText={setSearch}
-            style={[styles.searchInput, { color: theme.textPrimary }]}
+            style={[styles.searchInput, {color: theme.textPrimary}]}
           />
           {Boolean(search) && (
             <TouchableOpacity onPress={() => setSearch('')}>
-              <Text style={[styles.clearIcon, { color: theme.textMuted }]}>✕</Text>
+              <Text style={[styles.clearIcon, {color: theme.textMuted}]}>
+                ✕
+              </Text>
             </TouchableOpacity>
           )}
         </View>
 
         {/* Filter Pills */}
         <View style={styles.pillsRow}>
-          {['all', 'pending', 'completed'].map((status) => {
+          {['all', 'pending', 'completed'].map(status => {
             const isSelected = filterStatus === status;
             return (
               <TouchableOpacity
@@ -185,17 +190,17 @@ const CategoryScreen = ({ route }) => {
                 style={[
                   styles.statusPill,
                   {
-                    backgroundColor: isSelected ? meta.color : theme.surfaceSecondary,
+                    backgroundColor: isSelected
+                      ? meta.color
+                      : theme.surfaceSecondary,
                     borderColor: isSelected ? meta.color : theme.border,
                   },
-                ]}
-              >
+                ]}>
                 <Text
                   style={[
                     styles.statusPillText,
-                    { color: isSelected ? '#FFFFFF' : theme.textSecondary },
-                  ]}
-                >
+                    {color: isSelected ? '#FFFFFF' : theme.textSecondary},
+                  ]}>
                   {status.charAt(0).toUpperCase() + status.slice(1)}
                 </Text>
               </TouchableOpacity>
@@ -214,12 +219,8 @@ const CategoryScreen = ({ route }) => {
           />
         ) : (
           <View style={styles.taskList}>
-            {categoryTasks.map((item) => (
-              <TaskCard
-                key={item.id}
-                task={item}
-                onEdit={handleEdit}
-              />
+            {categoryTasks.map(item => (
+              <TaskCard key={item.id} task={item} onEdit={handleEdit} />
             ))}
           </View>
         )}
@@ -229,12 +230,7 @@ const CategoryScreen = ({ route }) => {
       <TouchableOpacity
         activeOpacity={0.85}
         onPress={() => setIsModalVisible(true)}
-        style={[
-          styles.fab,
-          { backgroundColor: meta.color },
-          theme.glowShadow,
-        ]}
-      >
+        style={[styles.fab, {backgroundColor: meta.color}, theme.glowShadow]}>
         <Text style={styles.fabPlus}>+</Text>
       </TouchableOpacity>
 

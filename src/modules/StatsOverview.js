@@ -1,15 +1,15 @@
 // src/modules/StatsOverview.js
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { useTheme } from '../context/ThemeContext';
-import { useTasks } from '../context/TaskContext';
-import { textScale } from '../styles/responsiveStyles';
-import { fontFamily } from '../common/fonts';
-import { spacing } from '../styles/spacing';
+import {View, Text, StyleSheet} from 'react-native';
+import {useTheme} from '../context/ThemeContext';
+import {useTasks} from '../context/TaskContext';
+import {textScale} from '../styles/responsiveStyles';
+import {fontFamily} from '../common/fonts';
+import {spacing} from '../styles/spacing';
 
 export const StatsOverview = () => {
-  const { theme, isDark } = useTheme();
-  const { stats, profile } = useTasks();
+  const {theme, isDark} = useTheme();
+  const {stats, profile} = useTasks();
 
   const firstName = (profile.name || 'Friend').split(' ')[0];
 
@@ -22,15 +22,16 @@ export const StatsOverview = () => {
             backgroundColor: isDark ? theme.surface : '#1E40AF', // Deep Royal Blue hero card
           },
           theme.cardShadow,
-        ]}
-      >
+        ]}>
         {/* Header Greeting */}
         <View style={styles.headerRow}>
           <View>
             <Text style={styles.greetingText}>Hello, {firstName} 👋</Text>
             <Text style={styles.subGreeting}>
               {stats.pending > 0
-                ? `You have ${stats.pending} pending ${stats.pending === 1 ? 'task' : 'tasks'} today`
+                ? `You have ${stats.pending} pending ${
+                    stats.pending === 1 ? 'task' : 'tasks'
+                  } today`
                 : 'All caught up! Excellent work 🎉'}
             </Text>
           </View>
@@ -52,7 +53,7 @@ export const StatsOverview = () => {
             <View
               style={[
                 styles.progressBarFill,
-                { width: `${Math.max(stats.completionRate, 4)}%` },
+                {width: `${Math.max(stats.completionRate, 4)}%`},
               ]}
             />
           </View>
@@ -68,7 +69,7 @@ export const StatsOverview = () => {
           <View style={styles.metricDivider} />
 
           <View style={styles.metricItem}>
-            <Text style={[styles.metricNumber, { color: '#34D399' }]}>
+            <Text style={[styles.metricNumber, {color: '#34D399'}]}>
               {stats.completed}
             </Text>
             <Text style={styles.metricLabel}>Completed</Text>
@@ -77,7 +78,7 @@ export const StatsOverview = () => {
           <View style={styles.metricDivider} />
 
           <View style={styles.metricItem}>
-            <Text style={[styles.metricNumber, { color: '#FBBF24' }]}>
+            <Text style={[styles.metricNumber, {color: '#FBBF24'}]}>
               {stats.pending}
             </Text>
             <Text style={styles.metricLabel}>Pending</Text>

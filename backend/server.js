@@ -1,5 +1,5 @@
 // backend/server.js
-// Lightweight, zero-dependency REST API server for GOTask mobile & web clients
+// Production-Grade, Zero-Dependency REST API & Agent Integration Hub for GOTask
 
 const http = require('http');
 const fs = require('fs');
@@ -9,31 +9,103 @@ const url = require('url');
 const PORT = process.env.PORT || 5000;
 const DB_FILE = path.join(__dirname, 'data', 'db.json');
 
-// Ensure db directory & file exist
+// --- DATABASE LAYER (Atomic & Crash-Resilient) ---
 function getDb() {
   try {
     if (!fs.existsSync(DB_FILE)) {
-      const initial = { profile: {}, categories: [], tasks: [] };
-      fs.mkdirSync(path.dirname(DB_FILE), { recursive: true });
-      fs.writeFileSync(DB_FILE, JSON.stringify(initial, null, 2));
+      const initial = {
+        profile: {
+          name: 'Shryansh Shree',
+          email: 'shryansh.gangwal@example.com',
+          role: 'Productivity Architect',
+          dailyGoal: 5,
+          avatar:
+            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80',
+          joinedDate: 'October 2026',
+        },
+        categories: [
+          {id: 'cat_1', name: 'Work', color: '#4F46E5', icon: 'briefcase'},
+          {id: 'cat_2', name: 'Personal', color: '#06B6D4', icon: 'user'},
+          {
+            id: 'cat_3',
+            name: 'Shopping',
+            color: '#EC4899',
+            icon: 'shopping-cart',
+          },
+          {id: 'cat_4', name: 'Health', color: '#10B981', icon: 'heartbeat'},
+          {id: 'cat_5', name: 'Study', color: '#8B5CF6', icon: 'book'},
+        ],
+        tasks: [],
+        auditLogs: [],
+      };
+      fs.mkdirSync(path.dirname(DB_FILE), {recursive: true});
+      fs.writeFileSync(DB_FILE, JSON.stringify(initial, null, 2), 'utf-8');
       return initial;
     }
     const data = fs.readFileSync(DB_FILE, 'utf-8');
-    return JSON.parse(data);
+    const parsed = JSON.parse(data);
+    if (!Array.isArray(parsed.auditLogs)) {
+      parsed.auditLogs = [];
+    }
+    if (!Array.isArray(parsed.tasks)) {
+      parsed.tasks = [];
+    }
+    if (!Array.isArray(parsed.categories)) {
+      parsed.categories = [];
+    }
+    return parsed;
   } catch (err) {
     console.error('Error reading DB:', err);
-    return { profile: {}, categories: [], tasks: [] };
+    return {profile: {}, categories: [], tasks: [], auditLogs: []};
   }
 }
 
+// Atomic write to prevent file corruption
 function saveDb(data) {
   try {
-    fs.mkdirSync(path.dirname(DB_FILE), { recursive: true });
-    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+    fs.mkdirSync(path.dirname(DB_FILE), {recursive: true});
+    const tmpFile = `${DB_FILE}.${Date.now()}.${Math.random()
+      .toString(36)
+      .slice(2, 7)}.tmp`;
+    fs.writeFileSync(tmpFile, JSON.stringify(data, null, 2), 'utf-8');
+    fs.renameSync(tmpFile, DB_FILE);
     return true;
   } catch (err) {
-    console.error('Error writing DB:', err);
+    console.error('Error writing DB atomically:', err);
     return false;
+  }
+}
+
+// Record an event in the audit trail
+function recordAudit(
+  action,
+  entityType,
+  entityId,
+  details = {},
+  actor = 'human',
+) {
+  try {
+    const db = getDb();
+    if (!Array.isArray(db.auditLogs)) {
+      db.auditLogs = [];
+    }
+    const entry = {
+      id: `audit_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      timestamp: new Date().toISOString(),
+      action,
+      entityType,
+      entityId,
+      actor,
+      details,
+    };
+    db.auditLogs.unshift(entry);
+    if (db.auditLogs.length > 500) {
+      db.auditLogs.pop();
+    } // Cap history
+    saveDb(db);
+    return entry;
+  } catch (e) {
+    console.warn('Could not record audit log:', e);
   }
 }
 
@@ -45,35 +117,115 @@ function parseBody(req) {
       body += chunk.toString();
     });
     req.on('end', () => {
-      if (!body) return resolve({});
+      if (!body || !body.trim()) {
+        return resolve({});
+      }
       try {
         resolve(JSON.parse(body));
       } catch (err) {
-        reject(new Error('Invalid JSON'));
+        reject(new Error('Invalid JSON format in request body'));
       }
     });
     req.on('error', reject);
   });
 }
 
-// Send JSON response with CORS headers
+// Send JSON response with CORS & Security Headers
 function sendJson(res, statusCode, data) {
   res.writeHead(statusCode, {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Headers':
+      'Content-Type, Authorization, X-Agent-ID, X-Agent-Name',
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
   });
   res.end(JSON.stringify(data));
 }
 
+// Natural Language Task Parser
+function parseNaturalLanguageTask(text = '') {
+  let title = text.trim();
+  let priority = 'medium';
+  let category = 'Personal';
+  let dueDate = 'Today';
+  const tags = [];
+
+  // 1. Extract Priority tags like !high, !urgent, !medium, !low
+  const priorityMatch = title.match(/!(high|urgent|medium|low)/i);
+  if (priorityMatch) {
+    const p = priorityMatch[1].toLowerCase();
+    priority = p === 'urgent' ? 'high' : p;
+    title = title.replace(priorityMatch[0], '').trim();
+  }
+
+  // 2. Extract Hashtags like #Work, #Health, #Shopping
+  const hashtagMatches = title.match(/#(\w+)/g);
+  if (hashtagMatches) {
+    hashtagMatches.forEach(tag => {
+      const cleanTag = tag.slice(1);
+      tags.push(cleanTag);
+      // Map common tags to categories
+      if (
+        ['work', 'job', 'project', 'client'].includes(cleanTag.toLowerCase())
+      ) {
+        category = 'Work';
+      } else if (
+        ['buy', 'shopping', 'groceries', 'store'].includes(
+          cleanTag.toLowerCase(),
+        )
+      ) {
+        category = 'Shopping';
+      } else if (
+        ['health', 'gym', 'workout', 'meds'].includes(cleanTag.toLowerCase())
+      ) {
+        category = 'Health';
+      } else if (
+        ['study', 'learn', 'read', 'book'].includes(cleanTag.toLowerCase())
+      ) {
+        category = 'Study';
+      }
+      title = title.replace(tag, '').trim();
+    });
+  }
+
+  // 3. Extract Due Date keywords
+  if (/\b(tomorrow)\b/i.test(title)) {
+    dueDate = 'Tomorrow';
+    title = title.replace(/\b(tomorrow)\b/gi, '').trim();
+  } else if (/\b(today)\b/i.test(title)) {
+    dueDate = 'Today';
+    title = title.replace(/\b(today)\b/gi, '').trim();
+  } else if (/\b(this weekend|weekend)\b/i.test(title)) {
+    dueDate = 'This Weekend';
+    title = title.replace(/\b(this weekend|weekend)\b/gi, '').trim();
+  } else if (/\b(next week)\b/i.test(title)) {
+    dueDate = 'Next Week';
+    title = title.replace(/\b(next week)\b/gi, '').trim();
+  }
+
+  // Clean remaining whitespace
+  title = title.replace(/\s+/g, ' ').trim();
+
+  return {
+    title: title || 'Untitled Task',
+    priority,
+    category,
+    dueDate,
+    tags,
+  };
+}
+
+// --- HTTP SERVER ---
 const server = http.createServer(async (req, res) => {
-  // Handle CORS preflight
+  // CORS Preflight
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Headers':
+        'Content-Type, Authorization, X-Agent-ID, X-Agent-Name',
     });
     return res.end();
   }
@@ -81,15 +233,47 @@ const server = http.createServer(async (req, res) => {
   const parsedUrl = url.parse(req.url, true);
   const pathname = parsedUrl.pathname;
   const query = parsedUrl.query;
+  const actor =
+    req.headers['x-agent-name'] || req.headers['x-agent-id'] || 'human';
 
-  // Root / Health check
-  if (pathname === '/' || pathname === '/health') {
+  // --- HEALTH & STATUS ---
+  if (
+    pathname === '/' ||
+    pathname === '/health' ||
+    pathname === '/api/health'
+  ) {
+    const db = getDb();
     return sendJson(res, 200, {
       status: 'ok',
       service: 'GOTask API Server',
-      version: '2.0.0',
+      version: '2.5.0',
+      nodeVersion: process.version,
+      uptimeSeconds: Math.floor(process.uptime()),
       timestamp: new Date().toISOString(),
+      stats: {
+        totalTasks: (db.tasks || []).length,
+        categories: (db.categories || []).length,
+        auditLogsCount: (db.auditLogs || []).length,
+      },
     });
+  }
+
+  // --- NATURAL LANGUAGE TASK PARSER ---
+  // POST /api/tasks/parse
+  if (pathname === '/api/tasks/parse' && req.method === 'POST') {
+    try {
+      const body = await parseBody(req);
+      if (!body.text || !body.text.trim()) {
+        return sendJson(res, 400, {
+          success: false,
+          message: 'Field "text" is required',
+        });
+      }
+      const parsed = parseNaturalLanguageTask(body.text);
+      return sendJson(res, 200, {success: true, parsed});
+    } catch (err) {
+      return sendJson(res, 400, {success: false, message: err.message});
+    }
   }
 
   // --- TASKS API ---
@@ -100,30 +284,79 @@ const server = http.createServer(async (req, res) => {
 
     // Filter by category
     if (query.category && query.category !== 'All') {
-      tasks = tasks.filter(t => t.category && t.category.toLowerCase() === query.category.toLowerCase());
+      tasks = tasks.filter(
+        t =>
+          t.category &&
+          t.category.toLowerCase() === query.category.toLowerCase(),
+      );
     }
 
     // Filter by status (completed / active)
     if (query.status) {
-      if (query.status === 'completed') tasks = tasks.filter(t => t.completed);
-      if (query.status === 'active' || query.status === 'pending') tasks = tasks.filter(t => !t.completed);
+      if (query.status === 'completed') {
+        tasks = tasks.filter(t => t.completed);
+      }
+      if (query.status === 'active' || query.status === 'pending') {
+        tasks = tasks.filter(t => !t.completed);
+      }
     }
 
     // Filter by priority
-    if (query.priority) {
+    if (query.priority && query.priority !== 'all') {
       tasks = tasks.filter(t => t.priority === query.priority);
+    }
+
+    // Filter by tag
+    if (query.tag) {
+      const targetTag = query.tag.toLowerCase();
+      tasks = tasks.filter(
+        t =>
+          Array.isArray(t.tags) &&
+          t.tags.some(tag => tag.toLowerCase() === targetTag),
+      );
+    }
+
+    // Filter by agent assignment
+    if (query.agentAssigned === 'true') {
+      tasks = tasks.filter(t => Boolean(t.agentMetadata));
     }
 
     // Search query
     if (query.search) {
       const q = query.search.toLowerCase();
-      tasks = tasks.filter(t => 
-        (t.title && t.title.toLowerCase().includes(q)) || 
-        (t.description && t.description.toLowerCase().includes(q))
+      tasks = tasks.filter(
+        t =>
+          (t.title && t.title.toLowerCase().includes(q)) ||
+          (t.description && t.description.toLowerCase().includes(q)) ||
+          (Array.isArray(t.tags) &&
+            t.tags.some(tg => tg.toLowerCase().includes(q))),
       );
     }
 
-    return sendJson(res, 200, { success: true, count: tasks.length, tasks });
+    // Sort order
+    const sortBy = query.sortBy || 'createdAt'; // 'createdAt' | 'dueDate' | 'priority'
+    const sortOrder = query.order === 'asc' ? 1 : -1;
+
+    tasks.sort((a, b) => {
+      // Always keep pinned tasks first unless disabled
+      if (query.pinnedFirst !== 'false') {
+        if (a.isPinned && !b.isPinned) {
+          return -1;
+        }
+        if (!a.isPinned && b.isPinned) {
+          return 1;
+        }
+      }
+      if (sortBy === 'priority') {
+        const pWeight = {high: 3, medium: 2, low: 1};
+        return (
+          (pWeight[b.priority] || 0) - (pWeight[a.priority] || 0) * sortOrder
+        );
+      }
+      return ((a[sortBy] || 0) > (b[sortBy] || 0) ? 1 : -1) * sortOrder;
+    });
+
+    return sendJson(res, 200, {success: true, count: tasks.length, tasks});
   }
 
   // POST /api/tasks
@@ -131,12 +364,17 @@ const server = http.createServer(async (req, res) => {
     try {
       const body = await parseBody(req);
       if (!body.title || !body.title.trim()) {
-        return sendJson(res, 400, { success: false, message: 'Title is required' });
+        return sendJson(res, 400, {
+          success: false,
+          message: 'Title is required',
+        });
       }
 
       const db = getDb();
       const newTask = {
-        id: body.id || `task_${Date.now()}`,
+        id:
+          body.id ||
+          `task_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
         title: body.title.trim(),
         description: body.description || '',
         category: body.category || 'Personal',
@@ -144,43 +382,57 @@ const server = http.createServer(async (req, res) => {
         completed: Boolean(body.completed),
         dueDate: body.dueDate || 'Today',
         isPinned: Boolean(body.isPinned),
+        tags: Array.isArray(body.tags) ? body.tags : [],
         subtasks: Array.isArray(body.subtasks) ? body.subtasks : [],
+        agentMetadata: body.agentMetadata || null,
         createdAt: body.createdAt || Date.now(),
         updatedAt: Date.now(),
       };
 
       db.tasks = [newTask, ...(db.tasks || [])];
       saveDb(db);
-      return sendJson(res, 201, { success: true, task: newTask });
+      recordAudit(
+        'create_task',
+        'task',
+        newTask.id,
+        {title: newTask.title},
+        actor,
+      );
+
+      return sendJson(res, 201, {success: true, task: newTask});
     } catch (err) {
-      return sendJson(res, 400, { success: false, message: err.message });
+      return sendJson(res, 400, {success: false, message: err.message});
     }
   }
 
-  // PUT /api/tasks/:id
+  // Task URL Matcher for /api/tasks/:id
   const taskMatch = pathname.match(/^\/api\/tasks\/([^/]+)$/);
   if (taskMatch && req.method === 'PUT') {
     try {
       const taskId = taskMatch[1];
       const updates = await parseBody(req);
       const db = getDb();
-      const index = (db.tasks || []).findIndex(t => String(t.id) === String(taskId));
+      const index = (db.tasks || []).findIndex(
+        t => String(t.id) === String(taskId),
+      );
 
       if (index === -1) {
-        return sendJson(res, 404, { success: false, message: 'Task not found' });
+        return sendJson(res, 404, {success: false, message: 'Task not found'});
       }
 
       db.tasks[index] = {
         ...db.tasks[index],
         ...updates,
-        id: db.tasks[index].id, // Prevent ID override
+        id: db.tasks[index].id, // Prevent ID overwrite
         updatedAt: Date.now(),
       };
 
       saveDb(db);
-      return sendJson(res, 200, { success: true, task: db.tasks[index] });
+      recordAudit('update_task', 'task', taskId, updates, actor);
+
+      return sendJson(res, 200, {success: true, task: db.tasks[index]});
     } catch (err) {
-      return sendJson(res, 400, { success: false, message: err.message });
+      return sendJson(res, 400, {success: false, message: err.message});
     }
   }
 
@@ -192,14 +444,210 @@ const server = http.createServer(async (req, res) => {
     db.tasks = (db.tasks || []).filter(t => String(t.id) !== String(taskId));
 
     if (db.tasks.length === initialCount) {
-      return sendJson(res, 404, { success: false, message: 'Task not found' });
+      return sendJson(res, 404, {success: false, message: 'Task not found'});
     }
 
     saveDb(db);
-    return sendJson(res, 200, { success: true, message: 'Task deleted successfully' });
+    recordAudit('delete_task', 'task', taskId, {}, actor);
+
+    return sendJson(res, 200, {
+      success: true,
+      message: 'Task deleted successfully',
+    });
   }
 
-  // --- STATS API ---
+  // --- AGENT INTEGRATION HUB ---
+  // POST /api/agent/dispatch
+  if (pathname === '/api/agent/dispatch' && req.method === 'POST') {
+    try {
+      const body = await parseBody(req);
+      const {
+        agentId = 'agent_generic',
+        agentName = 'AI Productivity Agent',
+        action = 'create', // 'create' | 'update' | 'resolve' | 'generate_subtasks'
+        task = {},
+        taskId = null,
+      } = body;
+
+      const db = getDb();
+
+      if (action === 'create') {
+        if (!task.title) {
+          return sendJson(res, 400, {
+            success: false,
+            message: 'Agent task requires a title',
+          });
+        }
+        const newTask = {
+          id: task.id || `agent_task_${Date.now()}`,
+          title: task.title,
+          description: task.description || '',
+          category: task.category || 'Work',
+          priority: task.priority || 'medium',
+          completed: false,
+          dueDate: task.dueDate || 'Today',
+          isPinned: Boolean(task.isPinned),
+          tags: Array.from(new Set([...(task.tags || []), 'agent-created'])),
+          subtasks: Array.isArray(task.subtasks) ? task.subtasks : [],
+          agentMetadata: {
+            dispatchedBy: agentName,
+            agentId,
+            dispatchedAt: new Date().toISOString(),
+            status: 'agent_active',
+          },
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        };
+
+        db.tasks = [newTask, ...(db.tasks || [])];
+        saveDb(db);
+        recordAudit(
+          'agent_dispatch_create',
+          'task',
+          newTask.id,
+          {agentName, title: newTask.title},
+          agentName,
+        );
+        return sendJson(res, 201, {success: true, task: newTask});
+      }
+
+      if (action === 'generate_subtasks' && taskId) {
+        const index = (db.tasks || []).findIndex(
+          t => String(t.id) === String(taskId),
+        );
+        if (index === -1) {
+          return sendJson(res, 404, {
+            success: false,
+            message: 'Task not found',
+          });
+        }
+
+        const currentSubtasks = db.tasks[index].subtasks || [];
+        const newSubtasks = (task.subtasks || []).map((st, i) => ({
+          id: `st_agent_${Date.now()}_${i}`,
+          title: typeof st === 'string' ? st : st.title,
+          completed: false,
+        }));
+
+        db.tasks[index].subtasks = [...currentSubtasks, ...newSubtasks];
+        db.tasks[index].updatedAt = Date.now();
+        saveDb(db);
+        recordAudit(
+          'agent_generate_subtasks',
+          'task',
+          taskId,
+          {subtasksCount: newSubtasks.length},
+          agentName,
+        );
+
+        return sendJson(res, 200, {success: true, task: db.tasks[index]});
+      }
+
+      if (action === 'resolve' && taskId) {
+        const index = (db.tasks || []).findIndex(
+          t => String(t.id) === String(taskId),
+        );
+        if (index === -1) {
+          return sendJson(res, 404, {
+            success: false,
+            message: 'Task not found',
+          });
+        }
+
+        db.tasks[index].completed = true;
+        db.tasks[index].updatedAt = Date.now();
+        if (db.tasks[index].agentMetadata) {
+          db.tasks[index].agentMetadata.status = 'agent_completed';
+          db.tasks[index].agentMetadata.completedAt = new Date().toISOString();
+        }
+        saveDb(db);
+        recordAudit('agent_resolve_task', 'task', taskId, {}, agentName);
+
+        return sendJson(res, 200, {success: true, task: db.tasks[index]});
+      }
+
+      return sendJson(res, 400, {
+        success: false,
+        message: `Unsupported agent action "${action}"`,
+      });
+    } catch (err) {
+      return sendJson(res, 400, {success: false, message: err.message});
+    }
+  }
+
+  // GET /api/agent/tasks (Tasks view specifically tailored for agent scraping & execution)
+  if (pathname === '/api/agent/tasks' && req.method === 'GET') {
+    const db = getDb();
+    const tasks = db.tasks || [];
+    const pending = tasks.filter(t => !t.completed);
+    const agentTasks = tasks.filter(t => t.agentMetadata);
+
+    return sendJson(res, 200, {
+      success: true,
+      summary: {
+        totalPending: pending.length,
+        totalAgentManaged: agentTasks.length,
+      },
+      tasks: pending,
+    });
+  }
+
+  // POST /api/agent/batch (Bulk mutations)
+  if (pathname === '/api/agent/batch' && req.method === 'POST') {
+    try {
+      const {operations = []} = await parseBody(req);
+      const db = getDb();
+      let affected = 0;
+
+      operations.forEach(op => {
+        if (op.type === 'create' && op.task) {
+          db.tasks.unshift({
+            id:
+              op.task.id ||
+              `task_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+            ...op.task,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+          });
+          affected += 1;
+        } else if (op.type === 'update' && op.taskId && op.updates) {
+          const idx = db.tasks.findIndex(
+            t => String(t.id) === String(op.taskId),
+          );
+          if (idx !== -1) {
+            db.tasks[idx] = {
+              ...db.tasks[idx],
+              ...op.updates,
+              updatedAt: Date.now(),
+            };
+            affected += 1;
+          }
+        } else if (op.type === 'delete' && op.taskId) {
+          db.tasks = db.tasks.filter(t => String(t.id) !== String(op.taskId));
+          affected += 1;
+        }
+      });
+
+      saveDb(db);
+      recordAudit(
+        'agent_batch_operation',
+        'system',
+        'batch',
+        {operationsCount: operations.length, affected},
+        actor,
+      );
+
+      return sendJson(res, 200, {
+        success: true,
+        affected,
+        totalTasks: db.tasks.length,
+      });
+    } catch (err) {
+      return sendJson(res, 400, {success: false, message: err.message});
+    }
+  }
+
+  // --- STATS & PRODUCTIVITY API ---
   // GET /api/stats
   if (pathname === '/api/stats' && req.method === 'GET') {
     const db = getDb();
@@ -207,15 +655,22 @@ const server = http.createServer(async (req, res) => {
     const total = tasks.length;
     const completed = tasks.filter(t => t.completed).length;
     const pending = total - completed;
-    const highPriority = tasks.filter(t => t.priority === 'high' && !t.completed).length;
-    const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
+    const highPriority = tasks.filter(
+      t => t.priority === 'high' && !t.completed,
+    ).length;
+    const completionRate =
+      total > 0 ? Math.round((completed / total) * 100) : 0;
 
     const byCategory = {};
     tasks.forEach(t => {
       const cat = t.category || 'General';
-      if (!byCategory[cat]) byCategory[cat] = { total: 0, completed: 0 };
+      if (!byCategory[cat]) {
+        byCategory[cat] = {total: 0, completed: 0};
+      }
       byCategory[cat].total += 1;
-      if (t.completed) byCategory[cat].completed += 1;
+      if (t.completed) {
+        byCategory[cat].completed += 1;
+      }
     });
 
     return sendJson(res, 200, {
@@ -231,15 +686,28 @@ const server = http.createServer(async (req, res) => {
     });
   }
 
-  // --- SYNC API (Bidirectional Offline-First Sync) ---
+  // --- AUDIT TRAIL API ---
+  // GET /api/audit-logs
+  if (pathname === '/api/audit-logs' && req.method === 'GET') {
+    const db = getDb();
+    const limit = parseInt(query.limit, 10) || 50;
+    const logs = (db.auditLogs || []).slice(0, limit);
+    return sendJson(res, 200, {
+      success: true,
+      count: logs.length,
+      auditLogs: logs,
+    });
+  }
+
+  // --- BIDIRECTIONAL OFFLINE-FIRST SYNC ---
   // POST /api/sync
   if (pathname === '/api/sync' && req.method === 'POST') {
     try {
-      const { localTasks = [], localProfile = {} } = await parseBody(req);
+      const {localTasks = [], localProfile = {}} = await parseBody(req);
       const db = getDb();
       const serverTasks = db.tasks || [];
 
-      // Merge tasks based on ID and updatedAt
+      // Merge tasks based on ID and timestamp
       const taskMap = new Map();
       serverTasks.forEach(t => taskMap.set(String(t.id), t));
 
@@ -249,7 +717,6 @@ const server = http.createServer(async (req, res) => {
         if (!st) {
           taskMap.set(id, lt);
         } else {
-          // Keep newest version
           const localTime = lt.updatedAt || lt.createdAt || 0;
           const serverTime = st.updatedAt || st.createdAt || 0;
           if (localTime >= serverTime) {
@@ -261,12 +728,18 @@ const server = http.createServer(async (req, res) => {
       const mergedTasks = Array.from(taskMap.values());
       db.tasks = mergedTasks;
 
-      // Update profile if client provided changes
       if (localProfile && localProfile.name) {
-        db.profile = { ...(db.profile || {}), ...localProfile };
+        db.profile = {...(db.profile || {}), ...localProfile};
       }
 
       saveDb(db);
+      recordAudit(
+        'client_sync',
+        'system',
+        'sync',
+        {mergedCount: mergedTasks.length},
+        actor,
+      );
 
       return sendJson(res, 200, {
         success: true,
@@ -275,7 +748,7 @@ const server = http.createServer(async (req, res) => {
         profile: db.profile,
       });
     } catch (err) {
-      return sendJson(res, 400, { success: false, message: err.message });
+      return sendJson(res, 400, {success: false, message: err.message});
     }
   }
 
@@ -283,7 +756,7 @@ const server = http.createServer(async (req, res) => {
   // GET /api/profile
   if (pathname === '/api/profile' && req.method === 'GET') {
     const db = getDb();
-    return sendJson(res, 200, { success: true, profile: db.profile || {} });
+    return sendJson(res, 200, {success: true, profile: db.profile || {}});
   }
 
   // PUT /api/profile
@@ -291,18 +764,26 @@ const server = http.createServer(async (req, res) => {
     try {
       const updates = await parseBody(req);
       const db = getDb();
-      db.profile = { ...(db.profile || {}), ...updates };
+      db.profile = {...(db.profile || {}), ...updates};
       saveDb(db);
-      return sendJson(res, 200, { success: true, profile: db.profile });
+      recordAudit('update_profile', 'profile', 'user_profile', updates, actor);
+      return sendJson(res, 200, {success: true, profile: db.profile});
     } catch (err) {
-      return sendJson(res, 400, { success: false, message: err.message });
+      return sendJson(res, 400, {success: false, message: err.message});
     }
   }
 
   // 404 for unknown endpoints
-  return sendJson(res, 404, { success: false, message: 'Endpoint not found' });
+  return sendJson(res, 404, {success: false, message: 'Endpoint not found'});
 });
 
-server.listen(PORT, () => {
-  console.log(`🚀 GOTask REST API Server running at http://localhost:${PORT}`);
-});
+// Start listening if run directly
+if (require.main === module) {
+  server.listen(PORT, () => {
+    console.log(
+      `🚀 GOTask REST API & Agent Hub running at http://localhost:${PORT}`,
+    );
+  });
+}
+
+module.exports = {server, parseNaturalLanguageTask, getDb, saveDb};

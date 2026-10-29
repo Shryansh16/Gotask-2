@@ -1,15 +1,15 @@
 // src/modules/StartButton.js
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { textScale } from '../styles/responsiveStyles';
-import { spacing } from '../styles/spacing';
-import { fontFamily } from '../common/fonts';
-import { useNavigation } from '@react-navigation/native';
-import { useTheme } from '../context/ThemeContext';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {textScale} from '../styles/responsiveStyles';
+import {spacing} from '../styles/spacing';
+import {fontFamily} from '../common/fonts';
+import {useNavigation} from '@react-navigation/native';
+import {useTheme} from '../context/ThemeContext';
 
 const StartButton = () => {
   const navigation = useNavigation();
-  const { theme } = useTheme();
+  const {theme} = useTheme();
 
   function onPressButton() {
     navigation.replace('Drawer');
@@ -19,18 +19,20 @@ const StartButton = () => {
     <View style={styles.container}>
       <TouchableOpacity
         activeOpacity={0.85}
-        style={[styles.button, { backgroundColor: theme.primary }, theme.glowShadow]}
-        onPress={onPressButton}
-      >
+        style={[
+          styles.button,
+          {backgroundColor: theme.primary},
+          theme.glowShadow,
+        ]}
+        onPress={onPressButton}>
         <Text style={styles.buttonText}>Get Started ➔</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         activeOpacity={0.7}
         style={styles.skipButton}
-        onPress={onPressButton}
-      >
-        <Text style={[styles.skipText, { color: theme.textMuted }]}>
+        onPress={onPressButton}>
+        <Text style={[styles.skipText, {color: theme.textMuted}]}>
           Skip to Dashboard
         </Text>
       </TouchableOpacity>
