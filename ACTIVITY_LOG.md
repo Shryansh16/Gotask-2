@@ -117,3 +117,12 @@ This document tracks all actions, file changes, and architectural decisions made
 * **Active Local Services**:
   * Backend REST API & Agent Hub currently active and serving on `http://localhost:5000`.
 
+### 23:00 - 23:05 IST | Migration to Gotask-2 & Full Clean Commit
+* **New Remote Target Configured**:
+  * Action: Re-pointed `origin` to `https://github.com/Shryansh16/Gotask-2.git`.
+  * Verified: Clean connection with remote via `git ls-remote origin`.
+* **Full Codebase Staged & Committed**:
+  * Commit: `85e5197` ("feat: complete local offline-first architecture, REST backend, test suites, and TypeSafe skill").
+  * Files: 52 files committed, working tree verified 100% clean.
+
+
