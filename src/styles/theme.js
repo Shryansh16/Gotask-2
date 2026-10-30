@@ -1,117 +1,117 @@
 // src/styles/theme.js
-// Modern, curated design system for GOTask
+// Modern, curated design system for GOTask aligned with docs/Design.md Section 4.1
 
 export const lightTheme = {
   mode: 'light',
-  background: '#F8FAFC',
+  background: '#F7F8FA',
   surface: '#FFFFFF',
-  surfaceSecondary: '#F1F5F9',
+  surfaceSecondary: '#F0F2F5',
   surfaceElevated: '#FFFFFF',
 
-  // Brand colors
-  primary: '#2563EB', // Royal Blue
-  primaryLight: '#EFF6FF',
-  primaryDark: '#1D4ED8',
-  secondary: '#7C3AED', // Electric Violet
-  secondaryLight: '#F5F3FF',
+  // Brand colors (docs/Design.md Section 4.1 calm muted teal)
+  primary: '#286B68',
+  primaryLight: '#E6F2F0',
+  primaryDark: '#1E5250',
+  secondary: '#626B78',
+  secondaryLight: '#F0F2F5',
 
   // Status & Priority
-  danger: '#EF4444', // High priority / Delete
+  danger: '#B83B40',
   dangerLight: '#FEF2F2',
-  warning: '#F59E0B', // Medium priority
-  warningLight: '#FFFBEB',
-  success: '#10B981', // Low priority / Completed
-  successLight: '#ECFDF5',
-  info: '#06B6D4',
-  infoLight: '#ECFEFF',
+  warning: '#94651B',
+  warningLight: '#FEF9EE',
+  success: '#28734D',
+  successLight: '#EFF8F3',
+  info: '#286B68',
+  infoLight: '#E6F2F0',
 
   // Typography colors
-  textPrimary: '#0F172A',
-  textSecondary: '#475569',
-  textMuted: '#94A3B8',
+  textPrimary: '#20262E',
+  textSecondary: '#626B78',
+  textMuted: '#7B8490',
   textInverse: '#FFFFFF',
 
   // Borders & Dividers
-  border: '#E2E8F0',
-  borderFocus: '#2563EB',
-  divider: '#F1F5F9',
+  border: '#E1E5EA',
+  borderFocus: '#286B68',
+  divider: '#E1E5EA',
 
   // Shadows
-  shadowColor: '#0F172A',
+  shadowColor: '#20262E',
   cardShadow: {
-    shadowColor: '#0F172A',
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    elevation: 3,
+    shadowColor: '#20262E',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
   glowShadow: {
-    shadowColor: '#2563EB',
-    shadowOffset: {width: 0, height: 6},
-    shadowOpacity: 0.25,
-    shadowRadius: 14,
-    elevation: 8,
+    shadowColor: '#286B68',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 4,
   },
 };
 
 export const darkTheme = {
   mode: 'dark',
-  background: '#0B0F19',
-  surface: '#131B2E',
-  surfaceSecondary: '#1E293B',
-  surfaceElevated: '#1E293B',
+  background: '#121518',
+  surface: '#1B2025',
+  surfaceSecondary: '#242B31',
+  surfaceElevated: '#242B31',
 
-  // Brand colors
-  primary: '#3B82F6',
-  primaryLight: 'rgba(59, 130, 246, 0.15)',
-  primaryDark: '#60A5FA',
-  secondary: '#8B5CF6',
-  secondaryLight: 'rgba(139, 92, 246, 0.15)',
+  // Brand colors (docs/Design.md Section 4.1 soft muted teal)
+  primary: '#78B8B0',
+  primaryLight: '#223C3A',
+  primaryDark: '#5E9992',
+  secondary: '#B0BAC4',
+  secondaryLight: '#242B31',
 
   // Status & Priority
-  danger: '#F87171',
-  dangerLight: 'rgba(239, 68, 68, 0.15)',
-  warning: '#FBBF24',
-  warningLight: 'rgba(245, 158, 11, 0.15)',
-  success: '#34D399',
-  successLight: 'rgba(16, 185, 129, 0.15)',
-  info: '#38BDF8',
-  infoLight: 'rgba(56, 189, 248, 0.15)',
+  danger: '#F08D91',
+  dangerLight: '#321D1F',
+  warning: '#E7BE78',
+  warningLight: '#322918',
+  success: '#86C9A1',
+  successLight: '#1A2E23',
+  info: '#78B8B0',
+  infoLight: '#223C3A',
 
   // Typography colors
-  textPrimary: '#F8FAFC',
-  textSecondary: '#CBD5E1',
-  textMuted: '#64748B',
-  textInverse: '#0F172A',
+  textPrimary: '#EDF1F4',
+  textSecondary: '#B0BAC4',
+  textMuted: '#9AA5B0',
+  textInverse: '#121518',
 
   // Borders & Dividers
-  border: '#1E293B',
-  borderFocus: '#3B82F6',
-  divider: '#1E293B',
+  border: '#303940',
+  borderFocus: '#78B8B0',
+  divider: '#303940',
 
   // Shadows
   shadowColor: '#000000',
   cardShadow: {
     shadowColor: '#000000',
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
     elevation: 3,
   },
   glowShadow: {
-    shadowColor: '#3B82F6',
-    shadowOffset: {width: 0, height: 6},
+    shadowColor: '#78B8B0',
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.3,
-    shadowRadius: 14,
-    elevation: 8,
+    shadowRadius: 12,
+    elevation: 6,
   },
 };
 
 export const categoryMeta = {
   All: {
     name: 'All',
-    color: '#2563EB',
-    bgColor: '#EFF6FF',
+    color: '#286B68',
+    bgColor: '#E6F2F0',
     icon: 'folder-open',
   },
   Work: {
@@ -134,8 +134,8 @@ export const categoryMeta = {
   },
   Health: {
     name: 'Health',
-    color: '#10B981',
-    bgColor: '#ECFDF5',
+    color: '#28734D',
+    bgColor: '#EFF8F3',
     icon: 'heartbeat',
   },
   Study: {
@@ -146,7 +146,7 @@ export const categoryMeta = {
   },
   Finance: {
     name: 'Finance',
-    color: '#F59E0B',
+    color: '#94651B',
     bgColor: '#FFFBEB',
     icon: 'dollar-sign',
   },
@@ -155,20 +155,20 @@ export const categoryMeta = {
 export const priorityMeta = {
   high: {
     label: 'High',
-    color: '#EF4444',
+    color: '#B83B40',
     bgColor: '#FEF2F2',
-    dotColor: '#DC2626',
+    dotColor: '#B83B40',
   },
   medium: {
     label: 'Medium',
-    color: '#F59E0B',
+    color: '#94651B',
     bgColor: '#FFFBEB',
-    dotColor: '#D97706',
+    dotColor: '#94651B',
   },
   low: {
     label: 'Low',
-    color: '#10B981',
+    color: '#28734D',
     bgColor: '#ECFDF5',
-    dotColor: '#059669',
+    dotColor: '#28734D',
   },
 };

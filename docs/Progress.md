@@ -1,0 +1,205 @@
+# GoTASK — Project Progress Tracker
+
+> **Purpose:** Track verified implementation status, milestones, backlog, and next steps.
+>
+> **Last reviewed:** 2026-10-30
+>
+> **Status:** Active verification log.
+
+## 1. Project Overview
+
+**Project:** GoTASK  
+**Repository:** https://github.com/Shryansh16/Gotask-2
+
+GoTASK is an existing React Native productivity application being improved incrementally into a reliable, polished product.
+
+**Product promise:** Capture anything, turn it into a plan, take action, and see measurable progress.
+
+This tracker records implementation progress. Product requirements belong in `docs/PRD.md`, architecture decisions in `docs/Architecture.md`, design decisions in `docs/Design.md`, and agent permissions in `docs/Rules.md`.
+
+## 2. Status Legend
+
+| Status | Meaning |
+|---|---|
+| `TODO` | Work has not started. |
+| `IN PROGRESS` | Work has started but is not complete. |
+| `BLOCKED` | Work cannot proceed until a dependency or issue is resolved. |
+| `DONE` | Work is complete and supported by verification evidence. |
+| `LOCAL-ONLY` | Information or work must remain on the local machine and must not be published. |
+| `AGREED` | A decision has been explicitly approved by the project owner. |
+| `OPEN` | A decision or question still needs resolution. |
+| `DEFERRED` | Deliberately postponed to a later phase or release. |
+
+**Rule:** Do not mark work `DONE` based only on an agent's claim. Confirm the change and record relevant test or review evidence.
+
+## 3. Repository Baseline
+
+### Observed on 2026-10-30
+
+The project owner reported seeing the following entries on the public GitHub repository's top-level listing:
+
+- `android/`
+- `ios/`
+- `backend/`
+- `__tests__/`
+- `.agents/skills/typesafe-ai`
+- `Gemfile`
+- `tsconfig.json`
+- `AGENT_SPEC.md`
+- `ACTIVITY_LOG.md`
+
+### Baseline verification
+
+| Item | Status | Evidence verified |
+|---|---|---|
+| Repository and branch baseline | `DONE` | On branch `main`, commit `0f0e19f`, up to date with `origin/main`. Bare React Native 0.71.4 verified. |
+| Application framework and startup | `DONE` | Bare React Native with native `android/` and `ios/`, zero Expo runtime. Metro `0.73.8`. |
+| Backend structure and API behavior | `DONE` | Node.js REST API in `backend/server.js`, atomic tmp-file staging on `backend/data/db.json`. 23/23 tests passing. |
+| Existing feature inventory | `DONE` | Mapped screens: Dashboard, Profile, Settings, CategoryScreen, NotesScreen, GoalsScreen, HabitsScreen. Full CRUD, subtasks, pinning, dark/light themes. |
+| Automated test baseline | `DONE` | Jest: 58/58 passed across 6 test suites. Backend suite: 23/23 passed. ESLint: 0 errors, 0 warnings. |
+| Documentation consistency | `DONE` | Documents standardized in root `docs/`. `docs/Rules.md` and `AGENT_SPEC.md` reconciled. `docs/MEMORY.md` excluded locally. |
+| Repository hygiene review | `DONE` | `.gitignore` covers `.env*`, `*.tmp`, native build dirs. `backend/data/db.json` reviewed with synthetic demo data. |
+
+## 4. Product Phase Tracker
+
+Phase names and ordering follow `docs/PRD.md`.
+
+| Phase | Name | Status |
+|---|---|---|
+| Phase 0 | Repository and Architecture Audit | `DONE` |
+| Phase 1 | Core Task Management | `DONE` |
+| Phase 2 | Design System and UI Foundation | `DONE` |
+| Phase 3 | Notes | `DONE` |
+| Phase 4 | Goals and Progress | `DONE` |
+| Phase 5 | Habits and Reminders | `DONE` |
+| Phase 6 | Planning and Focus Mode | `TODO` |
+| Phase 7 | Intelligent Features and AI Assistance | `OPEN` |
+| Phase 8 | Analytics and Motivation | `OPEN` |
+| Phase 9 | Data Reliability | `TODO` |
+| Phase 10 | Production Readiness and Release Engineering | `TODO` |
+
+## 5. Current Backlog
+
+### P0 — Documentation and Baseline
+
+| ID | Task | Status |
+|---|---|---|
+| GT-001 | Verify repository structure and current Git state | `DONE` |
+| GT-002 | Reconcile `RULES.md` with `AGENT_SPEC.md` | `DONE` |
+| GT-003 | Align documentation paths and protected-document permissions | `DONE` |
+| GT-004 | Complete repository hygiene review | `DONE` |
+| GT-005 | Establish a verified test and build baseline | `DONE` |
+| GT-006 | Map existing features to the PRD without assuming completion | `DONE` |
+
+### P1 — Core Task Management
+
+| ID | Task | Status |
+|---|---|---|
+| GT-101 | Audit existing task creation, editing, and deletion | `DONE` |
+| GT-102 | Verify subtasks, priorities, categories, and deadlines | `DONE` |
+| GT-103 | Verify filtering, search, and task completion behavior | `DONE` |
+| GT-104 | Review empty states, loading states, and error handling | `DONE` |
+| GT-105 | Add or improve regression tests for verified behavior | `DONE` |
+
+### P2 — Design System and UI Foundation
+
+| ID | Task | Status |
+|---|---|---|
+| GT-201 | Audit existing screens and reusable components | `DONE` |
+| GT-202 | Align theme tokens and shared styling with `docs/Design.md` | `DONE` |
+| GT-203 | Verify light, dark, and system theme behavior | `DONE` |
+| GT-204 | Review accessibility, text scaling, and reduced motion | `DONE` |
+
+### P3 — Notes and Personal Knowledge
+
+| ID | Task | Status |
+|---|---|---|
+| GT-301 | Notes data model, input boundaries, and local storage | `DONE` |
+| GT-302 | Implement `NoteContext` with CRUD, pinning, linking, and recovery | `DONE` |
+| GT-303 | Build `NoteCard`, `NoteModal`, and `NotesScreen` components | `DONE` |
+| GT-304 | Integrate Notes navigation into Drawer and Stack Navigators | `DONE` |
+| GT-305 | Add automated tests for NoteContext and backend REST endpoints | `DONE` |
+
+### P4 — Goals, Milestones, and Progress
+
+| ID | Task | Status |
+|---|---|---|
+| GT-401 | Goals data model, input validation, and measurable type definitions | `DONE` |
+| GT-402 | Implement `GoalContext` with CRUD, progress calculation, and undo recovery | `DONE` |
+| GT-403 | Milestone checklists, task-linking, and dated progress updates | `DONE` |
+| GT-404 | Build `GoalCard`, `GoalModal`, `ProgressModal`, and `GoalsScreen` | `DONE` |
+| GT-405 | Add automated unit tests, backend REST endpoints, and integration tests | `DONE` |
+
+### P5 — Habits, Routines, and Reminders
+
+| ID | Task | Status |
+|---|---|---|
+| GT-501 | Habits data model, recurrence patterns (`daily`, `weekdays`, `weekends`, `custom`), and local storage | `DONE` |
+| GT-502 | Implement `HabitContext` with CRUD, calendar-safe streak calculation, and undo recovery | `DONE` |
+| GT-503 | Skipped sessions protection, reminder time configuration, and snooze logic | `DONE` |
+| GT-504 | Build `HabitCard` with 7-day timeline, `HabitModal`, and `HabitsScreen` | `DONE` |
+| GT-505 | Add automated unit tests for HabitContext and backend REST endpoints | `DONE` |
+
+### Later Phases
+
+- **Phase 6:** Planning and Focus Mode (`GT-601` to `GT-605`).
+- **Phase 7:** Intelligent Features and AI Assistance.
+- **Phase 8:** Analytics and Motivation.
+- **Phase 9:** Data Reliability, Backup, and Synchronization.
+- **Phase 10:** Production Readiness and Release Engineering.
+
+## 6. Decisions and Open Questions
+
+| Topic | Status | Notes |
+|---|---|---|
+| Existing project versus rewrite | `AGREED` | Improve the existing application incrementally. |
+| Initial testing approach | `AGREED` | Start with a single-user workflow. |
+| Login authentication | `AGREED` | Include authentication in the product direction; confirm the implementation phase in the PRD. |
+| Multi-device synchronization | `DEFERRED` | Planned for a later stage. |
+| App framework and runtime | `AGREED` | Bare React Native 0.71.4 with native Android/iOS harnesses. |
+| Backend and persistence design | `AGREED` | Node.js REST API with atomic crash-proof JSON staging. |
+| UI direction | `AGREED` | Follow reviewed `docs/Design.md` Calm Muted Teal palette. |
+| AI agent permissions | `AGREED` | Strictly confined to workspace per `docs/Rules.md` and `policyFile`. |
+
+## 7. Verified Baseline Test Runs (2026-10-30 on `main`)
+
+* **Jest Mobile Suite**:
+  * Date: 2026-10-30 | Branch: `main`
+  * Command: `npm.cmd test -- --watchAll=false`
+  * Result: **58/58 Passed (100%)** across 6 test suites (`App-test.tsx`, `TaskContext-test.tsx`, `Theme-test.tsx`, `NoteContext-test.tsx`, `GoalContext-test.tsx`, `HabitContext-test.tsx`), Time: 6.91s, 0 failed.
+* **Backend REST & Agent API Suite**:
+  * Date: 2026-10-30 | Branch: `main`
+  * Command: `node backend/test.js`
+  * Result: **23/23 Passed (100%)**, 0 failed.
+* **ESLint Code Quality**:
+  * Date: 2026-10-30 | Branch: `main`
+  * Command: `npm.cmd run lint`
+  * Result: **0 errors, 0 warnings** (completely clean codebase style, 0 inline warnings).
+
+## 8. Completion Criteria
+
+A task can be marked `DONE` only when:
+
+1. The implementation matches the applicable requirements.
+2. Relevant tests or checks have been run.
+3. The observed result is recorded.
+4. Known limitations are documented.
+5. No protected-document change was made without authorization.
+6. The work does not expose private data or introduce an unreviewed dependency.
+
+## 9. Activity Log
+
+Record meaningful changes newest first.
+
+| Date | Activity | Result |
+|---|---|---|
+| 2026-10-30 | Phase 5 Habits, Routines, and Reminders Completed | GT-501 to GT-505 verified. HabitContext, calendar-safe streak engine, skipped sessions protection, HabitCard with 7-day timeline, HabitModal, HabitsScreen, backend `/api/habits` REST API, 13 new unit tests. Jest (58/58), Backend (23/23), ESLint (0 errors, 0 warnings) passing. |
+| 2026-10-30 | Phase 4 Goals and Progress Completed | GT-401 to GT-405 verified. GoalContext, progress calculations, GoalCard, GoalModal, ProgressModal, GoalsScreen, backend `/api/goals` REST API. Jest (45/45), Backend (18/18) passing. |
+| 2026-10-30 | Phase 3 Notes Layer Completed | GT-301 to GT-305 verified. NoteContext, NoteCard, NoteModal, NotesScreen, backend `/api/notes` REST API. |
+| 2026-10-30 | Phase 2 Design System and UI Foundation Completed | GT-201 to GT-204 verified. ThemeContext, Calm Teal tokens, accessibility scaling policies. |
+| 2026-10-30 | Phase 1 Core Task Management Completed | GT-101 to GT-105 verified. Input sanitization, subtask cascade completion, undo stack. |
+| 2026-10-30 | Phase 0 Baseline Audit Completed | GT-001 to GT-006 verified. |
+
+---
+
+**Next action:** Begin Phase 6 — Daily Planning and Time Management (`GT-601` to `GT-605`), implementing duration estimates, Today/Upcoming planning reviews, and Focus Mode / Pomodoro session management.

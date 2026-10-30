@@ -1,66 +1,66 @@
 // backend/test.js
-// Automated End-to-End Test Suite for GOTask Backend & Agent Hub
+// Automated End-to-End Test Suite for GOTask Backend & Agent Hub (Phases 1 - 6)
 
-const http = require('http');
 const assert = require('assert');
-const {server} = require('./server');
-
-const BASE_URL = 'http://localhost:5000';
+const { Readable, EventEmitter } = require('stream');
+const { server } = require('./server');
 
 function request(method, path, body = null, headers = {}) {
-  return new Promise((resolve, reject) => {
-    const url = new URL(path, BASE_URL);
-    const options = {
-      method,
-      hostname: url.hostname,
-      port: url.port,
-      path: url.pathname + url.search,
-      headers: {
-        'Content-Type': 'application/json',
-        ...headers,
-      },
-    };
+  return new Promise((resolve) => {
+    const bodyStr =
+      body !== null
+        ? typeof body === 'string'
+          ? body
+          : JSON.stringify(body)
+        : null;
 
-    const req = http.request(options, res => {
-      let data = '';
-      res.on('data', chunk => (data += chunk));
-      res.on('end', () => {
-        let json = null;
-        try {
-          json = JSON.parse(data);
-        } catch (e) {
-          json = data;
+    const req = new Readable({
+      read() {
+        if (bodyStr) {
+          this.push(bodyStr);
         }
-        resolve({status: res.statusCode, data: json});
-      });
+        this.push(null);
+      },
     });
 
-    req.on('error', reject);
-    if (body) {
-      req.write(typeof body === 'string' ? body : JSON.stringify(body));
-    }
-    req.end();
+    req.method = method;
+    req.url = path;
+    req.headers = {
+      'content-type': 'application/json',
+      ...headers,
+    };
+
+    const res = new EventEmitter();
+    let data = '';
+    res.statusCode = 200;
+    res.setHeader = () => {};
+    res.writeHead = (status, _h) => {
+      res.statusCode = status;
+    };
+    res.write = chunk => {
+      if (chunk) {
+        data += chunk;
+      }
+    };
+    res.end = chunk => {
+      if (chunk) {
+        data += chunk;
+      }
+      let json = null;
+      try {
+        json = JSON.parse(data);
+      } catch (e) {
+        json = data;
+      }
+      resolve({ status: res.statusCode, data: json });
+    };
+
+    server.emit('request', req, res);
   });
 }
 
 async function runTests() {
   console.log('🧪 Starting GOTask Backend & Agent Integration Test Suite...\n');
-  let startedLocalServer = false;
-
-  // Ensure server is running for tests
-  await new Promise(resolve => {
-    const probeReq = http.get('http://localhost:5000/health', () => resolve());
-    probeReq.on('error', () => {
-      try {
-        server.listen(5000, () => {
-          startedLocalServer = true;
-          resolve();
-        });
-      } catch (e) {
-        resolve();
-      }
-    });
-  });
 
   let passed = 0;
   let failed = 0;
@@ -88,7 +88,7 @@ async function runTests() {
   // 2. Natural language parsing
   await test('POST /api/tasks/parse extracts metadata from natural language', async () => {
     const text = 'Finish presentation tomorrow 5pm !urgent #Work';
-    const res = await request('POST', '/api/tasks/parse', {text});
+    const res = await request('POST', '/api/tasks/parse', { text });
     assert.strictEqual(res.status, 200);
     assert.strictEqual(res.data.success, true);
     assert.strictEqual(res.data.parsed.priority, 'high');
@@ -106,6 +106,7 @@ async function runTests() {
       category: 'Work',
       priority: 'high',
       dueDate: 'Tomorrow',
+      estimatedDuration: 45,
     });
     assert.strictEqual(res.status, 201);
     assert.strictEqual(res.data.success, true);
@@ -153,12 +154,12 @@ async function runTests() {
           priority: 'high',
           tags: ['security', 'audit'],
           subtasks: [
-            {id: 'st_1', title: 'Verify CORS headers', completed: true},
-            {id: 'st_2', title: 'Verify atomic file writes', completed: true},
+            { id: 'st_1', title: 'Verify CORS headers', completed: true },
+            { id: 'st_2', title: 'Verify atomic file writes', completed: true },
           ],
         },
       },
-      {'X-Agent-Name': 'DevOps Orchestrator'},
+      { 'X-Agent-Name': 'DevOps Orchestrator' },
     );
     assert.strictEqual(res.status, 201);
     assert.strictEqual(res.data.success, true);
@@ -195,7 +196,36 @@ async function runTests() {
     assert.ok('completionRate' in res.data.stats);
   });
 
-  // 10. Clean up created test tasks
+  // 10. Focus Mode Sessions (Phase 6 — P6.5, P6.6)
+  await test('POST /api/focus/sessions records focus session and retrieves list', async () => {
+    const sessionRes = await request('POST', '/api/focus/sessions', {
+      taskId: createdTaskId,
+      mode: 'pomodoro',
+      durationMinutes: 25,
+    });
+    assert.strictEqual(sessionRes.status, 201);
+    assert.strictEqual(sessionRes.data.success, true);
+    assert.strictEqual(sessionRes.data.session.durationMinutes, 25);
+
+    const listRes = await request('GET', '/api/focus/sessions');
+    assert.strictEqual(listRes.status, 200);
+    assert.strictEqual(listRes.data.success, true);
+    assert.ok(Array.isArray(listRes.data.sessions));
+    assert.ok(listRes.data.sessions.length > 0);
+  });
+
+  // 11. Daily Planning Summary (Phase 6 — P6.1, P6.8)
+  await test('GET /api/planning/summary calculates planned load and overload status', async () => {
+    const res = await request('GET', '/api/planning/summary');
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.data.success, true);
+    assert.ok('todayTasksCount' in res.data.summary);
+    assert.ok('todayEstimatedMinutes' in res.data.summary);
+    assert.ok('capacityMinutes' in res.data.summary);
+    assert.strictEqual(typeof res.data.summary.isOverloaded, 'boolean');
+  });
+
+  // 12. Clean up created test tasks
   await test('DELETE /api/tasks/:id deletes task and records audit', async () => {
     if (createdTaskId) {
       const res = await request('DELETE', `/api/tasks/${createdTaskId}`);
@@ -210,10 +240,6 @@ async function runTests() {
   console.log('\n========================================');
   console.log(`Results: ${passed} Passed, ${failed} Failed`);
   console.log('========================================\n');
-
-  if (startedLocalServer) {
-    server.close();
-  }
 
   if (failed > 0) {
     process.exit(1);

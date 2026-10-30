@@ -3,6 +3,10 @@ import {StatusBar, StyleSheet, View} from 'react-native';
 import Navigation from './navigation/navigation';
 import {ThemeProvider, useTheme} from './context/ThemeContext';
 import {TaskProvider} from './context/TaskContext';
+import {PlanningProvider} from './context/PlanningContext';
+import {NoteProvider} from './context/NoteContext';
+import {GoalProvider} from './context/GoalContext';
+import {HabitProvider} from './context/HabitContext';
 
 const MainApp = () => {
   const {theme, isDark} = useTheme();
@@ -22,7 +26,15 @@ const App = () => {
   return (
     <ThemeProvider>
       <TaskProvider>
-        <MainApp />
+        <PlanningProvider>
+          <NoteProvider>
+            <GoalProvider>
+              <HabitProvider>
+                <MainApp />
+              </HabitProvider>
+            </GoalProvider>
+          </NoteProvider>
+        </PlanningProvider>
       </TaskProvider>
     </ThemeProvider>
   );

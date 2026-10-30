@@ -3,6 +3,11 @@ import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import DrawerComponent from '../modules/DrawerComponent';
 import FunctionScreen from '../screens/FunctionScreen';
+import PlanningScreen from '../screens/PlanningScreen';
+import FocusScreen from '../screens/FocusScreen';
+import NotesScreen from '../screens/NotesScreen';
+import GoalsScreen from '../screens/GoalsScreen';
+import HabitsScreen from '../screens/HabitsScreen';
 import WelcomeScreen from '../screens/welcomeScreen';
 import Profile from '../screens/Profile';
 import Settings from '../screens/Settings';
@@ -40,6 +45,41 @@ const Drawer = () => {
           component={FunctionScreen}
           options={{
             title: '📋  Tasks Dashboard',
+          }}
+        />
+        <DrawerNav.Screen
+          name="PlanningScreen"
+          component={PlanningScreen}
+          options={{
+            title: '📅  Daily Planning',
+          }}
+        />
+        <DrawerNav.Screen
+          name="FocusScreen"
+          component={FocusScreen}
+          options={{
+            title: '🎯  Focus Mode',
+          }}
+        />
+        <DrawerNav.Screen
+          name="NotesScreen"
+          component={NotesScreen}
+          options={{
+            title: '📝  Notes',
+          }}
+        />
+        <DrawerNav.Screen
+          name="GoalsScreen"
+          component={GoalsScreen}
+          options={{
+            title: '🎯  Goals & Milestones',
+          }}
+        />
+        <DrawerNav.Screen
+          name="HabitsScreen"
+          component={HabitsScreen}
+          options={{
+            title: '🔁  Habits & Routines',
           }}
         />
         <DrawerNav.Screen

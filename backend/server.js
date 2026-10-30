@@ -53,6 +53,18 @@ function getDb() {
     if (!Array.isArray(parsed.categories)) {
       parsed.categories = [];
     }
+    if (!Array.isArray(parsed.notes)) {
+      parsed.notes = [];
+    }
+    if (!Array.isArray(parsed.goals)) {
+      parsed.goals = [];
+    }
+    if (!Array.isArray(parsed.habits)) {
+      parsed.habits = [];
+    }
+    if (!Array.isArray(parsed.focusSessions)) {
+      parsed.focusSessions = [];
+    }
     return parsed;
   } catch (err) {
     console.error('Error reading DB:', err);
@@ -771,6 +783,335 @@ const server = http.createServer(async (req, res) => {
     } catch (err) {
       return sendJson(res, 400, {success: false, message: err.message});
     }
+  }
+
+
+  // --- NOTES API (Phase 3) ---
+  if (pathname === '/api/notes' && req.method === 'GET') {
+    const db = getDb();
+    let notes = db.notes || [];
+    if (query.category && query.category !== 'All') {
+      notes = notes.filter(n => n.category && n.category.toLowerCase() === query.category.toLowerCase());
+    }
+    if (query.search) {
+      const q = query.search.toLowerCase();
+      notes = notes.filter(n =>
+        (n.title && n.title.toLowerCase().includes(q)) ||
+        (n.content && n.content.toLowerCase().includes(q)) ||
+        (Array.isArray(n.tags) && n.tags.some(tg => tg.toLowerCase().includes(q)))
+      );
+    }
+    return sendJson(res, 200, {success: true, count: notes.length, notes});
+  }
+
+  if (pathname === '/api/notes' && req.method === 'POST') {
+    try {
+      const body = await parseBody(req);
+      if (!body.title || !body.title.trim()) {
+        return sendJson(res, 400, {success: false, message: 'Title is required'});
+      }
+      const db = getDb();
+      const newNote = {
+        id: body.id || ('note_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6)),
+        title: body.title.trim(),
+        content: body.content || '',
+        category: body.category || 'Personal',
+        tags: Array.isArray(body.tags) ? body.tags : [],
+        isPinned: Boolean(body.isPinned),
+        isArchived: Boolean(body.isArchived),
+        linkedTaskId: body.linkedTaskId || null,
+        createdAt: body.createdAt || Date.now(),
+        updatedAt: Date.now(),
+      };
+      db.notes = [newNote, ...(db.notes || [])];
+      saveDb(db);
+      recordAudit('create_note', 'note', newNote.id, {title: newNote.title}, actor);
+      return sendJson(res, 201, {success: true, note: newNote});
+    } catch (err) {
+      return sendJson(res, 400, {success: false, message: err.message});
+    }
+  }
+
+  const noteMatch = pathname.match(/^\/api\/notes\/([^/]+)$/);
+  if (noteMatch && req.method === 'PUT') {
+    try {
+      const noteId = noteMatch[1];
+      const updates = await parseBody(req);
+      const db = getDb();
+      const index = (db.notes || []).findIndex(n => String(n.id) === String(noteId));
+      if (index === -1) {
+        return sendJson(res, 404, {success: false, message: 'Note not found'});
+      }
+      db.notes[index] = {
+        ...db.notes[index],
+        ...updates,
+        id: db.notes[index].id,
+        updatedAt: Date.now(),
+      };
+      saveDb(db);
+      recordAudit('update_note', 'note', noteId, updates, actor);
+      return sendJson(res, 200, {success: true, note: db.notes[index]});
+    } catch (err) {
+      return sendJson(res, 400, {success: false, message: err.message});
+    }
+  }
+
+  if (noteMatch && req.method === 'DELETE') {
+    const noteId = noteMatch[1];
+    const db = getDb();
+    const initialCount = (db.notes || []).length;
+    db.notes = (db.notes || []).filter(n => String(n.id) !== String(noteId));
+    if (db.notes.length === initialCount) {
+      return sendJson(res, 404, {success: false, message: 'Note not found'});
+    }
+    saveDb(db);
+    recordAudit('delete_note', 'note', noteId, {}, actor);
+    return sendJson(res, 200, {success: true, message: 'Note deleted'});
+  }
+
+  // --- GOALS API (Phase 4) ---
+  if (pathname === '/api/goals' && req.method === 'GET') {
+    const db = getDb();
+    let goals = db.goals || [];
+    if (query.category && query.category !== 'All') {
+      goals = goals.filter(g => g.category && g.category.toLowerCase() === query.category.toLowerCase());
+    }
+    if (query.search) {
+      const q = query.search.toLowerCase();
+      goals = goals.filter(g =>
+        (g.title && g.title.toLowerCase().includes(q)) ||
+        (g.description && g.description.toLowerCase().includes(q))
+      );
+    }
+    return sendJson(res, 200, {success: true, count: goals.length, goals});
+  }
+
+  if (pathname === '/api/goals' && req.method === 'POST') {
+    try {
+      const body = await parseBody(req);
+      if (!body.title || !body.title.trim()) {
+        return sendJson(res, 400, {success: false, message: 'Title is required'});
+      }
+      const db = getDb();
+      const newGoal = {
+        id: body.id || ('goal_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6)),
+        title: body.title.trim(),
+        description: body.description || '',
+        category: body.category || 'Personal',
+        type: body.type || 'target_count',
+        targetValue: body.targetValue !== undefined ? Number(body.targetValue) : 100,
+        currentValue: body.currentValue !== undefined ? Number(body.currentValue) : 0,
+        unit: body.unit || '%',
+        targetDate: body.targetDate || null,
+        milestones: Array.isArray(body.milestones) ? body.milestones : [],
+        linkedTaskIds: Array.isArray(body.linkedTaskIds) ? body.linkedTaskIds : [],
+        progressHistory: Array.isArray(body.progressHistory) ? body.progressHistory : [],
+        isArchived: Boolean(body.isArchived),
+        createdAt: body.createdAt || Date.now(),
+        updatedAt: Date.now(),
+      };
+      db.goals = [newGoal, ...(db.goals || [])];
+      saveDb(db);
+      recordAudit('create_goal', 'goal', newGoal.id, {title: newGoal.title}, actor);
+      return sendJson(res, 201, {success: true, goal: newGoal});
+    } catch (err) {
+      return sendJson(res, 400, {success: false, message: err.message});
+    }
+  }
+
+  const goalMatch = pathname.match(/^\/api\/goals\/([^/]+)$/);
+  if (goalMatch && req.method === 'PUT') {
+    try {
+      const goalId = goalMatch[1];
+      const updates = await parseBody(req);
+      const db = getDb();
+      const index = (db.goals || []).findIndex(g => String(g.id) === String(goalId));
+      if (index === -1) {
+        return sendJson(res, 404, {success: false, message: 'Goal not found'});
+      }
+      db.goals[index] = {
+        ...db.goals[index],
+        ...updates,
+        id: db.goals[index].id,
+        updatedAt: Date.now(),
+      };
+      saveDb(db);
+      recordAudit('update_goal', 'goal', goalId, updates, actor);
+      return sendJson(res, 200, {success: true, goal: db.goals[index]});
+    } catch (err) {
+      return sendJson(res, 400, {success: false, message: err.message});
+    }
+  }
+
+  if (goalMatch && req.method === 'DELETE') {
+    const goalId = goalMatch[1];
+    const db = getDb();
+    const initialCount = (db.goals || []).length;
+    db.goals = (db.goals || []).filter(g => String(g.id) !== String(goalId));
+    if (db.goals.length === initialCount) {
+      return sendJson(res, 404, {success: false, message: 'Goal not found'});
+    }
+    saveDb(db);
+    recordAudit('delete_goal', 'goal', goalId, {}, actor);
+    return sendJson(res, 200, {success: true, message: 'Goal deleted'});
+  }
+
+  // --- HABITS API (Phase 5) ---
+  if (pathname === '/api/habits' && req.method === 'GET') {
+    const db = getDb();
+    let habits = db.habits || [];
+    if (query.category && query.category !== 'All') {
+      habits = habits.filter(h => h.category && h.category.toLowerCase() === query.category.toLowerCase());
+    }
+    if (query.search) {
+      const q = query.search.toLowerCase();
+      habits = habits.filter(h =>
+        (h.title && h.title.toLowerCase().includes(q)) ||
+        (h.description && h.description.toLowerCase().includes(q))
+      );
+    }
+    return sendJson(res, 200, {success: true, count: habits.length, habits});
+  }
+
+  if (pathname === '/api/habits' && req.method === 'POST') {
+    try {
+      const body = await parseBody(req);
+      if (!body.title || !body.title.trim()) {
+        return sendJson(res, 400, {success: false, message: 'Title is required'});
+      }
+      const db = getDb();
+      const newHabit = {
+        id: body.id || ('habit_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6)),
+        title: body.title.trim(),
+        description: body.description || '',
+        category: body.category || 'Health',
+        frequency: body.frequency || 'daily',
+        customDays: Array.isArray(body.customDays) ? body.customDays : [],
+        reminderTime: body.reminderTime || null,
+        history: body.history || {},
+        isArchived: Boolean(body.isArchived),
+        createdAt: body.createdAt || Date.now(),
+        updatedAt: Date.now(),
+      };
+      db.habits = [newHabit, ...(db.habits || [])];
+      saveDb(db);
+      recordAudit('create_habit', 'habit', newHabit.id, {title: newHabit.title}, actor);
+      return sendJson(res, 201, {success: true, habit: newHabit});
+    } catch (err) {
+      return sendJson(res, 400, {success: false, message: err.message});
+    }
+  }
+
+  const habitToggleMatch = pathname.match(/^\/api\/habits\/([^/]+)\/toggle$/);
+  if (habitToggleMatch && req.method === 'POST') {
+    try {
+      const habitId = habitToggleMatch[1];
+      const body = await parseBody(req);
+      const {dateStr, status} = body;
+      const db = getDb();
+      const habit = (db.habits || []).find(h => String(h.id) === String(habitId));
+      if (!habit) {
+        return sendJson(res, 404, {success: false, message: 'Habit not found'});
+      }
+      habit.history = habit.history || {};
+      if (status === null || status === undefined) {
+        delete habit.history[dateStr];
+      } else {
+        habit.history[dateStr] = {status, timestamp: Date.now()};
+      }
+      habit.updatedAt = Date.now();
+      saveDb(db);
+      recordAudit('toggle_habit_day', 'habit', habitId, {dateStr, status}, actor);
+      return sendJson(res, 200, {success: true, habit});
+    } catch (err) {
+      return sendJson(res, 400, {success: false, message: err.message});
+    }
+  }
+
+  const habitMatch = pathname.match(/^\/api\/habits\/([^/]+)$/);
+  if (habitMatch && req.method === 'PUT') {
+    try {
+      const habitId = habitMatch[1];
+      const updates = await parseBody(req);
+      const db = getDb();
+      const index = (db.habits || []).findIndex(h => String(h.id) === String(habitId));
+      if (index === -1) {
+        return sendJson(res, 404, {success: false, message: 'Habit not found'});
+      }
+      db.habits[index] = {
+        ...db.habits[index],
+        ...updates,
+        id: db.habits[index].id,
+        updatedAt: Date.now(),
+      };
+      saveDb(db);
+      recordAudit('update_habit', 'habit', habitId, updates, actor);
+      return sendJson(res, 200, {success: true, habit: db.habits[index]});
+    } catch (err) {
+      return sendJson(res, 400, {success: false, message: err.message});
+    }
+  }
+
+  if (habitMatch && req.method === 'DELETE') {
+    const habitId = habitMatch[1];
+    const db = getDb();
+    const initialCount = (db.habits || []).length;
+    db.habits = (db.habits || []).filter(h => String(h.id) !== String(habitId));
+    if (db.habits.length === initialCount) {
+      return sendJson(res, 404, {success: false, message: 'Habit not found'});
+    }
+    saveDb(db);
+    recordAudit('delete_habit', 'habit', habitId, {}, actor);
+    return sendJson(res, 200, {success: true, message: 'Habit deleted'});
+  }
+
+
+  // --- FOCUS & PLANNING API (Phase 6) ---
+  if (pathname === '/api/focus/sessions' && req.method === 'GET') {
+    const db = getDb();
+    const sessions = db.focusSessions || [];
+    return sendJson(res, 200, {success: true, count: sessions.length, sessions});
+  }
+
+  if (pathname === '/api/focus/sessions' && req.method === 'POST') {
+    try {
+      const body = await parseBody(req);
+      const db = getDb();
+      const newSession = {
+        id: body.id || ('focus_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6)),
+        taskId: body.taskId || null,
+        mode: body.mode || 'pomodoro',
+        durationMinutes: Number(body.durationMinutes) || 25,
+        completedAt: body.completedAt || Date.now(),
+      };
+      db.focusSessions = [newSession, ...(db.focusSessions || [])];
+      saveDb(db);
+      recordAudit('record_focus_session', 'focus', newSession.id, {mode: newSession.mode, durationMinutes: newSession.durationMinutes}, actor);
+      return sendJson(res, 201, {success: true, session: newSession});
+    } catch (err) {
+      return sendJson(res, 400, {success: false, message: err.message});
+    }
+  }
+
+  if (pathname === '/api/planning/summary' && req.method === 'GET') {
+    const db = getDb();
+    const tasks = db.tasks || [];
+    const todayTasks = tasks.filter(t => !t.completed && t.dueDate === 'Today');
+    const overdueTasks = tasks.filter(t => !t.completed && (t.dueDate === 'Yesterday' || t.isOverdue));
+    const todayEstimatedMinutes = todayTasks.reduce((sum, t) => sum + (Number(t.estimatedDuration) || 25), 0);
+    const capacityMinutes = 480;
+    const isOverloaded = todayEstimatedMinutes > capacityMinutes;
+    return sendJson(res, 200, {
+      success: true,
+      summary: {
+        todayTasksCount: todayTasks.length,
+        overdueTasksCount: overdueTasks.length,
+        todayEstimatedMinutes,
+        capacityMinutes,
+        isOverloaded,
+        overflowMinutes: isOverloaded ? todayEstimatedMinutes - capacityMinutes : 0,
+      },
+    });
   }
 
   // 404 for unknown endpoints

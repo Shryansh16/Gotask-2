@@ -1,5 +1,5 @@
 // src/services/apiService.js
-// Offline-first REST API client for GOTask
+// Offline-first REST API client for GOTask (Phases 1 - 5)
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Platform} from 'react-native';
@@ -81,47 +81,143 @@ class ApiService {
     }
   }
 
+  // --- TASKS ---
   async pushTask(task) {
     try {
-      if (!this.isOnline) {
-        return;
-      }
+      if (!this.isOnline) return;
       await fetch(`${this.baseUrl}/api/tasks`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(task),
       });
-    } catch (e) {
-      // Background push failure is non-fatal in offline-first mode
-    }
+    } catch (e) {}
   }
 
   async updateTask(task) {
     try {
-      if (!this.isOnline) {
-        return;
-      }
+      if (!this.isOnline) return;
       await fetch(`${this.baseUrl}/api/tasks/${task.id}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(task),
       });
-    } catch (e) {
-      // Offline fallback
-    }
+    } catch (e) {}
   }
 
   async deleteTask(taskId) {
     try {
-      if (!this.isOnline) {
-        return;
-      }
+      if (!this.isOnline) return;
       await fetch(`${this.baseUrl}/api/tasks/${taskId}`, {
         method: 'DELETE',
       });
-    } catch (e) {
-      // Offline fallback
-    }
+    } catch (e) {}
+  }
+
+  // --- NOTES (Phase 3) ---
+  async pushNote(note) {
+    try {
+      if (!this.isOnline) return;
+      await fetch(`${this.baseUrl}/api/notes`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(note),
+      });
+    } catch (e) {}
+  }
+
+  async updateNote(note) {
+    try {
+      if (!this.isOnline) return;
+      await fetch(`${this.baseUrl}/api/notes/${note.id}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(note),
+      });
+    } catch (e) {}
+  }
+
+  async deleteNote(noteId) {
+    try {
+      if (!this.isOnline) return;
+      await fetch(`${this.baseUrl}/api/notes/${noteId}`, {
+        method: 'DELETE',
+      });
+    } catch (e) {}
+  }
+
+  // --- GOALS (Phase 4) ---
+  async pushGoal(goal) {
+    try {
+      if (!this.isOnline) return;
+      await fetch(`${this.baseUrl}/api/goals`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(goal),
+      });
+    } catch (e) {}
+  }
+
+  async updateGoal(goal) {
+    try {
+      if (!this.isOnline) return;
+      await fetch(`${this.baseUrl}/api/goals/${goal.id}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(goal),
+      });
+    } catch (e) {}
+  }
+
+  async deleteGoal(goalId) {
+    try {
+      if (!this.isOnline) return;
+      await fetch(`${this.baseUrl}/api/goals/${goalId}`, {
+        method: 'DELETE',
+      });
+    } catch (e) {}
+  }
+
+  // --- HABITS (Phase 5) ---
+  async pushHabit(habit) {
+    try {
+      if (!this.isOnline) return;
+      await fetch(`${this.baseUrl}/api/habits`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(habit),
+      });
+    } catch (e) {}
+  }
+
+  async updateHabit(habit) {
+    try {
+      if (!this.isOnline) return;
+      await fetch(`${this.baseUrl}/api/habits/${habit.id}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(habit),
+      });
+    } catch (e) {}
+  }
+
+  async deleteHabit(habitId) {
+    try {
+      if (!this.isOnline) return;
+      await fetch(`${this.baseUrl}/api/habits/${habitId}`, {
+        method: 'DELETE',
+      });
+    } catch (e) {}
+  }
+
+  async toggleHabitDay(habitId, dateStr, status) {
+    try {
+      if (!this.isOnline) return;
+      await fetch(`${this.baseUrl}/api/habits/${habitId}/toggle`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({dateStr, status}),
+      });
+    } catch (e) {}
   }
 
   // Natural Language Task Parser with local offline fallback
@@ -129,7 +225,6 @@ class ApiService {
     if (!text || !text.trim()) {
       return null;
     }
-    // Attempt backend parse first
     try {
       const res = await fetch(`${this.baseUrl}/api/tasks/parse`, {
         method: 'POST',

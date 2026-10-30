@@ -249,6 +249,302 @@
   ],
   "auditLogs": [
     {
+      "id": "audit_1793389066540_3tuzl",
+      "timestamp": "2026-10-30T19:37:46.540Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "agent_task_1793389066519",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793389066536_cje1c",
+      "timestamp": "2026-10-30T19:37:46.536Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "task_1793389066506_txbs",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793389066530_qvupb",
+      "timestamp": "2026-10-30T19:37:46.530Z",
+      "action": "record_focus_session",
+      "entityType": "focus",
+      "entityId": "focus_1793389066527_jwy7",
+      "actor": "human",
+      "details": {
+        "mode": "pomodoro",
+        "durationMinutes": 25
+      }
+    },
+    {
+      "id": "audit_1793389066521_r5bv8",
+      "timestamp": "2026-10-30T19:37:46.521Z",
+      "action": "agent_dispatch_create",
+      "entityType": "task",
+      "entityId": "agent_task_1793389066519",
+      "actor": "DevOps Orchestrator",
+      "details": {
+        "agentName": "DevOps Orchestrator",
+        "title": "Review production security headers and logs"
+      }
+    },
+    {
+      "id": "audit_1793389066516_mzr7e",
+      "timestamp": "2026-10-30T19:37:46.516Z",
+      "action": "update_task",
+      "entityType": "task",
+      "entityId": "task_1793389066506_txbs",
+      "actor": "human",
+      "details": {
+        "completed": true,
+        "description": "Updated via test suite"
+      }
+    },
+    {
+      "id": "audit_1793389066510_eq5mz",
+      "timestamp": "2026-10-30T19:37:46.510Z",
+      "action": "create_task",
+      "entityType": "task",
+      "entityId": "task_1793389066506_txbs",
+      "actor": "human",
+      "details": {
+        "title": "Automated E2E Verification Task"
+      }
+    },
+    {
+      "id": "audit_1793388109103_o0qqs",
+      "timestamp": "2026-10-30T19:21:49.103Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "agent_task_1793388109091",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793388109099_06v79",
+      "timestamp": "2026-10-30T19:21:49.099Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "task_1793388109081_tbl2",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793388109093_fy2hs",
+      "timestamp": "2026-10-30T19:21:49.093Z",
+      "action": "agent_dispatch_create",
+      "entityType": "task",
+      "entityId": "agent_task_1793388109091",
+      "actor": "DevOps Orchestrator",
+      "details": {
+        "agentName": "DevOps Orchestrator",
+        "title": "Review production security headers and logs"
+      }
+    },
+    {
+      "id": "audit_1793388109088_1mfob",
+      "timestamp": "2026-10-30T19:21:49.088Z",
+      "action": "update_task",
+      "entityType": "task",
+      "entityId": "task_1793388109081_tbl2",
+      "actor": "human",
+      "details": {
+        "completed": true,
+        "description": "Updated via test suite"
+      }
+    },
+    {
+      "id": "audit_1793388109083_gruhc",
+      "timestamp": "2026-10-30T19:21:49.083Z",
+      "action": "create_task",
+      "entityType": "task",
+      "entityId": "task_1793388109081_tbl2",
+      "actor": "human",
+      "details": {
+        "title": "Automated E2E Verification Task"
+      }
+    },
+    {
+      "id": "audit_1793388055843_mtd61",
+      "timestamp": "2026-10-30T19:20:55.843Z",
+      "action": "delete_habit",
+      "entityType": "habit",
+      "entityId": "habit_1793388055825_uk3r",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793388055840_9v3oz",
+      "timestamp": "2026-10-30T19:20:55.840Z",
+      "action": "delete_goal",
+      "entityType": "goal",
+      "entityId": "goal_1793388055821_kd1q",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793388055835_bawfp",
+      "timestamp": "2026-10-30T19:20:55.835Z",
+      "action": "delete_note",
+      "entityType": "note",
+      "entityId": "note_1793388055814_t636",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793388055832_wr0xj",
+      "timestamp": "2026-10-30T19:20:55.832Z",
+      "action": "toggle_habit_day",
+      "entityType": "habit",
+      "entityId": "habit_1793388055825_uk3r",
+      "actor": "human",
+      "details": {
+        "dateStr": "2026-10-31",
+        "status": "completed"
+      }
+    },
+    {
+      "id": "audit_1793388055827_xp9l2",
+      "timestamp": "2026-10-30T19:20:55.827Z",
+      "action": "create_habit",
+      "entityType": "habit",
+      "entityId": "habit_1793388055825_uk3r",
+      "actor": "human",
+      "details": {
+        "title": "Test Habit"
+      }
+    },
+    {
+      "id": "audit_1793388055823_4e7em",
+      "timestamp": "2026-10-30T19:20:55.823Z",
+      "action": "create_goal",
+      "entityType": "goal",
+      "entityId": "goal_1793388055821_kd1q",
+      "actor": "human",
+      "details": {
+        "title": "Test Goal"
+      }
+    },
+    {
+      "id": "audit_1793388055816_4lbux",
+      "timestamp": "2026-10-30T19:20:55.816Z",
+      "action": "create_note",
+      "entityType": "note",
+      "entityId": "note_1793388055814_t636",
+      "actor": "human",
+      "details": {
+        "title": "Test Note"
+      }
+    },
+    {
+      "id": "audit_1793388047259_gnu36",
+      "timestamp": "2026-10-30T19:20:47.259Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "agent_task_1793388047246",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793388047255_a5nht",
+      "timestamp": "2026-10-30T19:20:47.255Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "task_1793388047235_k2lr",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793388047248_689dn",
+      "timestamp": "2026-10-30T19:20:47.248Z",
+      "action": "agent_dispatch_create",
+      "entityType": "task",
+      "entityId": "agent_task_1793388047246",
+      "actor": "DevOps Orchestrator",
+      "details": {
+        "agentName": "DevOps Orchestrator",
+        "title": "Review production security headers and logs"
+      }
+    },
+    {
+      "id": "audit_1793388047241_m06gc",
+      "timestamp": "2026-10-30T19:20:47.241Z",
+      "action": "update_task",
+      "entityType": "task",
+      "entityId": "task_1793388047235_k2lr",
+      "actor": "human",
+      "details": {
+        "completed": true,
+        "description": "Updated via test suite"
+      }
+    },
+    {
+      "id": "audit_1793388047237_sx8bs",
+      "timestamp": "2026-10-30T19:20:47.237Z",
+      "action": "create_task",
+      "entityType": "task",
+      "entityId": "task_1793388047235_k2lr",
+      "actor": "human",
+      "details": {
+        "title": "Automated E2E Verification Task"
+      }
+    },
+    {
+      "id": "audit_1793387820085_66k9f",
+      "timestamp": "2026-10-30T19:17:00.085Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "agent_task_1793387820076",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793387820082_pdkgc",
+      "timestamp": "2026-10-30T19:17:00.082Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "task_1793387820068_4m0v",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793387820077_17pqz",
+      "timestamp": "2026-10-30T19:17:00.077Z",
+      "action": "agent_dispatch_create",
+      "entityType": "task",
+      "entityId": "agent_task_1793387820076",
+      "actor": "DevOps Orchestrator",
+      "details": {
+        "agentName": "DevOps Orchestrator",
+        "title": "Review production security headers and logs"
+      }
+    },
+    {
+      "id": "audit_1793387820073_z6x0j",
+      "timestamp": "2026-10-30T19:17:00.073Z",
+      "action": "update_task",
+      "entityType": "task",
+      "entityId": "task_1793387820068_4m0v",
+      "actor": "human",
+      "details": {
+        "completed": true,
+        "description": "Updated via test suite"
+      }
+    },
+    {
+      "id": "audit_1793387820069_p296f",
+      "timestamp": "2026-10-30T19:17:00.069Z",
+      "action": "create_task",
+      "entityType": "task",
+      "entityId": "task_1793387820068_4m0v",
+      "actor": "human",
+      "details": {
+        "title": "Automated E2E Verification Task"
+      }
+    },
+    {
       "id": "audit_1793281455818_ffeb8",
       "timestamp": "2026-10-29T13:44:15.818Z",
       "action": "delete_task",
@@ -576,6 +872,18 @@
       "details": {
         "title": "Automated E2E Verification Task"
       }
+    }
+  ],
+  "notes": [],
+  "goals": [],
+  "habits": [],
+  "focusSessions": [
+    {
+      "id": "focus_1793389066527_jwy7",
+      "taskId": "task_1793389066506_txbs",
+      "mode": "pomodoro",
+      "durationMinutes": 25,
+      "completedAt": 1793389066527
     }
   ]
 }
