@@ -930,6 +930,107 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  
+  // --- BACKUP & DATA RELIABILITY ENDPOINTS (Phase 9 - P9.3 to P9.8) ---
+  // GET /api/backup/export
+  if (pathname === '/api/backup/export' && req.method === 'GET') {
+    const db = getDb();
+    const backupPayload = {
+      appName: 'GOTask',
+      schemaVersion: '2.0.0',
+      exportedAt: new Date().toISOString(),
+      recordCounts: {
+        tasks: (db.tasks || []).length,
+        notes: (db.notes || []).length,
+        goals: (db.goals || []).length,
+        habits: (db.habits || []).length,
+        focusSessions: (db.focusSessions || []).length,
+      },
+      data: {
+        tasks: db.tasks || [],
+        notes: db.notes || [],
+        goals: db.goals || [],
+        habits: db.habits || [],
+        focusSessions: db.focusSessions || [],
+        profile: db.profile || {},
+        categories: db.categories || [],
+      },
+    };
+    recordAudit('backup_export', 'system', 'backup', {recordCounts: backupPayload.recordCounts}, actor);
+    return sendJson(res, 200, {success: true, backup: backupPayload});
+  }
+
+  // POST /api/backup/import
+  if (pathname === '/api/backup/import' && req.method === 'POST') {
+    try {
+      const {backup} = await parseBody(req);
+      if (!backup || backup.appName !== 'GOTask' || !backup.data) {
+        return sendJson(res, 400, {success: false, message: 'Invalid GOTask backup payload'});
+      }
+      const db = getDb();
+      db.tasks = Array.isArray(backup.data.tasks) ? backup.data.tasks : db.tasks;
+      db.notes = Array.isArray(backup.data.notes) ? backup.data.notes : db.notes;
+      db.goals = Array.isArray(backup.data.goals) ? backup.data.goals : db.goals;
+      db.habits = Array.isArray(backup.data.habits) ? backup.data.habits : db.habits;
+      db.focusSessions = Array.isArray(backup.data.focusSessions) ? backup.data.focusSessions : db.focusSessions;
+      if (backup.data.profile) db.profile = backup.data.profile;
+      saveDb(db);
+
+      recordAudit('backup_import', 'system', 'backup', {schemaVersion: backup.schemaVersion}, actor);
+      return sendJson(res, 200, {
+        success: true,
+        message: 'Backup restored successfully',
+        restoredCounts: {
+          tasks: db.tasks.length,
+          notes: db.notes.length,
+          goals: db.goals.length,
+          habits: db.habits.length,
+        },
+      });
+    } catch (err) {
+      return sendJson(res, 400, {success: false, message: err.message});
+    }
+  }
+
+  // POST /api/sync/resolve
+  if (pathname === '/api/sync/resolve' && req.method === 'POST') {
+    try {
+      const {localTasks = [], strategy = 'LWW'} = await parseBody(req);
+      const db = getDb();
+      const serverTasks = db.tasks || [];
+      const itemMap = new Map();
+      const conflicts = [];
+
+      serverTasks.forEach(t => itemMap.set(String(t.id), {...t}));
+
+      localTasks.forEach(local => {
+        const strId = String(local.id);
+        if (!itemMap.has(strId)) {
+          itemMap.set(strId, {...local});
+        } else {
+          const serverItem = itemMap.get(strId);
+          const localTime = new Date(local.updatedAt || 0).getTime();
+          const serverTime = new Date(serverItem.updatedAt || 0).getTime();
+          if (localTime > serverTime) {
+            itemMap.set(strId, {...local});
+            conflicts.push({id: strId, winner: 'local', reason: 'Local is newer'});
+          }
+        }
+      });
+
+      db.tasks = Array.from(itemMap.values());
+      saveDb(db);
+      recordAudit('sync_resolve', 'system', 'sync', {mergedCount: db.tasks.length, conflictsCount: conflicts.length}, actor);
+      return sendJson(res, 200, {
+        success: true,
+        mergedTasks: db.tasks,
+        conflictsCount: conflicts.length,
+      });
+    } catch (err) {
+      return sendJson(res, 400, {success: false, message: err.message});
+    }
+  }
+
   // --- AUDIT TRAIL API ---
   // GET /api/audit-logs
   if (pathname === '/api/audit-logs' && req.method === 'GET') {

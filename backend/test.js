@@ -305,6 +305,48 @@ async function runTests() {
     assert.ok('totalFocusMinutes' in res.data.metrics);
   });
 
+    // 19. Backup Export API (Phase 9 — P9.3)
+  await test('GET /api/backup/export downloads full valid snapshot', async () => {
+    const res = await request('GET', '/api/backup/export');
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.data.success, true);
+    assert.strictEqual(res.data.backup.appName, 'GOTask');
+    assert.ok(Array.isArray(res.data.backup.data.tasks));
+  });
+
+  // 20. Backup Import API (Phase 9 — P9.4)
+  await test('POST /api/backup/import validates and restores backup', async () => {
+    const validBackup = {
+      appName: 'GOTask',
+      schemaVersion: '2.0.0',
+      data: {
+        tasks: [{ id: createdTaskId, title: 'Preserved Task', completed: false }, { id: 'restored_task_1', title: 'Restored Task', completed: false }],
+        notes: [],
+        goals: [],
+        habits: [],
+      },
+    };
+    const res = await request('POST', '/api/backup/import', { backup: validBackup });
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.data.success, true);
+
+    // Corrupted backup rejection
+    const invalidRes = await request('POST', '/api/backup/import', { backup: { appName: 'WrongApp' } });
+    assert.strictEqual(invalidRes.status, 400);
+    assert.strictEqual(invalidRes.data.success, false);
+  });
+
+  // 21. Sync Conflict Resolution API (Phase 9 — P9.7)
+  await test('POST /api/sync/resolve reconciles tasks with LWW strategy', async () => {
+    const localTasks = [
+      { id: 'restored_task_1', title: 'Restored Task Modified', completed: true, updatedAt: new Date(Date.now() + 5000).toISOString() },
+    ];
+    const res = await request('POST', '/api/sync/resolve', { localTasks, strategy: 'LWW' });
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.data.success, true);
+    assert.ok(Array.isArray(res.data.mergedTasks));
+  });
+
   // 12. Clean up created test tasks
   await test('DELETE /api/tasks/:id deletes task and records audit', async () => {
     if (createdTaskId) {

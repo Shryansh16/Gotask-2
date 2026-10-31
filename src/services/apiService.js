@@ -329,6 +329,51 @@ class ApiService {
       tags,
     };
   }
+
+  // --- BACKUP & SYNC ENGINE (Phase 9) ---
+  async exportBackup() {
+    try {
+      const res = await fetch(`${this.baseUrl}/api/backup/export`);
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`);
+      }
+      return await res.json();
+    } catch (err) {
+      return {success: false, error: err.message};
+    }
+  }
+
+  async importBackup(payload) {
+    try {
+      const res = await fetch(`${this.baseUrl}/api/backup/import`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`);
+      }
+      return await res.json();
+    } catch (err) {
+      return {success: false, error: err.message};
+    }
+  }
+
+  async resolveSync(updates) {
+    try {
+      const res = await fetch(`${this.baseUrl}/api/sync/resolve`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({updates}),
+      });
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`);
+      }
+      return await res.json();
+    } catch (err) {
+      return {success: false, error: err.message};
+    }
+  }
 }
 
 export const apiService = new ApiService();

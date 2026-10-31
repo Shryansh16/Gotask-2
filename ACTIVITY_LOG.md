@@ -207,7 +207,26 @@ This document tracks all actions, file changes, and architectural decisions made
   * Backend Suite: **17/17 REST endpoints passing**.
   * ESLint: **0 errors** across entire codebase.
 
-### 16:30 - 16:35 IST (Oct 31) | Phase 8 — Analytics & Motivation Engine (P8.1 to P8.9)
+### 17:55 - 18:00 IST (Oct 31) | Phase 9 — Data Reliability, Backup & Synchronization (P9.1 to P9.7)
+* **Schema Migration Engine (P9.1, P9.2)**:
+  * File: `src/services/migrationService.js`
+  * Action: Built semantic version compare engine (`compareSemver`), sequential migration pipeline (`1.0.0` -> `1.1.0` -> `2.0.0`), populating missing subtasks, tags, timestamps, and active state flags safely without data loss.
+* **Integrity-Validated Backup & Export (P9.3, P9.4)**:
+  * File: `src/services/backupService.js`
+  * Action: Implemented `createBackupPayload` (full workspace export with record counts and deterministic bitwise checksum), `validateBackup` (format validation, corruption detection, checksum validation), and `prepareRestoreData` (safe migration before restoration).
+* **Multi-Device Sync & Conflict Engine (P9.5 to P9.7)**:
+  * File: `src/services/syncEngine.js`
+  * Action: Implemented `detectConflict`, `resolveItemConflict` (Last-Write-Wins with non-destructive superseded variant archiving in `archivedVariant`), and `mergeEntityCollections`.
+* **Backend REST Endpoints (P9.3, P9.5)**:
+  * Files: `backend/server.js`, `backend/test.js`
+  * Action: Implemented `GET /api/backup/export` (downloads full valid snapshot), `POST /api/backup/import` (validates and restores backup), and `POST /api/sync/resolve` (reconciles client tasks with LWW strategy and logs audit events). Added Tests 19, 20, and 21 to backend test suite (21/21 passing).
+* **Settings & Sync UI Integration (P9.3, P9.4)**:
+  * Files: `src/screens/Settings.js`, `src/services/apiService.js`
+  * Action: Exposed "Export Backup Snapshot", "Restore Server Backup", and "Reconcile Sync (LWW)" controls in Settings data management section with live confirmation dialogs.
+* **Automated Verification**:
+  * Jest: **10/10 test suites, 109/109 unit and integration tests passing** (`__tests__/DataReliability-test.tsx` 11/11).
+  * Backend Suite: **21/21 REST endpoints passing**.
+  * ESLint: **0 errors** across entire codebase.
 * **Comprehensive Analytics Service (P8.1 to P8.5, P8.9)**:
   * File: `src/services/analyticsService.js`
   * Action: Implemented verified metric computations with source validation (P8.9):

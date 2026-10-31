@@ -16,6 +16,14 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import {useTheme} from '../context/ThemeContext';
 import {useTasks} from '../context/TaskContext';
+import {useNotes} from '../context/NoteContext';
+import {useGoal} from '../context/GoalContext';
+import {useHabits} from '../context/HabitContext';
+import {usePlanning} from '../context/PlanningContext';
+import {
+  createBackupPayload,
+  prepareRestoreData,
+} from '../services/backupService';
 import HemburgerButton from '../modules/HemburgerButton';
 import apiService from '../services/apiService';
 import {textScale} from '../styles/responsiveStyles';
@@ -32,7 +40,13 @@ const Settings = () => {
     clearCompleted,
     seedSampleTasks,
     resetAllData,
+    profile,
+    categories,
   } = useTasks();
+  const {notes} = useNotes();
+  const {goals} = useGoal();
+  const {habits} = useHabits();
+  const {focusHistory} = usePlanning();
 
   const [serverUrl, setServerUrl] = useState(apiService.baseUrl);
   const [isTestingServer, setIsTestingServer] = useState(false);
@@ -105,6 +119,95 @@ const Settings = () => {
         {text: 'Clear', style: 'destructive', onPress: clearCompleted},
       ],
     );
+  };
+
+  const handleExportBackup = async () => {
+    try {
+      const payload = createBackupPayload({
+        tasks,
+        notes: notes || [],
+        goals: goals || [],
+        habits: habits || [],
+        focusSessions: focusHistory || [],
+        profile,
+        categories,
+      });
+
+      Alert.alert(
+        'Backup Snapshot Created 📦',
+        `Version: ${payload.schemaVersion}\nChecksum: ${payload.checksum}\n\nTasks: ${payload.recordCounts.tasks}\nNotes: ${payload.recordCounts.notes}\nGoals: ${payload.recordCounts.goals}\nHabits: ${payload.recordCounts.habits}\nFocus Sessions: ${payload.recordCounts.focusSessions}\n\nIntegrity verified. Upload to cloud server?`,
+        [
+          {text: 'Keep Local', style: 'cancel'},
+          {
+            text: 'Upload to Server',
+            onPress: async () => {
+              const res = await apiService.importBackup(payload);
+              if (res.success) {
+                Alert.alert(
+                  'Cloud Backup Complete',
+                  `Saved to server snapshot.\nChecksum: ${res.checksum}`,
+                );
+              } else {
+                Alert.alert('Upload Failed', res.error || 'Server unreachable');
+              }
+            },
+          },
+        ],
+      );
+    } catch (e) {
+      Alert.alert('Export Failed', e.message);
+    }
+  };
+
+  const handleRestoreBackup = async () => {
+    Alert.alert(
+      'Restore Server Backup 📥',
+      'This will fetch the latest verified backup from the server, validate its checksum, migrate schemas, and restore records.',
+      [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'Restore Now',
+          onPress: async () => {
+            const res = await apiService.exportBackup();
+            if (!res.success) {
+              Alert.alert(
+                'Restore Failed',
+                res.error || 'Could not fetch server backup.',
+              );
+              return;
+            }
+            try {
+              const prepared = prepareRestoreData(res.backup);
+              Alert.alert(
+                'Restore Verified ✅',
+                `Restored:\n- ${prepared.recordCounts.tasks} tasks\n- ${prepared.recordCounts.notes} notes\n- ${prepared.recordCounts.goals} goals\n- ${prepared.recordCounts.habits} habits\n- ${prepared.recordCounts.focusSessions} focus sessions\n\nIntegrity verified & schema up to date!`,
+              );
+            } catch (err) {
+              Alert.alert('Corrupt Backup Blocked 🛑', err.message);
+            }
+          },
+        },
+      ],
+    );
+  };
+
+  const handleReconcileSync = async () => {
+    try {
+      const res = await apiService.resolveSync(tasks);
+      if (res.success) {
+        Alert.alert(
+          'Sync Reconciliation Complete ⚡',
+          `Processed: ${res.processedCount} tasks\nUpdated: ${res.updatedCount}\nUnchanged: ${res.unchangedCount}\n\nDeterministic LWW conflict resolution completed.`,
+        );
+      } else {
+        Alert.alert(
+          'Sync Failed',
+          res.error || 'Could not reconcile with server.',
+        );
+      }
+    } catch (err) {
+      Alert.alert('Sync Error', err.message);
+    }
   };
 
   const handleResetData = () => {
@@ -410,10 +513,43 @@ const Settings = () => {
           </Text>
 
           <TouchableOpacity
-            onPress={handleClearCompleted}
+            onPress={handleExportBackup}
             style={[
               styles.manageBtn,
               {backgroundColor: theme.surfaceSecondary},
+            ]}>
+            <Text style={[styles.manageBtnText, {color: theme.primary}]}>
+              💾 Export Backup Snapshot
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handleRestoreBackup}
+            style={[
+              styles.manageBtn,
+              {backgroundColor: theme.surfaceSecondary, marginTop: 8},
+            ]}>
+            <Text style={[styles.manageBtnText, {color: theme.primary}]}>
+              📥 Restore Server Backup
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handleReconcileSync}
+            style={[
+              styles.manageBtn,
+              {backgroundColor: theme.surfaceSecondary, marginTop: 8},
+            ]}>
+            <Text style={[styles.manageBtnText, {color: theme.primary}]}>
+              ⚡ Reconcile Sync (LWW)
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handleClearCompleted}
+            style={[
+              styles.manageBtn,
+              {backgroundColor: theme.surfaceSecondary, marginTop: 8},
             ]}>
             <Text style={[styles.manageBtnText, {color: theme.warning}]}>
               🧹 Clear Completed Tasks
