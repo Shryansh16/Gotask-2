@@ -5,7 +5,7 @@
  */
 
 import 'react-native';
-import React, {useEffect} from 'react';
+import React from 'react';
 import renderer, {act} from 'react-test-renderer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -13,8 +13,6 @@ import {
   usePlanning,
   evaluateFocusTransition,
   evaluateDayWorkload,
-  TIMER_MODES,
-  DEFAULT_CAPACITY_MINUTES,
 } from '../src/context/PlanningContext';
 import {TaskProvider, useTasks} from '../src/context/TaskContext';
 
@@ -282,7 +280,9 @@ describe('Planning and Focus Mode State & Operations (GT-601 to GT-605)', () => 
     expect(harness.getPlanning().todayEstimatedMinutes).toBe(105);
 
     // Update duration of Task A to 90 minutes
-    const taskA = harness.getTasks().tasks.find((t: any) => t.title === 'Task A');
+    const taskA = harness
+      .getTasks()
+      .tasks.find((t: any) => t.title === 'Task A');
     await act(async () => {
       await harness.getPlanning().setTaskDuration(taskA.id, 90);
     });
@@ -295,9 +295,8 @@ describe('Planning and Focus Mode State & Operations (GT-601 to GT-605)', () => 
     await harness.render();
 
     // Add overdue and today tasks
-    let overdueTask: any;
     await act(async () => {
-      overdueTask = await harness.getTasks().addTask({
+      await harness.getTasks().addTask({
         title: 'Overdue Bugfix',
         dueDate: 'Yesterday',
       });
@@ -319,4 +318,3 @@ describe('Planning and Focus Mode State & Operations (GT-601 to GT-605)', () => 
     expect(harness.getPlanning().todayTasks.length).toBe(2);
   });
 });
-

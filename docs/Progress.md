@@ -140,10 +140,28 @@ Phase names and ordering follow `docs/PRD.md`.
 | GT-504 | Build `HabitCard` with 7-day timeline, `HabitModal`, and `HabitsScreen` | `DONE` |
 | GT-505 | Add automated unit tests for HabitContext and backend REST endpoints | `DONE` |
 
+### P6 — Planning, Time Management, and Focus Mode
+
+| ID | Task | Status |
+|---|---|---|
+| GT-601 | Daily planning data model, duration estimates, and workload limits | `DONE` |
+| GT-602 | Implement `PlanningContext` with TypeSafe decision truth tables and batch rescheduling | `DONE` |
+| GT-603 | Distraction-free Focus Mode with countdown timer, Pomodoro/Break tabs | `DONE` |
+| GT-604 | Build `FocusTimer`, `FocusScreen`, and `PlanningScreen` UI | `DONE` |
+| GT-605 | Automated unit tests and backend `/api/focus/sessions` endpoints | `DONE` |
+
+### P7 — Intelligent Features and AI Assistance
+
+| ID | Task | Status |
+|---|---|---|
+| GT-701 | Robust natural language task parsing with structured schema and entity extraction (P7.1 - P7.3) | `DONE` |
+| GT-702 | AI Task Review & Confirmation modal flow preserving user control (P7.4) | `DONE` |
+| GT-703 | Goal decomposition to milestones and subtask suggestion engine (P7.5, P7.6) | `DONE` |
+| GT-704 | Overdue recovery planning and factual progress summaries (P7.7, P7.8) | `DONE` |
+| GT-705 | Universal contextual search, agent rate limiting & security guardrails (P7.9 - P7.13) | `DONE` |
+
 ### Later Phases
 
-- **Phase 6:** Planning and Focus Mode (`GT-601` to `GT-605`).
-- **Phase 7:** Intelligent Features and AI Assistance.
 - **Phase 8:** Analytics and Motivation.
 - **Phase 9:** Data Reliability, Backup, and Synchronization.
 - **Phase 10:** Production Readiness and Release Engineering.
@@ -193,6 +211,7 @@ Record meaningful changes newest first.
 
 | Date | Activity | Result |
 |---|---|---|
+| 2026-10-31 | Phase 7 Intelligent Features and AI Assistance Completed | GT-701 to GT-705 verified. aiService entity extraction with confidence scoring, AIReviewModal (P7.4), goal decomposition, subtask suggestions, overdue recovery planner, factual progress summary generator, universal contextual search, agent rate limiting & security guardrails. Jest (89/89 passing across 8 suites), Backend (17/17 passing), ESLint (0 errors). |
 | 2026-10-31 | Android Studio Setup & Emulator Deployment | Configured Gradle 7.5.1 wrapper distribution, aligned Gradle JDK with Java 17, verified successful Android Studio build, and deployed APK to Android Emulator. |
 | 2026-10-31 | Phase 6 Daily Planning and Time Management Completed | GT-601 to GT-605 verified. PlanningContext with TypeSafe decision truth tables (`evaluateFocusTransition`, `evaluateDayWorkload`), background-safe timer arithmetic, batch overdue rescheduling, FocusTimer, FocusScreen, PlanningScreen, `/api/focus/sessions` REST endpoints, 12 new unit tests. Jest (71/71 passing across 7 suites), Backend (12/12 passing). Pushed to GitHub `origin/main` at commit `656c0e8`. |
 | 2026-10-30 | Phase 5 Habits, Routines, and Reminders Completed | GT-501 to GT-505 verified. HabitContext, calendar-safe streak engine, skipped sessions protection, HabitCard with 7-day timeline, HabitModal, HabitsScreen, backend `/api/habits` REST API, 13 new unit tests. Jest (58/58), Backend (23/23), ESLint (0 errors, 0 warnings) passing. |
@@ -204,4 +223,4 @@ Record meaningful changes newest first.
 
 ---
 
-**Next action:** Launch Metro bundler (`npm start`) to run live React Native app session on emulator, then proceed to Phase 7 (Offline Sync Engine & Conflict Resolution) or user-directed features.
+**Next action:** Proceed to Phase 8 — Analytics and Motivation (`GT-801` to `GT-805`), implementing completion rate trends, category distribution visualizations, streaks dashboard, and milestone badges.

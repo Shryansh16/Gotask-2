@@ -167,7 +167,9 @@ export const PlanningProvider = ({children}) => {
 
   // Timer Tick Function
   const handleTick = useCallback(() => {
-    if (!targetEndTimestampRef.current) return;
+    if (!targetEndTimestampRef.current) {
+      return;
+    }
     const now = Date.now();
     const diffSeconds = Math.max(
       0,
@@ -214,24 +216,22 @@ export const PlanningProvider = ({children}) => {
   }, [activeTaskId, activeMode, durationMinutes, tasks, updateTask]);
 
   // Mode Selection
-  const selectMode = useCallback(
-    (modeId, customMins = null) => {
-      const modeConfig = TIMER_MODES[modeId.toUpperCase()] || TIMER_MODES.POMODORO;
-      const mins = customMins || modeConfig.defaultMinutes;
-      setActiveMode(modeConfig.id);
-      setDurationMinutes(mins);
-      setRemainingSeconds(mins * 60);
-      pausedRemainingRef.current = mins * 60;
-      targetEndTimestampRef.current = null;
-      setTimerStatus('idle');
+  const selectMode = useCallback((modeId, customMins = null) => {
+    const modeConfig =
+      TIMER_MODES[modeId.toUpperCase()] || TIMER_MODES.POMODORO;
+    const mins = customMins || modeConfig.defaultMinutes;
+    setActiveMode(modeConfig.id);
+    setDurationMinutes(mins);
+    setRemainingSeconds(mins * 60);
+    pausedRemainingRef.current = mins * 60;
+    targetEndTimestampRef.current = null;
+    setTimerStatus('idle');
 
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current);
-        timerIntervalRef.current = null;
-      }
-    },
-    [],
-  );
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
+  }, []);
 
   // Start Session
   const startSession = useCallback(
@@ -308,7 +308,9 @@ export const PlanningProvider = ({children}) => {
 
   // Complete Linked Task explicitly (distinct action from timer end)
   const completeActiveTask = useCallback(async () => {
-    if (!activeTaskId) return;
+    if (!activeTaskId) {
+      return;
+    }
     await toggleTaskComplete(activeTaskId);
   }, [activeTaskId, toggleTaskComplete]);
 
@@ -351,10 +353,7 @@ export const PlanningProvider = ({children}) => {
 
   const upcomingTasks = useMemo(() => {
     return tasks.filter(
-      t =>
-        !t.completed &&
-        t.dueDate !== 'Today' &&
-        t.dueDate !== 'Yesterday',
+      t => !t.completed && t.dueDate !== 'Today' && t.dueDate !== 'Yesterday',
     );
   }, [tasks]);
 
@@ -391,7 +390,10 @@ export const PlanningProvider = ({children}) => {
   }, [focusHistory, todayDateStr]);
 
   const todayFocusMinutes = useMemo(() => {
-    return todayFocusSessions.reduce((sum, s) => sum + (s.durationMinutes || 0), 0);
+    return todayFocusSessions.reduce(
+      (sum, s) => sum + (s.durationMinutes || 0),
+      0,
+    );
   }, [todayFocusSessions]);
 
   const totalFocusMinutes = useMemo(() => {
@@ -399,7 +401,9 @@ export const PlanningProvider = ({children}) => {
   }, [focusHistory]);
 
   const activeTask = useMemo(() => {
-    if (!activeTaskId) return null;
+    if (!activeTaskId) {
+      return null;
+    }
     return tasks.find(t => t.id === activeTaskId) || null;
   }, [activeTaskId, tasks]);
 
@@ -453,4 +457,3 @@ export const usePlanning = () => {
 };
 
 export default PlanningContext;
-

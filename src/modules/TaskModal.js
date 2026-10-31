@@ -21,6 +21,7 @@ import {fontFamily} from '../common/fonts';
 import {spacing} from '../styles/spacing';
 import {categoryMeta, priorityMeta} from '../styles/theme';
 import {apiService} from '../services/apiService';
+import {parseNaturalLanguageTask, suggestSubtasks} from '../services/aiService';
 
 export const TaskModal = ({
   visible,
@@ -95,7 +96,7 @@ export const TaskModal = ({
     if (!title.trim()) {
       return;
     }
-    const parsed = await apiService.parseNaturalLanguageTask(title);
+    const parsed = parseNaturalLanguageTask(title);
     if (parsed) {
       setTitle(parsed.title);
       if (parsed.priority) {
@@ -107,6 +108,19 @@ export const TaskModal = ({
       if (parsed.category) {
         setCategory(parsed.category);
       }
+      if (parsed.subtasks && parsed.subtasks.length > 0) {
+        setSubtasks(parsed.subtasks);
+      }
+    }
+  };
+
+  const handleAiDecompose = () => {
+    if (!title.trim()) {
+      return;
+    }
+    const suggestions = suggestSubtasks(title, category);
+    if (suggestions && suggestions.length > 0) {
+      setSubtasks(prev => [...prev, ...suggestions]);
     }
   };
 
@@ -374,9 +388,38 @@ export const TaskModal = ({
                 </TouchableOpacity>
 
                 {/* Checklist / Subtasks */}
-                <Text style={[styles.inputLabel, {color: theme.textSecondary}]}>
-                  Checklist Items ({subtasks.length})
-                </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: spacing.xs,
+                  }}>
+                  <Text
+                    style={[
+                      styles.inputLabel,
+                      {color: theme.textSecondary, marginBottom: 0},
+                    ]}>
+                    Checklist Items ({subtasks.length})
+                  </Text>
+                  <TouchableOpacity
+                    onPress={handleAiDecompose}
+                    style={{
+                      paddingHorizontal: spacing.sm,
+                      paddingVertical: 4,
+                      borderRadius: 6,
+                      backgroundColor: theme.primary + '18',
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: textScale(11),
+                        fontFamily: fontFamily.poppinsMedium,
+                        color: theme.primary,
+                      }}>
+                      ✨ AI Breakdown
+                    </Text>
+                  </TouchableOpacity>
+                </View>
 
                 {subtasks.map(sub => (
                   <View

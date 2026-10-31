@@ -18,6 +18,7 @@ import {useTheme} from '../context/ThemeContext';
 import {useGoal, GOAL_BOUNDS, GOAL_TYPES} from '../context/GoalContext';
 import {useTasks} from '../context/TaskContext';
 import {categoryMeta} from '../styles/theme';
+import {decomposeGoalToMilestones} from '../services/aiService';
 import {textScale, moderateScale} from '../styles/responsiveStyles';
 import {fontFamily} from '../common/fonts';
 import {spacing} from '../styles/spacing';
@@ -95,6 +96,29 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
     setNewMilestoneText('');
     setLinkedTaskIds([]);
     setIsSubmitting(false);
+  };
+
+  const handleAiDecomposeMilestones = () => {
+    if (!title.trim()) {
+      Alert.alert(
+        'Goal Title Required',
+        'Please provide a title for this goal to generate milestones.',
+      );
+      return;
+    }
+    const draftMilestones = decomposeGoalToMilestones(title, category);
+    const formatted = draftMilestones.map((dm, idx) => ({
+      id: `m_${Date.now()}_${idx}`,
+      title: dm.title.slice(0, GOAL_BOUNDS.MILESTONE_TITLE_MAX_LEN),
+      isCompleted: false,
+      dueDate: targetDays
+        ? Date.now() + (dm.targetDays || targetDays) * 24 * 3600000
+        : null,
+      completedAt: null,
+    }));
+    setMilestones(prev =>
+      [...prev, ...formatted].slice(0, GOAL_BOUNDS.MAX_MILESTONES),
+    );
   };
 
   const handleAddMilestone = () => {
@@ -424,10 +448,39 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
             {/* Milestones Editor (PRD P4.4) */}
             {type === GOAL_TYPES.MILESTONES && (
               <View style={styles.inputGroup}>
-                <Text style={[styles.label, {color: theme.textPrimary}]}>
-                  Milestones Checklist ({milestones.length}/
-                  {GOAL_BOUNDS.MAX_MILESTONES})
-                </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: 6,
+                  }}>
+                  <Text
+                    style={[
+                      styles.label,
+                      {color: theme.textPrimary, marginBottom: 0},
+                    ]}>
+                    Milestones Checklist ({milestones.length}/
+                    {GOAL_BOUNDS.MAX_MILESTONES})
+                  </Text>
+                  <TouchableOpacity
+                    onPress={handleAiDecomposeMilestones}
+                    style={{
+                      paddingHorizontal: 10,
+                      paddingVertical: 4,
+                      borderRadius: 6,
+                      backgroundColor: theme.primary + '20',
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: textScale(11),
+                        fontFamily: fontFamily.medium,
+                        color: theme.primary,
+                      }}>
+                      ✨ AI Milestones
+                    </Text>
+                  </TouchableOpacity>
+                </View>
                 <View style={styles.milestoneInputRow}>
                   <TextInput
                     value={newMilestoneText}

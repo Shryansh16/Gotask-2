@@ -98,7 +98,9 @@ export const FocusScreen = ({navigation}) => {
               Today Focused
             </Text>
           </View>
-          <View style={[styles.statDivider, {backgroundColor: theme.divider}]} />
+          <View
+            style={[styles.statDivider, {backgroundColor: theme.divider}]}
+          />
           <View style={styles.statItem}>
             <Text
               {...getTextA11yProps(1.2)}
@@ -117,59 +119,61 @@ export const FocusScreen = ({navigation}) => {
         <FocusTimer onCompleteTask={activeTask ? completeActiveTask : null} />
 
         {/* Active Task Checklist preview (if task is selected) */}
-        {activeTask && activeTask.subtasks && activeTask.subtasks.length > 0 && (
-          <View
-            style={[
-              styles.checklistContainer,
-              {backgroundColor: theme.surface, borderColor: theme.border},
-            ]}>
-            <Text
-              {...getTextA11yProps(1.2)}
-              style={[styles.checklistHeader, {color: theme.textSecondary}]}>
-              SUBTASKS CHECKLIST
-            </Text>
-            {activeTask.subtasks.map(subtask => (
-              <TouchableOpacity
-                key={subtask.id}
-                onPress={() => toggleSubtask(activeTask.id, subtask.id)}
-                style={styles.subtaskRow}
-                accessibilityRole="checkbox"
-                accessibilityState={{checked: subtask.completed}}>
-                <View
-                  style={[
-                    styles.checkboxBox,
-                    {
-                      borderColor: subtask.completed
-                        ? theme.primary
-                        : theme.border,
-                      backgroundColor: subtask.completed
-                        ? theme.primary
-                        : 'transparent',
-                    },
-                  ]}>
-                  {subtask.completed && (
-                    <Text style={styles.checkboxCheckmark}>✓</Text>
-                  )}
-                </View>
-                <Text
-                  {...getTextA11yProps(1.2)}
-                  style={[
-                    styles.subtaskTitle,
-                    {
-                      color: subtask.completed
-                        ? theme.textMuted
-                        : theme.textPrimary,
-                      textDecorationLine: subtask.completed
-                        ? 'line-through'
-                        : 'none',
-                    },
-                  ]}>
-                  {subtask.title}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
+        {activeTask &&
+          activeTask.subtasks &&
+          activeTask.subtasks.length > 0 && (
+            <View
+              style={[
+                styles.checklistContainer,
+                {backgroundColor: theme.surface, borderColor: theme.border},
+              ]}>
+              <Text
+                {...getTextA11yProps(1.2)}
+                style={[styles.checklistHeader, {color: theme.textSecondary}]}>
+                SUBTASKS CHECKLIST
+              </Text>
+              {activeTask.subtasks.map(subtask => (
+                <TouchableOpacity
+                  key={subtask.id}
+                  onPress={() => toggleSubtask(activeTask.id, subtask.id)}
+                  style={styles.subtaskRow}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{checked: subtask.completed}}>
+                  <View
+                    style={[
+                      styles.checkboxBox,
+                      {
+                        borderColor: subtask.completed
+                          ? theme.primary
+                          : theme.border,
+                        backgroundColor: subtask.completed
+                          ? theme.primary
+                          : 'transparent',
+                      },
+                    ]}>
+                    {subtask.completed && (
+                      <Text style={styles.checkboxCheckmark}>✓</Text>
+                    )}
+                  </View>
+                  <Text
+                    {...getTextA11yProps(1.2)}
+                    style={[
+                      styles.subtaskTitle,
+                      {
+                        color: subtask.completed
+                          ? theme.textMuted
+                          : theme.textPrimary,
+                        textDecorationLine: subtask.completed
+                          ? 'line-through'
+                          : 'none',
+                      },
+                    ]}>
+                    {subtask.title}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
       </ScrollView>
 
       {/* Task Picker Modal */}
@@ -219,7 +223,11 @@ export const FocusScreen = ({navigation}) => {
             </TouchableOpacity>
 
             <FlatList
-              data={todayTasks.length > 0 ? todayTasks : tasks.filter(t => !t.completed)}
+              data={
+                todayTasks.length > 0
+                  ? todayTasks
+                  : tasks.filter(t => !t.completed)
+              }
               keyExtractor={item => item.id}
               renderItem={({item}) => {
                 const isSelected = activeTaskId === item.id;
@@ -240,9 +248,7 @@ export const FocusScreen = ({navigation}) => {
                       style={[
                         styles.taskPickTitle,
                         {
-                          color: isSelected
-                            ? theme.primary
-                            : theme.textPrimary,
+                          color: isSelected ? theme.primary : theme.textPrimary,
                           fontFamily: isSelected
                             ? fontFamily.bold
                             : fontFamily.medium,
@@ -253,7 +259,10 @@ export const FocusScreen = ({navigation}) => {
                     {item.estimatedDuration ? (
                       <Text
                         {...getTextA11yProps(1.1)}
-                        style={[styles.durationBadge, {color: theme.textSecondary}]}>
+                        style={[
+                          styles.durationBadge,
+                          {color: theme.textSecondary},
+                        ]}>
                         ⏱ {item.estimatedDuration}m
                       </Text>
                     ) : null}
@@ -417,4 +426,3 @@ const styles = StyleSheet.create({
 });
 
 export default FocusScreen;
-

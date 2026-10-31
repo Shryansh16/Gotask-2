@@ -84,7 +84,9 @@ class ApiService {
   // --- TASKS ---
   async pushTask(task) {
     try {
-      if (!this.isOnline) return;
+      if (!this.isOnline) {
+        return;
+      }
       await fetch(`${this.baseUrl}/api/tasks`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -95,7 +97,9 @@ class ApiService {
 
   async updateTask(task) {
     try {
-      if (!this.isOnline) return;
+      if (!this.isOnline) {
+        return;
+      }
       await fetch(`${this.baseUrl}/api/tasks/${task.id}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
@@ -106,7 +110,9 @@ class ApiService {
 
   async deleteTask(taskId) {
     try {
-      if (!this.isOnline) return;
+      if (!this.isOnline) {
+        return;
+      }
       await fetch(`${this.baseUrl}/api/tasks/${taskId}`, {
         method: 'DELETE',
       });
@@ -116,7 +122,9 @@ class ApiService {
   // --- NOTES (Phase 3) ---
   async pushNote(note) {
     try {
-      if (!this.isOnline) return;
+      if (!this.isOnline) {
+        return;
+      }
       await fetch(`${this.baseUrl}/api/notes`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -127,7 +135,9 @@ class ApiService {
 
   async updateNote(note) {
     try {
-      if (!this.isOnline) return;
+      if (!this.isOnline) {
+        return;
+      }
       await fetch(`${this.baseUrl}/api/notes/${note.id}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
@@ -138,7 +148,9 @@ class ApiService {
 
   async deleteNote(noteId) {
     try {
-      if (!this.isOnline) return;
+      if (!this.isOnline) {
+        return;
+      }
       await fetch(`${this.baseUrl}/api/notes/${noteId}`, {
         method: 'DELETE',
       });
@@ -148,7 +160,9 @@ class ApiService {
   // --- GOALS (Phase 4) ---
   async pushGoal(goal) {
     try {
-      if (!this.isOnline) return;
+      if (!this.isOnline) {
+        return;
+      }
       await fetch(`${this.baseUrl}/api/goals`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -159,7 +173,9 @@ class ApiService {
 
   async updateGoal(goal) {
     try {
-      if (!this.isOnline) return;
+      if (!this.isOnline) {
+        return;
+      }
       await fetch(`${this.baseUrl}/api/goals/${goal.id}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
@@ -170,7 +186,9 @@ class ApiService {
 
   async deleteGoal(goalId) {
     try {
-      if (!this.isOnline) return;
+      if (!this.isOnline) {
+        return;
+      }
       await fetch(`${this.baseUrl}/api/goals/${goalId}`, {
         method: 'DELETE',
       });
@@ -180,7 +198,9 @@ class ApiService {
   // --- HABITS (Phase 5) ---
   async pushHabit(habit) {
     try {
-      if (!this.isOnline) return;
+      if (!this.isOnline) {
+        return;
+      }
       await fetch(`${this.baseUrl}/api/habits`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -191,7 +211,9 @@ class ApiService {
 
   async updateHabit(habit) {
     try {
-      if (!this.isOnline) return;
+      if (!this.isOnline) {
+        return;
+      }
       await fetch(`${this.baseUrl}/api/habits/${habit.id}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
@@ -202,7 +224,9 @@ class ApiService {
 
   async deleteHabit(habitId) {
     try {
-      if (!this.isOnline) return;
+      if (!this.isOnline) {
+        return;
+      }
       await fetch(`${this.baseUrl}/api/habits/${habitId}`, {
         method: 'DELETE',
       });
@@ -211,7 +235,9 @@ class ApiService {
 
   async toggleHabitDay(habitId, dateStr, status) {
     try {
-      if (!this.isOnline) return;
+      if (!this.isOnline) {
+        return;
+      }
       await fetch(`${this.baseUrl}/api/habits/${habitId}/toggle`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},

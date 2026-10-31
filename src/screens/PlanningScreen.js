@@ -76,9 +76,7 @@ export const PlanningScreen = ({navigation}) => {
           style={[styles.quickFocusBtn, {backgroundColor: theme.primary}]}
           accessibilityRole="button"
           accessibilityLabel="Open Focus Mode">
-          <Text
-            {...getTextA11yProps(1.2)}
-            style={styles.quickFocusBtnText}>
+          <Text {...getTextA11yProps(1.2)} style={styles.quickFocusBtnText}>
             ⏱ Focus
           </Text>
         </TouchableOpacity>
@@ -212,9 +210,7 @@ export const PlanningScreen = ({navigation}) => {
                 styles.tabBtnText,
                 {
                   color:
-                    activeTab === 'today'
-                      ? theme.primary
-                      : theme.textSecondary,
+                    activeTab === 'today' ? theme.primary : theme.textSecondary,
                   fontFamily:
                     activeTab === 'today' ? fontFamily.bold : fontFamily.medium,
                 },
@@ -743,4 +739,3 @@ const styles = StyleSheet.create({
 });
 
 export default PlanningScreen;
-

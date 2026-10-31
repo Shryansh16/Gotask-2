@@ -225,6 +225,74 @@ async function runTests() {
     assert.strictEqual(typeof res.data.summary.isOverloaded, 'boolean');
   });
 
+  
+  // 13. AI Goal Decomposition (Phase 7 — P7.5)
+  await test('POST /api/ai/decompose-goal returns sequential draft milestones', async () => {
+    const res = await request('POST', '/api/ai/decompose-goal', {
+      goalTitle: 'Run 10km Marathon in spring',
+      category: 'Health',
+    });
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.data.success, true);
+    assert.ok(Array.isArray(res.data.milestones));
+    assert.strictEqual(res.data.milestones.length, 4);
+    assert.strictEqual(res.data.milestones[0].id, 'm1');
+  });
+
+  // 14. AI Subtask Suggestions (Phase 7 — P7.5)
+  await test('POST /api/ai/suggest-subtasks returns decomposed actionable steps', async () => {
+    const res = await request('POST', '/api/ai/suggest-subtasks', {
+      taskTitle: 'Prepare quarterly presentation',
+      category: 'Work',
+    });
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.data.success, true);
+    assert.ok(Array.isArray(res.data.subtasks));
+    assert.ok(res.data.subtasks.length >= 3);
+  });
+
+  // 15. AI Overdue Recovery Plan (Phase 7 — P7.7)
+  await test('POST /api/ai/recovery-plan distributes overdue tasks to prevent burnout', async () => {
+    const overdueTasks = [
+      { id: 'ov_1', title: 'Task 1', estimatedDuration: 30, priority: 'high' },
+      { id: 'ov_2', title: 'Task 2', estimatedDuration: 45, priority: 'medium' },
+      { id: 'ov_3', title: 'Task 3', estimatedDuration: 60, priority: 'low' },
+    ];
+    const res = await request('POST', '/api/ai/recovery-plan', { overdueTasks });
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.data.success, true);
+    assert.strictEqual(res.data.totalOverdueCount, 3);
+    assert.ok(Array.isArray(res.data.plan));
+    assert.strictEqual(res.data.plan.length, 3);
+  });
+
+  // 16. AI Factual Progress Summary (Phase 7 — P7.8)
+  await test('POST /api/ai/summary returns evidence-based summary without fabrication', async () => {
+    const res = await request('POST', '/api/ai/summary', {
+      tasks: [{ id: 't1', title: 'Task 1', completed: true }, { id: 't2', title: 'Task 2', completed: false }],
+      goals: [{ id: 'g1', title: 'Goal 1', progress: 50 }],
+      habits: [{ id: 'h1', title: 'Habit 1', currentStreak: 5 }],
+      focusSessions: [{ id: 'fs1', durationMinutes: 25 }],
+    });
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.data.success, true);
+    assert.strictEqual(res.data.metrics.completedTasks, 1);
+    assert.strictEqual(res.data.metrics.totalTasks, 2);
+    assert.strictEqual(res.data.metrics.totalFocusMinutes, 25);
+  });
+
+  // 17. Security Guardrails: Action Whitelist (Phase 7 — P7.11)
+  await test('POST /api/agent/dispatch blocks unauthorized action with 403 Forbidden', async () => {
+    const res = await request('POST', '/api/agent/dispatch', {
+      agentId: 'agent_rogue',
+      action: 'drop_database_all',
+      task: { title: 'Unauthorized exploit' },
+    });
+    assert.strictEqual(res.status, 403);
+    assert.strictEqual(res.data.success, false);
+    assert.ok(res.data.message.includes('not permitted'));
+  });
+
   // 12. Clean up created test tasks
   await test('DELETE /api/tasks/:id deletes task and records audit', async () => {
     if (createdTaskId) {

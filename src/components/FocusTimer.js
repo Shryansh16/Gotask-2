@@ -34,11 +34,15 @@ export const FocusTimer = ({onCompleteTask}) => {
   // Format MM:SS
   const mins = Math.floor(remainingSeconds / 60);
   const secs = remainingSeconds % 60;
-  const timeDisplay = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  const timeDisplay = `${String(mins).padStart(2, '0')}:${String(secs).padStart(
+    2,
+    '0',
+  )}`;
 
   // Progress fraction (0 to 1)
   const totalSeconds = durationMinutes * 60;
-  const progressFraction = totalSeconds > 0 ? (totalSeconds - remainingSeconds) / totalSeconds : 0;
+  const progressFraction =
+    totalSeconds > 0 ? (totalSeconds - remainingSeconds) / totalSeconds : 0;
   const progressPercent = Math.min(100, Math.round(progressFraction * 100));
 
   return (
@@ -76,7 +80,9 @@ export const FocusTimer = ({onCompleteTask}) => {
                   styles.modeTabText,
                   {
                     color: isSelected ? theme.primary : theme.textSecondary,
-                    fontFamily: isSelected ? fontFamily.bold : fontFamily.regular,
+                    fontFamily: isSelected
+                      ? fontFamily.bold
+                      : fontFamily.regular,
                   },
                 ]}>
                 {mode.label}
@@ -120,7 +126,11 @@ export const FocusTimer = ({onCompleteTask}) => {
         </View>
 
         {/* Linear Progress Indicator */}
-        <View style={[styles.progressTrack, {backgroundColor: theme.surfaceSecondary}]}>
+        <View
+          style={[
+            styles.progressTrack,
+            {backgroundColor: theme.surfaceSecondary},
+          ]}>
           <View
             style={[
               styles.progressFill,
@@ -139,7 +149,10 @@ export const FocusTimer = ({onCompleteTask}) => {
         <View
           style={[
             styles.activeTaskBanner,
-            {backgroundColor: theme.surfaceSecondary, borderColor: theme.border},
+            {
+              backgroundColor: theme.surfaceSecondary,
+              borderColor: theme.border,
+            },
           ]}>
           <View style={{flex: 1}}>
             <Text
@@ -157,7 +170,10 @@ export const FocusTimer = ({onCompleteTask}) => {
           {onCompleteTask && (
             <TouchableOpacity
               onPress={onCompleteTask}
-              style={[styles.completeTaskBtn, {backgroundColor: theme.successLight}]}
+              style={[
+                styles.completeTaskBtn,
+                {backgroundColor: theme.successLight},
+              ]}
               accessibilityRole="button"
               accessibilityLabel={`Mark ${activeTask.title} as completed`}>
               <Text
@@ -218,13 +234,20 @@ export const FocusTimer = ({onCompleteTask}) => {
               onPress={resetSession}
               style={[
                 styles.dualActionBtn,
-                {backgroundColor: theme.surfaceSecondary, borderWidth: 1, borderColor: theme.border},
+                {
+                  backgroundColor: theme.surfaceSecondary,
+                  borderWidth: 1,
+                  borderColor: theme.border,
+                },
               ]}
               accessibilityRole="button"
               accessibilityLabel="Reset Focus Session">
               <Text
                 {...getTextA11yProps(1.2)}
-                style={[styles.dualActionSecondaryText, {color: theme.textSecondary}]}>
+                style={[
+                  styles.dualActionSecondaryText,
+                  {color: theme.textSecondary},
+                ]}>
                 ↺ Reset
               </Text>
             </TouchableOpacity>
@@ -366,4 +389,3 @@ const styles = StyleSheet.create({
 });
 
 export default FocusTimer;
-

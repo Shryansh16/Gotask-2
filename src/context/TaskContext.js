@@ -336,7 +336,9 @@ export const TaskProvider = ({children}) => {
     let sanitizedSubtasks = [];
     if (Array.isArray(taskData.subtasks)) {
       sanitizedSubtasks = taskData.subtasks
-        .filter(s => s && typeof s.title === 'string' && s.title.trim().length > 0)
+        .filter(
+          s => s && typeof s.title === 'string' && s.title.trim().length > 0,
+        )
         .map((s, idx) => ({
           id: s.id || `sub_${Date.now()}_${idx}`,
           title: s.title.trim(),
@@ -345,7 +347,8 @@ export const TaskProvider = ({children}) => {
     }
 
     const newTask = {
-      id: taskData.id || `task_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+      id:
+        taskData.id || `task_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
       title: (taskData.title || '').trim(),
       description: (taskData.description || '').trim(),
       category:
@@ -396,7 +399,9 @@ export const TaskProvider = ({children}) => {
   };
 
   const undoDeleteTask = async () => {
-    if (!lastDeletedTask) return;
+    if (!lastDeletedTask) {
+      return;
+    }
     const restored = [lastDeletedTask, ...tasks];
     setLastDeletedTask(null);
     await persistTasks(restored);
@@ -557,7 +562,9 @@ export const TaskProvider = ({children}) => {
   };
 
   const undoClearCompleted = async () => {
-    if (lastClearedTasks.length === 0) return;
+    if (lastClearedTasks.length === 0) {
+      return;
+    }
     const restored = [...tasks, ...lastClearedTasks];
     setLastClearedTasks([]);
     await persistTasks(restored);

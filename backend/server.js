@@ -2,6 +2,24 @@
 // Production-Grade, Zero-Dependency REST API & Agent Integration Hub for GOTask
 
 const http = require('http');
+
+// Agent Rate Limiting State (P7.12)
+const agentCallTracker = new Map();
+function checkAgentRateLimit(agentId = 'agent_generic', maxCallsPerMin = 60) {
+  const now = Date.now();
+  const windowStart = now - 60000;
+  let timestamps = agentCallTracker.get(agentId) || [];
+  timestamps = timestamps.filter(t => t > windowStart);
+  if (timestamps.length >= maxCallsPerMin) {
+    return false;
+  }
+  timestamps.push(now);
+  agentCallTracker.set(agentId, timestamps);
+  return true;
+}
+
+const PERMITTED_AGENT_ACTIONS = new Set(['create', 'update', 'resolve', 'generate_subtasks', 'batch', 'reschedule_overdue']);
+
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
@@ -156,76 +174,150 @@ function sendJson(res, statusCode, data) {
   res.end(JSON.stringify(data));
 }
 
-// Natural Language Task Parser
+// Natural Language Task Parser (Phase 7 - P7.1 to P7.3)
 function parseNaturalLanguageTask(text = '') {
-  let title = text.trim();
+  if (!text || typeof text !== 'string') {
+    return {
+      title: 'Untitled Task',
+      priority: 'medium',
+      category: 'General',
+      dueDate: 'Today',
+      dueTime: null,
+      estimatedDuration: 25,
+      tags: [],
+      subtasks: [],
+      confidence: 0,
+      ambiguous: true,
+      extractedEntities: { dates: [], times: [], durations: [], priorities: [], categories: [], tags: [] },
+    };
+  }
+
+  let raw = text.trim();
+  let workingText = raw;
+  const extracted = { dates: [], times: [], durations: [], priorities: [], categories: [], tags: [] };
+
   let priority = 'medium';
   let category = 'Personal';
   let dueDate = 'Today';
+  let dueTime = null;
+  let estimatedDuration = 25;
   const tags = [];
+  const subtasks = [];
 
-  // 1. Extract Priority tags like !high, !urgent, !medium, !low
-  const priorityMatch = title.match(/!(high|urgent|medium|low)/i);
-  if (priorityMatch) {
-    const p = priorityMatch[1].toLowerCase();
-    priority = p === 'urgent' ? 'high' : p;
-    title = title.replace(priorityMatch[0], '').trim();
+  // Subtasks
+  const subtaskMatch = workingText.match(/(?:with\s+subtasks|subtasks?):\s*([^\n]+)/i);
+  if (subtaskMatch) {
+    const rawList = subtaskMatch[1];
+    const items = rawList.includes(';') ? rawList.split(';') : rawList.split(',');
+    items.forEach((item, idx) => {
+      const clean = item.trim();
+      if (clean) subtasks.push({ id: `st_${Date.now()}_${idx}`, title: clean, completed: false });
+    });
+    workingText = workingText.replace(subtaskMatch[0], '').trim();
   }
 
-  // 2. Extract Hashtags like #Work, #Health, #Shopping
-  const hashtagMatches = title.match(/#(\w+)/g);
-  if (hashtagMatches) {
-    hashtagMatches.forEach(tag => {
-      const cleanTag = tag.slice(1);
-      tags.push(cleanTag);
-      // Map common tags to categories
-      if (
-        ['work', 'job', 'project', 'client'].includes(cleanTag.toLowerCase())
-      ) {
-        category = 'Work';
-      } else if (
-        ['buy', 'shopping', 'groceries', 'store'].includes(
-          cleanTag.toLowerCase(),
-        )
-      ) {
-        category = 'Shopping';
-      } else if (
-        ['health', 'gym', 'workout', 'meds'].includes(cleanTag.toLowerCase())
-      ) {
-        category = 'Health';
-      } else if (
-        ['study', 'learn', 'read', 'book'].includes(cleanTag.toLowerCase())
-      ) {
-        category = 'Study';
+  // Priority
+  const pMatch = workingText.match(/(?:!(high|urgent|p1|medium|p2|normal|low|p3)\b|priority:\s*(high|medium|low)\b|\b(urgent|high priority|low priority)\b)/i);
+  if (pMatch) {
+    const token = (pMatch[1] || pMatch[2] || pMatch[3]).toLowerCase();
+    if (token === 'high' || token === 'urgent' || token === 'p1' || token === 'high priority') priority = 'high';
+    else if (token === 'low' || token === 'p3' || token === 'low priority') priority = 'low';
+    else priority = 'medium';
+    extracted.priorities.push(priority);
+    workingText = workingText.replace(pMatch[0], '').trim();
+  }
+
+  // Category
+  const catMatch = workingText.match(/(?:[@#](work|personal|study|health|fitness|finance|shopping)\b|category:\s*([a-z]+)\b)/i);
+  if (catMatch) {
+    const rawCat = (catMatch[1] || catMatch[2]).toLowerCase();
+    category = rawCat === 'fitness' ? 'Health' : rawCat.charAt(0).toUpperCase() + rawCat.slice(1);
+    extracted.categories.push(category);
+    if (catMatch[0].startsWith('#')) {
+      const tagStr = catMatch[0].slice(1);
+      if (!tags.includes(tagStr)) {
+        tags.push(tagStr);
+        extracted.tags.push(tagStr);
       }
-      title = title.replace(tag, '').trim();
+    }
+    workingText = workingText.replace(catMatch[0], '').trim();
+  }
+
+  // Hashtags
+  const tagMatches = workingText.match(/#[a-zA-Z0-9_-]+/g);
+  if (tagMatches) {
+    tagMatches.forEach(t => {
+      const rawTag = t.slice(1);
+      const tagLower = rawTag.toLowerCase();
+      if (!tags.includes(rawTag)) {
+        tags.push(rawTag);
+        extracted.tags.push(rawTag);
+      }
+      workingText = workingText.replace(t, '').trim();
     });
   }
 
-  // 3. Extract Due Date keywords
-  if (/\b(tomorrow)\b/i.test(title)) {
-    dueDate = 'Tomorrow';
-    title = title.replace(/\b(tomorrow)\b/gi, '').trim();
-  } else if (/\b(today)\b/i.test(title)) {
-    dueDate = 'Today';
-    title = title.replace(/\b(today)\b/gi, '').trim();
-  } else if (/\b(this weekend|weekend)\b/i.test(title)) {
-    dueDate = 'This Weekend';
-    title = title.replace(/\b(this weekend|weekend)\b/gi, '').trim();
-  } else if (/\b(next week)\b/i.test(title)) {
-    dueDate = 'Next Week';
-    title = title.replace(/\b(next week)\b/gi, '').trim();
+  // Duration
+  const durMatch = workingText.match(/(?:for\s+)?(\d+)\s*(m|min|mins|minutes|h|hr|hrs|hours)\b/i);
+  if (durMatch) {
+    const num = parseInt(durMatch[1], 10);
+    const unit = durMatch[2].toLowerCase();
+    estimatedDuration = unit.startsWith('h') ? num * 60 : num;
+    extracted.durations.push(`${estimatedDuration}m`);
+    workingText = workingText.replace(durMatch[0], '').trim();
   }
 
-  // Clean remaining whitespace
-  title = title.replace(/\s+/g, ' ').trim();
+  // Time
+  const timeMatch = workingText.match(/(?:at\s+)?\b((?:1[0-2]|0?[1-9])(?::([0-5][0-9]))?\s*(am|pm)|(?:[01]?[0-9]|2[0-3]):[0-5][0-9])\b/i);
+  if (timeMatch) {
+    let tStr = timeMatch[0].replace(/^at\s+/i, '').trim();
+    if (/am|pm/i.test(tStr)) {
+      const isPm = /pm/i.test(tStr);
+      const cleanTime = tStr.replace(/am|pm/i, '').trim();
+      let [h, m = '00'] = cleanTime.split(':');
+      let hourNum = parseInt(h, 10);
+      if (isPm && hourNum < 12) hourNum += 12;
+      if (!isPm && hourNum === 12) hourNum = 0;
+      dueTime = `${String(hourNum).padStart(2, '0')}:${m.padStart(2, '0')}`;
+    } else {
+      dueTime = tStr;
+    }
+    extracted.times.push(dueTime);
+    workingText = workingText.replace(timeMatch[0], '').trim();
+  }
+
+  // Due Date
+  const dateMatch = workingText.match(/\b(today|tomorrow|tonight|this weekend|weekend|next week)\b/i);
+  if (dateMatch) {
+    const key = dateMatch[1].toLowerCase();
+    if (key === 'tomorrow') dueDate = 'Tomorrow';
+    else if (key.includes('weekend')) dueDate = 'This Weekend';
+    else if (key === 'next week') dueDate = 'Next Week';
+    else dueDate = 'Today';
+    extracted.dates.push(dueDate);
+    workingText = workingText.replace(dateMatch[0], '').trim();
+  }
+
+  let finalTitle = workingText.replace(/^[-–—:,.\s]+|[-–—:,.\s]+$/g, '').replace(/\s{2,}/g, ' ').trim();
+  let confidence = finalTitle.length >= 3 ? 0.7 : 0.4;
+  if (extracted.priorities.length) confidence += 0.1;
+  if (extracted.dates.length) confidence += 0.1;
+  if (extracted.categories.length) confidence += 0.1;
+  confidence = Math.min(1.0, Math.max(0.1, Math.round(confidence * 100) / 100));
 
   return {
-    title: title || 'Untitled Task',
+    title: finalTitle || 'Untitled Task',
     priority,
     category,
     dueDate,
+    dueTime,
+    estimatedDuration,
     tags,
+    subtasks,
+    confidence,
+    ambiguous: finalTitle.length < 3,
+    rawText: raw,
+    extractedEntities: extracted,
   };
 }
 
@@ -476,10 +568,26 @@ const server = http.createServer(async (req, res) => {
       const {
         agentId = 'agent_generic',
         agentName = 'AI Productivity Agent',
-        action = 'create', // 'create' | 'update' | 'resolve' | 'generate_subtasks'
+        action = 'create',
         task = {},
         taskId = null,
       } = body;
+
+      // Security Guardrail: Action Whitelist (P7.11)
+      if (!PERMITTED_AGENT_ACTIONS.has(action)) {
+        return sendJson(res, 403, {
+          success: false,
+          message: `Action "${action}" is not permitted for autonomous execution without approval.`,
+        });
+      }
+
+      // Security Guardrail: Rate Limit (P7.12)
+      if (!checkAgentRateLimit(agentId)) {
+        return sendJson(res, 429, {
+          success: false,
+          message: 'Rate limit exceeded: max 60 agent operations per minute.',
+        });
+      }
 
       const db = getDb();
 
@@ -696,6 +804,98 @@ const server = http.createServer(async (req, res) => {
         byCategory,
       },
     });
+  }
+
+    // --- AI ASSISTANCE ENDPOINTS (Phase 7 - P7.5 to P7.8) ---
+  // POST /api/ai/decompose-goal
+  if (pathname === '/api/ai/decompose-goal' && req.method === 'POST') {
+    try {
+      const {goalTitle = '', category = 'Personal'} = await parseBody(req);
+      if (!goalTitle || !goalTitle.trim()) {
+        return sendJson(res, 400, {success: false, message: 'goalTitle is required'});
+      }
+      const titleLower = goalTitle.toLowerCase();
+      let milestones = [
+        { id: 'm1', title: `Phase 1: Research and initial preparation for "${goalTitle}"`, targetDays: 7, priority: 'high' },
+        { id: 'm2', title: 'Phase 2: Build foundation and execute primary activities', targetDays: 21, priority: 'medium' },
+        { id: 'm3', title: 'Phase 3: Measure midpoint outcomes and iterate', targetDays: 42, priority: 'medium' },
+        { id: 'm4', title: 'Phase 4: Final delivery, review, and milestone celebration', targetDays: 60, priority: 'high' },
+      ];
+      if (titleLower.includes('marathon') || titleLower.includes('run')) {
+        milestones = [
+          { id: 'm1', title: 'Complete baseline 3km evaluation run', targetDays: 7, priority: 'high' },
+          { id: 'm2', title: 'Establish 3x weekly progressive endurance routine', targetDays: 21, priority: 'medium' },
+          { id: 'm3', title: 'Complete mid-program 8km continuous run', targetDays: 45, priority: 'medium' },
+          { id: 'm4', title: 'Taper and complete race distance target', targetDays: 60, priority: 'high' },
+        ];
+      }
+      recordAudit('ai_decompose_goal', 'goal', goalTitle, {milestonesCount: milestones.length}, actor);
+      return sendJson(res, 200, {success: true, goalTitle, category, milestones});
+    } catch (err) {
+      return sendJson(res, 400, {success: false, message: err.message});
+    }
+  }
+
+  // POST /api/ai/suggest-subtasks
+  if (pathname === '/api/ai/suggest-subtasks' && req.method === 'POST') {
+    try {
+      const {taskTitle = '', category = 'Personal'} = await parseBody(req);
+      if (!taskTitle || !taskTitle.trim()) {
+        return sendJson(res, 400, {success: false, message: 'taskTitle is required'});
+      }
+      const subtasks = [
+        { id: 'st_1', title: `Clarify requirements and prepare resources for ${taskTitle}`, completed: false },
+        { id: 'st_2', title: 'Execute main actionable work in focused sprint', completed: false },
+        { id: 'st_3', title: 'Review completed work against acceptance criteria', completed: false },
+      ];
+      return sendJson(res, 200, {success: true, taskTitle, subtasks});
+    } catch (err) {
+      return sendJson(res, 400, {success: false, message: err.message});
+    }
+  }
+
+  // POST /api/ai/recovery-plan
+  if (pathname === '/api/ai/recovery-plan' && req.method === 'POST') {
+    try {
+      const {overdueTasks = [], dailyCapacityMinutes = 240} = await parseBody(req);
+      const totalMinutes = overdueTasks.reduce((sum, t) => sum + (t.estimatedDuration || 25), 0);
+      const plan = [
+        { label: 'Today', tasksCount: Math.ceil(overdueTasks.length / 3), allocatedMinutes: Math.round(totalMinutes / 3) },
+        { label: 'Tomorrow', tasksCount: Math.round(overdueTasks.length / 3), allocatedMinutes: Math.round(totalMinutes / 3) },
+        { label: 'Day After Tomorrow', tasksCount: Math.floor(overdueTasks.length / 3), allocatedMinutes: Math.round(totalMinutes / 3) },
+      ];
+      return sendJson(res, 200, {
+        success: true,
+        totalOverdueCount: overdueTasks.length,
+        totalMinutes,
+        plan,
+        recommendation: `Distributed ${overdueTasks.length} tasks across 3 days to avoid overload.`,
+      });
+    } catch (err) {
+      return sendJson(res, 400, {success: false, message: err.message});
+    }
+  }
+
+  // POST /api/ai/summary
+  if (pathname === '/api/ai/summary' && req.method === 'POST') {
+    try {
+      const {tasks = [], goals = [], habits = [], focusSessions = []} = await parseBody(req);
+      const completedTasks = tasks.filter(t => t.completed);
+      const totalFocusMinutes = focusSessions.reduce((sum, s) => sum + (s.durationMinutes || s.targetMinutes || 25), 0);
+      return sendJson(res, 200, {
+        success: true,
+        narrative: `You completed ${completedTasks.length} of ${tasks.length} tasks and logged ${totalFocusMinutes} minutes of focus.`,
+        metrics: {
+          completedTasks: completedTasks.length,
+          totalTasks: tasks.length,
+          totalFocusMinutes,
+          activeGoals: goals.length,
+          activeHabits: habits.length,
+        },
+      });
+    } catch (err) {
+      return sendJson(res, 400, {success: false, message: err.message});
+    }
   }
 
   // --- AUDIT TRAIL API ---

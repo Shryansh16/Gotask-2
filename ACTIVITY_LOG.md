@@ -182,3 +182,27 @@ This document tracks all actions, file changes, and architectural decisions made
   * Action: Android Studio Gradle sync completed (`BUILD SUCCESSFUL`).
   * Deployed `GOTask` APK onto Android Emulator.
   * Successfully verified application initialization on Android virtual device. Ready for live Metro dev session.
+
+### 16:00 - 16:15 IST (Oct 31) | Phase 7 — Intelligent Features & AI Assistance (P7.1 to P7.13)
+* **Natural Language Entity Extraction (P7.1 - P7.3)**:
+  * Files: `src/services/aiService.js`, `backend/server.js`
+  * Action: Built robust NLP task parser with structured schema, extracting `title`, `priority`, `category`, `dueDate`, `dueTime`, `estimatedDuration`, `tags`, `subtasks`, `confidence`, and `extractedEntities`. Added ambiguity detection and relative date calculation (`today`, `tomorrow`, `in X days`, `next [weekday]`).
+* **AI Task Review & Confirmation Modal (P7.4)**:
+  * File: `src/modules/AIReviewModal.js`
+  * Action: Implemented interactive review card displaying confidence badges, chips, decomposed subtasks checklist, and explicit "Confirm & Save Task" action to preserve user control.
+* **Goal & Task Decomposition Engine (P7.5, P7.6)**:
+  * Files: `src/services/aiService.js`, `src/modules/GoalModal.js`, `src/modules/TaskModal.js`
+  * Action: Added `decomposeGoalToMilestones` for sequential milestone proposals and `suggestSubtasks` for decomposing complex tasks. Wired into `GoalModal` ("✨ AI Milestones") and `TaskModal` ("✨ AI Breakdown").
+* **Overdue Recovery Planning & Factual Summaries (P7.7, P7.8)**:
+  * File: `src/services/aiService.js`
+  * Action: Built `generateOverdueRecoveryPlan` distributing overdue tasks over 3 days to avoid overload, and `generateProgressSummary` deriving factual metrics strictly from verified app data (zero fabrication).
+* **Universal Contextual Search (P7.9)**:
+  * Files: `src/utility/contextualSearch.js`, `src/screens/UniversalSearchScreen.js`, `src/navigation/drawer.js`, `src/navigation/navigation.js`
+  * Action: Built cross-entity search scoring relevance across Tasks, Notes, Goals, and Habits with type filtering and direct navigation.
+* **Agent Security Guardrails & Backend Endpoints (P7.10 - P7.13)**:
+  * Files: `backend/server.js`, `backend/test.js`
+  * Action: Enforced agent action whitelist (`PERMITTED_AGENT_ACTIONS`), rate limiting (max 60 ops/min), and audit trail recording. Added `POST /api/ai/decompose-goal`, `/api/ai/suggest-subtasks`, `/api/ai/recovery-plan`, and `/api/ai/summary` endpoints (17/17 backend tests passing).
+* **Automated Verification**:
+  * Jest: **8/8 test suites, 89/89 unit and integration tests passing** (`__tests__/IntelligentFeatures-test.tsx` 18/18).
+  * Backend Suite: **17/17 REST endpoints passing**.
+  * ESLint: **0 errors** across entire codebase.
