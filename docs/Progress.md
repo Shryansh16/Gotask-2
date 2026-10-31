@@ -160,9 +160,18 @@ Phase names and ordering follow `docs/PRD.md`.
 | GT-704 | Overdue recovery planning and factual progress summaries (P7.7, P7.8) | `DONE` |
 | GT-705 | Universal contextual search, agent rate limiting & security guardrails (P7.9 - P7.13) | `DONE` |
 
+### P8 — Analytics and Motivation
+
+| ID | Task | Status |
+|---|---|---|
+| GT-801 | Verified task metrics, category breakdown, and source-record validation (P8.1, P8.9) | `DONE` |
+| GT-802 | Goal progress history and habit consistency summaries (P8.2, P8.3) | `DONE` |
+| GT-803 | Weekly activity velocity breakdown and planned vs. actual time comparison (P8.4, P8.5) | `DONE` |
+| GT-804 | Personal milestones achievements, motivational feedback, and gamification toggle (P8.6 - P8.8) | `DONE` |
+| GT-805 | Build `AnalyticsScreen`, navigation mounting, and backend `/api/analytics/overview` tests | `DONE` |
+
 ### Later Phases
 
-- **Phase 8:** Analytics and Motivation.
 - **Phase 9:** Data Reliability, Backup, and Synchronization.
 - **Phase 10:** Production Readiness and Release Engineering.
 
@@ -211,6 +220,7 @@ Record meaningful changes newest first.
 
 | Date | Activity | Result |
 |---|---|---|
+| 2026-10-31 | Phase 8 Analytics and Motivation Completed | GT-801 to GT-805 verified. analyticsService (task metrics, weekly activity breakdown, habit consistency, goal progress, planned vs. actual time comparison, review summary), motivationService (achievements catalog, badge unlocks, non-intrusive motivational feedback), AnalyticsScreen, `/api/analytics/overview` REST endpoint, 9 new unit tests. Jest (98/98 passing across 9 suites), Backend (18/18 passing), ESLint (0 errors). |
 | 2026-10-31 | Phase 7 Intelligent Features and AI Assistance Completed | GT-701 to GT-705 verified. aiService entity extraction with confidence scoring, AIReviewModal (P7.4), goal decomposition, subtask suggestions, overdue recovery planner, factual progress summary generator, universal contextual search, agent rate limiting & security guardrails. Jest (89/89 passing across 8 suites), Backend (17/17 passing), ESLint (0 errors). |
 | 2026-10-31 | Android Studio Setup & Emulator Deployment | Configured Gradle 7.5.1 wrapper distribution, aligned Gradle JDK with Java 17, verified successful Android Studio build, and deployed APK to Android Emulator. |
 | 2026-10-31 | Phase 6 Daily Planning and Time Management Completed | GT-601 to GT-605 verified. PlanningContext with TypeSafe decision truth tables (`evaluateFocusTransition`, `evaluateDayWorkload`), background-safe timer arithmetic, batch overdue rescheduling, FocusTimer, FocusScreen, PlanningScreen, `/api/focus/sessions` REST endpoints, 12 new unit tests. Jest (71/71 passing across 7 suites), Backend (12/12 passing). Pushed to GitHub `origin/main` at commit `656c0e8`. |
@@ -223,4 +233,4 @@ Record meaningful changes newest first.
 
 ---
 
-**Next action:** Proceed to Phase 8 — Analytics and Motivation (`GT-801` to `GT-805`), implementing completion rate trends, category distribution visualizations, streaks dashboard, and milestone badges.
+**Next action:** Proceed to Phase 9 — Data Reliability, Backup, and Synchronization (`GT-901` to `GT-905`), implementing automated JSON backup exports, schema migrations, and sync conflict resolution.

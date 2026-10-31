@@ -768,6 +768,38 @@ const server = http.createServer(async (req, res) => {
   }
 
   // --- STATS & PRODUCTIVITY API ---
+    // GET /api/analytics/overview (Phase 8 — P8.1 to P8.5, P8.9)
+  if (pathname === '/api/analytics/overview' && req.method === 'GET') {
+    const db = getDb();
+    const tasks = db.tasks || [];
+    const habits = db.habits || [];
+    const goals = db.goals || [];
+    const focusSessions = db.focusSessions || [];
+
+    const totalTasks = tasks.length;
+    const completedTasks = tasks.filter(t => t.completed).length;
+    const pendingTasks = totalTasks - completedTasks;
+    const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+    const totalFocusMinutes = focusSessions.reduce((sum, s) => sum + (s.durationMinutes || s.targetMinutes || 25), 0);
+    const longestStreak = habits.reduce((max, h) => Math.max(max, h.currentStreak || 0, h.bestStreak || 0), 0);
+
+    return sendJson(res, 200, {
+      success: true,
+      metrics: {
+        totalTasks,
+        completedTasks,
+        pendingTasks,
+        completionRate,
+        totalGoals: goals.length,
+        totalHabits: habits.length,
+        longestStreak,
+        totalFocusMinutes,
+      },
+      verifiedAt: new Date().toISOString(),
+    });
+  }
+
   // GET /api/stats
   if (pathname === '/api/stats' && req.method === 'GET') {
     const db = getDb();

@@ -9,6 +9,7 @@ import NotesScreen from '../screens/NotesScreen';
 import GoalsScreen from '../screens/GoalsScreen';
 import HabitsScreen from '../screens/HabitsScreen';
 import {UniversalSearchScreen} from '../screens/UniversalSearchScreen';
+import {AnalyticsScreen} from '../screens/AnalyticsScreen';
 import WelcomeScreen from '../screens/welcomeScreen';
 import Profile from '../screens/Profile';
 import Settings from '../screens/Settings';
@@ -53,6 +54,13 @@ const Drawer = () => {
           component={UniversalSearchScreen}
           options={{
             title: '🔍  Universal Search',
+          }}
+        />
+        <DrawerNav.Screen
+          name="AnalyticsScreen"
+          component={AnalyticsScreen}
+          options={{
+            title: '📊  Analytics & Insights',
           }}
         />
         <DrawerNav.Screen

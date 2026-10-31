@@ -293,6 +293,18 @@ async function runTests() {
     assert.ok(res.data.message.includes('not permitted'));
   });
 
+    // 18. Analytics Overview API (Phase 8 — P8.1 to P8.5)
+  await test('GET /api/analytics/overview returns verified cross-module metrics', async () => {
+    const res = await request('GET', '/api/analytics/overview');
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.data.success, true);
+    assert.ok('totalTasks' in res.data.metrics);
+    assert.ok('completedTasks' in res.data.metrics);
+    assert.ok('completionRate' in res.data.metrics);
+    assert.ok('longestStreak' in res.data.metrics);
+    assert.ok('totalFocusMinutes' in res.data.metrics);
+  });
+
   // 12. Clean up created test tasks
   await test('DELETE /api/tasks/:id deletes task and records audit', async () => {
     if (createdTaskId) {

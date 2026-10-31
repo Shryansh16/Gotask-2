@@ -206,3 +206,27 @@ This document tracks all actions, file changes, and architectural decisions made
   * Jest: **8/8 test suites, 89/89 unit and integration tests passing** (`__tests__/IntelligentFeatures-test.tsx` 18/18).
   * Backend Suite: **17/17 REST endpoints passing**.
   * ESLint: **0 errors** across entire codebase.
+
+### 16:30 - 16:35 IST (Oct 31) | Phase 8 — Analytics & Motivation Engine (P8.1 to P8.9)
+* **Comprehensive Analytics Service (P8.1 to P8.5, P8.9)**:
+  * File: `src/services/analyticsService.js`
+  * Action: Implemented verified metric computations with source validation (P8.9):
+    * `computeTaskMetrics`: Completed, pending, overdue counts, completion rate, priority and category distribution.
+    * `computeWeeklyActivity`: Mon-Sun completion breakdown with peak day identification.
+    * `computeHabitConsistency`: Active streak, longest streak, average streak, and completion consistency rates.
+    * `computeGoalMetrics`: Average progress, completed goals count, and milestone tracking.
+    * `computeTimeComparison`: Planned estimated minutes vs actual logged focus minutes.
+    * `generateReviewSummary`: Comprehensive review highlights explaining data instead of bare zeroes.
+* **Personal Milestones & Gamification Engine (P8.6 to P8.8)**:
+  * File: `src/services/motivationService.js`
+  * Action: Built achievements evaluation engine (`evaluateAchievements`) supporting 8 verified badges (`First Step`, `Task Master`, `Deep Diver`, `Habitual Master`, `Visionary`, etc.), non-intrusive motivational feedback (`getMotivationalGreeting`), and toggleable gamification shelf.
+* **Analytics & Insights Dashboard (P8.1 to P8.4)**:
+  * Files: `src/screens/AnalyticsScreen.js`, `src/navigation/drawer.js`, `src/navigation/navigation.js`
+  * Action: Built full analytics dashboard featuring time window filters (`7d`, `30d`, `all`), weekly activity bar chart, category workload progress bars, planned vs actual time cards, habit consistency lists, and achievement badge shelf. Mounted in drawer (`📊 Analytics & Insights`) and stack navigator.
+* **Backend REST Endpoint (P8.1)**:
+  * Files: `backend/server.js`, `backend/test.js`
+  * Action: Added `GET /api/analytics/overview` endpoint providing verified cross-module metrics; added backend automated test (18/18 passing).
+* **Automated Verification**:
+  * Jest: **9/9 test suites, 98/98 unit and integration tests passing** (`__tests__/Analytics-test.tsx` 9/9).
+  * Backend Suite: **18/18 REST endpoints passing**.
+  * ESLint: **0 errors** across entire codebase.

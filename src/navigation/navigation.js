@@ -14,6 +14,7 @@ import NotesScreen from '../screens/NotesScreen';
 import GoalsScreen from '../screens/GoalsScreen';
 import HabitsScreen from '../screens/HabitsScreen';
 import {UniversalSearchScreen} from '../screens/UniversalSearchScreen';
+import {AnalyticsScreen} from '../screens/AnalyticsScreen';
 import {useTheme} from '../context/ThemeContext';
 
 const Stack = createStackNavigator();
@@ -54,6 +55,7 @@ const Navigation = () => {
           name="UniversalSearchScreen"
           component={UniversalSearchScreen}
         />
+        <Stack.Screen name="AnalyticsScreen" component={AnalyticsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
