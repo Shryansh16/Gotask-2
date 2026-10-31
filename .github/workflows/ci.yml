@@ -1,0 +1,30 @@
+name: GOTask CI - Verification & Quality Gate
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Backend Integration Suite
+        run: node backend/test.js
+
+      - name: Run Mobile Test Suites & Critical Journeys
+        run: npm test -- --watchAll=false
