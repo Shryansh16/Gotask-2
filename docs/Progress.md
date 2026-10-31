@@ -72,11 +72,11 @@ Phase names and ordering follow `docs/PRD.md`.
 | Phase 3 | Notes | `DONE` |
 | Phase 4 | Goals and Progress | `DONE` |
 | Phase 5 | Habits and Reminders | `DONE` |
-| Phase 6 | Planning and Focus Mode | `TODO` |
-| Phase 7 | Intelligent Features and AI Assistance | `OPEN` |
-| Phase 8 | Analytics and Motivation | `OPEN` |
-| Phase 9 | Data Reliability | `TODO` |
-| Phase 10 | Production Readiness and Release Engineering | `TODO` |
+| Phase 6 | Planning and Focus Mode | `DONE` |
+| Phase 7 | Intelligent Features and AI Assistance | `DONE` |
+| Phase 8 | Analytics and Motivation | `DONE` |
+| Phase 9 | Data Reliability | `DONE` |
+| Phase 10 | Production Readiness and Release Engineering | `DONE` |
 
 ## 5. Current Backlog
 
