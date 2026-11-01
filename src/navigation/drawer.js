@@ -1,6 +1,7 @@
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 import DrawerComponent from '../modules/DrawerComponent';
 import FunctionScreen from '../screens/FunctionScreen';
 import PlanningScreen from '../screens/PlanningScreen';
@@ -14,13 +15,12 @@ import WelcomeScreen from '../screens/welcomeScreen';
 import Profile from '../screens/Profile';
 import Settings from '../screens/Settings';
 import {useTheme} from '../context/ThemeContext';
-import {textScale} from '../styles/responsiveStyles';
 import {fontFamily} from '../common/fonts';
 
 const DrawerNav = createDrawerNavigator();
 
 const Drawer = () => {
-  const {theme, isDark} = useTheme();
+  const {theme} = useTheme();
 
   return (
     <View style={[styles.mainContainer, {backgroundColor: theme.background}]}>
@@ -29,12 +29,18 @@ const Drawer = () => {
         drawerContent={props => <DrawerComponent {...props} />}
         screenOptions={{
           headerShown: false,
-          drawerActiveBackgroundColor: theme.primary,
-          drawerActiveTintColor: '#FFFFFF',
+          drawerActiveBackgroundColor: theme.primaryLight,
+          drawerActiveTintColor: theme.primary,
           drawerInactiveTintColor: theme.textSecondary,
+          drawerItemStyle: {
+            borderRadius: 12,
+            marginHorizontal: 10,
+            marginVertical: 3,
+            paddingHorizontal: 6,
+          },
           drawerLabelStyle: {
-            marginLeft: 5,
-            fontSize: textScale(14),
+            marginLeft: -8,
+            fontSize: 14,
             fontFamily: fontFamily.medium,
           },
           drawerStyle: {
@@ -46,77 +52,110 @@ const Drawer = () => {
           name="FunctionScreen"
           component={FunctionScreen}
           options={{
-            title: '📋  Tasks Dashboard',
+            title: 'Tasks',
+            drawerIcon: ({color, size}) => (
+              <Feather name="check-square" size={size || 18} color={color} />
+            ),
           }}
         />
         <DrawerNav.Screen
           name="UniversalSearchScreen"
           component={UniversalSearchScreen}
           options={{
-            title: '🔍  Universal Search',
+            title: 'Search',
+            drawerIcon: ({color, size}) => (
+              <Feather name="search" size={size || 18} color={color} />
+            ),
           }}
         />
         <DrawerNav.Screen
           name="AnalyticsScreen"
           component={AnalyticsScreen}
           options={{
-            title: '📊  Analytics & Insights',
+            title: 'Analytics & Insights',
+            drawerIcon: ({color, size}) => (
+              <Feather name="bar-chart-2" size={size || 18} color={color} />
+            ),
           }}
         />
         <DrawerNav.Screen
           name="PlanningScreen"
           component={PlanningScreen}
           options={{
-            title: '📅  Daily Planning',
+            title: 'Daily Planning',
+            drawerIcon: ({color, size}) => (
+              <Feather name="calendar" size={size || 18} color={color} />
+            ),
           }}
         />
         <DrawerNav.Screen
           name="FocusScreen"
           component={FocusScreen}
           options={{
-            title: '🎯  Focus Mode',
+            title: 'Focus Mode',
+            drawerIcon: ({color, size}) => (
+              <Feather name="clock" size={size || 18} color={color} />
+            ),
           }}
         />
         <DrawerNav.Screen
           name="NotesScreen"
           component={NotesScreen}
           options={{
-            title: '📝  Notes',
+            title: 'Notes & Knowledge',
+            drawerIcon: ({color, size}) => (
+              <Feather name="file-text" size={size || 18} color={color} />
+            ),
           }}
         />
         <DrawerNav.Screen
           name="GoalsScreen"
           component={GoalsScreen}
           options={{
-            title: '🎯  Goals & Milestones',
+            title: 'Goals & Targets',
+            drawerIcon: ({color, size}) => (
+              <Feather name="target" size={size || 18} color={color} />
+            ),
           }}
         />
         <DrawerNav.Screen
           name="HabitsScreen"
           component={HabitsScreen}
           options={{
-            title: '🔁  Habits & Routines',
+            title: 'Habits & Rituals',
+            drawerIcon: ({color, size}) => (
+              <Feather name="zap" size={size || 18} color={color} />
+            ),
           }}
         />
         <DrawerNav.Screen
           name="Profile"
           component={Profile}
           options={{
-            title: '👤  User Profile',
+            title: 'Profile',
+            drawerIcon: ({color, size}) => (
+              <Feather name="user" size={size || 18} color={color} />
+            ),
           }}
         />
         <DrawerNav.Screen
           name="Settings"
           component={Settings}
           options={{
-            title: '⚙️  Settings & Sync',
+            title: 'Settings & Sync',
+            drawerIcon: ({color, size}) => (
+              <Feather name="settings" size={size || 18} color={color} />
+            ),
           }}
         />
         <DrawerNav.Screen
           name="WelcomeScreen"
           component={WelcomeScreen}
           options={{
-            title: '🚀  Welcome Tour',
+            title: 'Welcome Tour',
+            drawerIcon: ({color, size}) => (
+              <Feather name="compass" size={size || 18} color={color} />
+            ),
           }}
         />
       </DrawerNav.Navigator>

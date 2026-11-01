@@ -8,20 +8,22 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   StatusBar,
   Modal,
   FlatList,
 } from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 import {useTheme} from '../context/ThemeContext';
 import {usePlanning} from '../context/PlanningContext';
 import {useTasks} from '../context/TaskContext';
 import {fontFamily} from '../common/fonts';
-import {textScale, moderateScale} from '../styles/responsiveStyles';
 import {spacing} from '../styles/spacing';
 import {getTextA11yProps} from '../utility/accessibility';
-import HemburgerButton from '../modules/HemburgerButton';
+import ScreenContainer from '../design-system/ScreenContainer';
+import Header from '../design-system/Header';
 import FocusTimer from '../components/FocusTimer';
+import ElevateTabBar from '../components/ElevateTabBar';
+import ElevateRecommendedPath from '../components/ElevateRecommendedPath';
 
 export const FocusScreen = ({navigation}) => {
   const {theme, isDark} = useTheme();
@@ -44,74 +46,74 @@ export const FocusScreen = ({navigation}) => {
   };
 
   return (
-    <SafeAreaView
-      style={[styles.safeArea, {backgroundColor: theme.background}]}>
+    <ScreenContainer scrollable={false} contentPadding={0}>
       <StatusBar
         backgroundColor={theme.background}
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
 
-      {/* Header */}
-      <View style={[styles.headerRow, {borderColor: theme.border}]}>
-        <HemburgerButton navigation={navigation} />
-        <View style={styles.headerTitleContainer}>
-          <Text
-            {...getTextA11yProps(1.3)}
-            style={[styles.headerTitle, {color: theme.textPrimary}]}>
-            Focus Mode
-          </Text>
-        </View>
-        <TouchableOpacity
-          onPress={() => setSelectorVisible(true)}
-          style={[styles.taskPickerBtn, {backgroundColor: theme.primaryLight}]}
-          accessibilityRole="button"
-          accessibilityLabel="Switch active focus task">
-          <Text
-            {...getTextA11yProps(1.2)}
-            style={[styles.taskPickerBtnText, {color: theme.primary}]}>
-            {activeTask ? 'Switch Task' : '+ Pick Task'}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      {/* Editorial Header */}
+      <Header
+        title="Focus Mode"
+        subtitle="Distraction-free deep work session"
+        navigation={navigation}
+        rightAction={{
+          icon: activeTask ? 'refresh-cw' : 'plus',
+          label: activeTask ? 'Switch' : 'Pick Task',
+          onPress: () => setSelectorVisible(true),
+          accessibilityLabel: 'Switch active focus task',
+        }}
+      />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}>
-        {/* Today's Focus Stats Banner */}
+        {/* Elevate Deep Focus Hero */}
         <View
           style={[
-            styles.statsBanner,
-            {
-              backgroundColor: theme.surface,
-              borderColor: theme.border,
-            },
+            styles.focusHero,
+            {backgroundColor: theme.primary},
+            theme.cardShadow,
           ]}>
-          <View style={styles.statItem}>
-            <Text
-              {...getTextA11yProps(1.2)}
-              style={[styles.statValue, {color: theme.primary}]}>
-              {todayFocusMinutes}m
-            </Text>
-            <Text
-              {...getTextA11yProps(1.2)}
-              style={[styles.statLabel, {color: theme.textSecondary}]}>
-              Today Focused
-            </Text>
+          <View style={styles.focusHeroHeader}>
+            <View style={styles.heroBadge}>
+              <Feather name="zap" size={13} color="#FEF08A" style={{marginRight: 5}} />
+              <Text style={styles.heroBadgeText}>DEEP WORK PULSE</Text>
+            </View>
+            <View style={styles.heroTargetIndicator}>
+              <Feather name="activity" size={14} color="#A7F3D0" />
+            </View>
           </View>
-          <View
-            style={[styles.statDivider, {backgroundColor: theme.divider}]}
-          />
-          <View style={styles.statItem}>
-            <Text
-              {...getTextA11yProps(1.2)}
-              style={[styles.statValue, {color: theme.primary}]}>
-              {todayFocusSessions.length}
-            </Text>
-            <Text
-              {...getTextA11yProps(1.2)}
-              style={[styles.statLabel, {color: theme.textSecondary}]}>
-              Sessions Done
-            </Text>
+
+          <View style={styles.heroTilesRow}>
+            <View style={styles.heroTile}>
+              <Text
+                {...getTextA11yProps(1.2)}
+                style={styles.heroTileNumber}>
+                {todayFocusMinutes}
+                <Text style={styles.heroTileUnit}>m</Text>
+              </Text>
+              <Text
+                {...getTextA11yProps(1.1)}
+                style={styles.heroTileLabel}>
+                Focused Today
+              </Text>
+            </View>
+
+            <View style={styles.heroTileDivider} />
+
+            <View style={styles.heroTile}>
+              <Text
+                {...getTextA11yProps(1.2)}
+                style={styles.heroTileNumber}>
+                {todayFocusSessions.length}
+              </Text>
+              <Text
+                {...getTextA11yProps(1.1)}
+                style={styles.heroTileLabel}>
+                Sessions Done
+              </Text>
+            </View>
           </View>
         </View>
 
@@ -125,20 +127,46 @@ export const FocusScreen = ({navigation}) => {
             <View
               style={[
                 styles.checklistContainer,
-                {backgroundColor: theme.surface, borderColor: theme.border},
+                {
+                  backgroundColor: theme.surface,
+                  borderColor: theme.border,
+                  borderLeftColor: theme.primary,
+                  borderLeftWidth: 5,
+                },
+                theme.cardShadow,
               ]}>
-              <Text
-                {...getTextA11yProps(1.2)}
-                style={[styles.checklistHeader, {color: theme.textSecondary}]}>
-                SUBTASKS CHECKLIST
-              </Text>
+              <View style={styles.checklistHeaderRow}>
+                <View
+                  style={[
+                    styles.checklistMedallion,
+                    {backgroundColor: theme.primaryLight},
+                  ]}>
+                  <Feather name="check-square" size={14} color={theme.primary} />
+                </View>
+                <Text
+                  {...getTextA11yProps(1.1)}
+                  style={[styles.checklistHeader, {color: theme.textSecondary}]}>
+                  SUBTASKS BREAKDOWN
+                </Text>
+              </View>
               {activeTask.subtasks.map(subtask => (
                 <TouchableOpacity
                   key={subtask.id}
+                  activeOpacity={0.8}
                   onPress={() => toggleSubtask(activeTask.id, subtask.id)}
-                  style={styles.subtaskRow}
+                  style={[
+                    styles.subtaskRow,
+                    {
+                      backgroundColor: subtask.completed
+                        ? theme.surfaceSecondary
+                        : 'transparent',
+                    },
+                  ]}
                   accessibilityRole="checkbox"
-                  accessibilityState={{checked: subtask.completed}}>
+                  accessibilityState={{checked: subtask.completed}}
+                  accessibilityLabel={`Mark subtask ${subtask.title} as ${
+                    subtask.completed ? 'incomplete' : 'complete'
+                  }`}>
                   <View
                     style={[
                       styles.checkboxBox,
@@ -148,11 +176,11 @@ export const FocusScreen = ({navigation}) => {
                           : theme.border,
                         backgroundColor: subtask.completed
                           ? theme.primary
-                          : 'transparent',
+                          : theme.surfaceSecondary,
                       },
                     ]}>
                     {subtask.completed && (
-                      <Text style={styles.checkboxCheckmark}>✓</Text>
+                      <Feather name="check" size={14} color="#FFFFFF" />
                     )}
                   </View>
                   <Text
@@ -166,6 +194,9 @@ export const FocusScreen = ({navigation}) => {
                         textDecorationLine: subtask.completed
                           ? 'line-through'
                           : 'none',
+                        fontFamily: subtask.completed
+                          ? fontFamily.regular
+                          : fontFamily.medium,
                       },
                     ]}>
                     {subtask.title}
@@ -174,7 +205,78 @@ export const FocusScreen = ({navigation}) => {
               ))}
             </View>
           )}
+
+        {/* Elevate Science-Backed Focus Benefits Card */}
+        <View
+          style={[
+            styles.benefitsCard,
+            {
+              backgroundColor: isDark ? '#151D2F' : '#FFFFFF',
+              borderColor: isDark ? '#1E293B' : '#E2E8F0',
+              borderBottomColor: isDark ? '#0F172A' : '#CBD5E1',
+            },
+          ]}>
+          <View style={styles.benefitsHeaderRow}>
+            <View style={styles.benefitsIconBadge}>
+              <Feather name="award" size={14} color="#00A3FF" />
+            </View>
+            <Text style={[styles.benefitsTitle, {color: theme.textPrimary}]}>
+              FOCUS SESSION BENEFITS
+            </Text>
+          </View>
+
+          <View style={styles.benefitItem}>
+            <View style={styles.checkPill}>
+              <Feather name="check" size={12} color="#10B981" />
+            </View>
+            <View style={styles.benefitTextCol}>
+              <Text style={[styles.benefitHeadline, {color: theme.textPrimary}]}>
+                Cognitive Flow State
+              </Text>
+              <Text style={[styles.benefitDesc, {color: theme.textSecondary}]}>
+                Eliminating interruptions boosts task completion speed by 2.4x.
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.benefitItem}>
+            <View style={styles.checkPill}>
+              <Feather name="check" size={12} color="#10B981" />
+            </View>
+            <View style={styles.benefitTextCol}>
+              <Text style={[styles.benefitHeadline, {color: theme.textPrimary}]}>
+                Fatigue Prevention
+              </Text>
+              <Text style={[styles.benefitDesc, {color: theme.textSecondary}]}>
+                Structured 5-minute pauses restore working memory and visual focus.
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.benefitItem}>
+            <View style={styles.checkPill}>
+              <Feather name="check" size={12} color="#10B981" />
+            </View>
+            <View style={styles.benefitTextCol}>
+              <Text style={[styles.benefitHeadline, {color: theme.textPrimary}]}>
+                Streak & Level XP
+              </Text>
+              <Text style={[styles.benefitDesc, {color: theme.textSecondary}]}>
+                Each completed interval awards +50 XP towards your Emerald league rank.
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Elevate Recommended Focus Workout Path (Image 1) */}
+        <ElevateRecommendedPath
+          tasks={tasks.filter(t => !t.completed)}
+          onSelectTask={handleSelectTask}
+        />
       </ScrollView>
+
+      {/* Elevate 5-Tab Tactile Bottom Navigation Bar */}
+      <ElevateTabBar activeTab="focus" navigation={navigation} />
 
       {/* Task Picker Modal */}
       <Modal
@@ -188,6 +290,7 @@ export const FocusScreen = ({navigation}) => {
               styles.modalSheet,
               {backgroundColor: theme.surface, borderColor: theme.border},
             ]}>
+            <View style={styles.modalGrabber} />
             <View style={styles.modalHeaderRow}>
               <Text
                 {...getTextA11yProps(1.3)}
@@ -197,12 +300,9 @@ export const FocusScreen = ({navigation}) => {
               <TouchableOpacity
                 onPress={() => setSelectorVisible(false)}
                 accessibilityRole="button"
-                accessibilityLabel="Close picker">
-                <Text
-                  {...getTextA11yProps(1.2)}
-                  style={[styles.modalCloseText, {color: theme.textSecondary}]}>
-                  ✕
-                </Text>
+                accessibilityLabel="Close picker"
+                style={styles.modalCloseBtn}>
+                <Feather name="x" size={18} color={theme.textSecondary} />
               </TouchableOpacity>
             </View>
 
@@ -213,8 +313,15 @@ export const FocusScreen = ({navigation}) => {
               }}
               style={[
                 styles.taskPickRow,
-                {backgroundColor: theme.background, borderColor: theme.border},
+                {backgroundColor: theme.surfaceSecondary, borderColor: theme.border},
               ]}>
+              <View
+                style={[
+                  styles.pickIconMedallion,
+                  {backgroundColor: theme.primaryLight},
+                ]}>
+                <Feather name="compass" size={16} color={theme.primary} />
+              </View>
               <Text
                 {...getTextA11yProps(1.2)}
                 style={[styles.taskPickTitle, {color: theme.textSecondary}]}>
@@ -229,6 +336,7 @@ export const FocusScreen = ({navigation}) => {
                   : tasks.filter(t => !t.completed)
               }
               keyExtractor={item => item.id}
+              showsVerticalScrollIndicator={false}
               renderItem={({item}) => {
                 const isSelected = activeTaskId === item.id;
                 return (
@@ -239,10 +347,26 @@ export const FocusScreen = ({navigation}) => {
                       {
                         backgroundColor: isSelected
                           ? theme.primaryLight
-                          : theme.background,
+                          : theme.surfaceSecondary,
                         borderColor: isSelected ? theme.primary : theme.border,
+                        borderWidth: isSelected ? 2 : 1,
                       },
                     ]}>
+                    <View
+                      style={[
+                        styles.pickIconMedallion,
+                        {
+                          backgroundColor: isSelected
+                            ? theme.primary
+                            : theme.surface,
+                        },
+                      ]}>
+                      <Feather
+                        name={isSelected ? 'check' : 'circle'}
+                        size={14}
+                        color={isSelected ? '#FFFFFF' : theme.textMuted}
+                      />
+                    </View>
                     <Text
                       {...getTextA11yProps(1.2)}
                       style={[
@@ -257,14 +381,26 @@ export const FocusScreen = ({navigation}) => {
                       {item.title}
                     </Text>
                     {item.estimatedDuration ? (
-                      <Text
-                        {...getTextA11yProps(1.1)}
+                      <View
                         style={[
                           styles.durationBadge,
-                          {color: theme.textSecondary},
+                          {backgroundColor: theme.surface},
                         ]}>
-                        ⏱ {item.estimatedDuration}m
-                      </Text>
+                        <Feather
+                          name="clock"
+                          size={11}
+                          color={theme.textSecondary}
+                          style={{marginRight: 4}}
+                        />
+                        <Text
+                          {...getTextA11yProps(1.1)}
+                          style={[
+                            styles.durationBadgeText,
+                            {color: theme.textSecondary},
+                          ]}>
+                          {item.estimatedDuration}m
+                        </Text>
+                      </View>
                     ) : null}
                   </TouchableOpacity>
                 );
@@ -282,146 +418,258 @@ export const FocusScreen = ({navigation}) => {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.medium,
-    paddingVertical: spacing.small,
-    borderBottomWidth: 1,
-  },
-  headerTitleContainer: {
-    flex: 1,
-    marginLeft: spacing.small,
-  },
-  headerTitle: {
-    fontSize: textScale(20),
-    fontFamily: fontFamily.bold,
-  },
-  taskPickerBtn: {
-    paddingVertical: spacing.small - 2,
-    paddingHorizontal: spacing.medium,
-    borderRadius: 8,
-  },
-  taskPickerBtnText: {
-    fontSize: textScale(12),
-    fontFamily: fontFamily.bold,
-  },
   scrollContent: {
     padding: spacing.medium,
+    paddingBottom: 120, // Full bottom clearance
   },
-  statsBanner: {
-    flexDirection: 'row',
-    borderRadius: 14,
+  focusHero: {
+    borderRadius: 22,
+    padding: 16,
+    marginBottom: spacing.medium,
     borderWidth: 1,
-    paddingVertical: spacing.medium - 2,
-    marginBottom: spacing.small,
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderBottomWidth: 5, // Elevate 3D bevel
   },
-  statItem: {
+  focusHeroHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 12,
+  },
+  heroBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  heroBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontFamily: fontFamily.bold,
+    letterSpacing: 0.8,
+  },
+  heroTargetIndicator: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroTilesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.15)',
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  heroTile: {
     flex: 1,
+    alignItems: 'center',
   },
-  statValue: {
-    fontSize: textScale(22),
+  heroTileDivider: {
+    width: 1,
+    height: 36,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  heroTileNumber: {
+    color: '#FFFFFF',
+    fontSize: 26,
     fontFamily: fontFamily.bold,
   },
-  statLabel: {
-    fontSize: textScale(12),
-    fontFamily: fontFamily.regular,
+  heroTileUnit: {
+    fontSize: 16,
+    fontFamily: fontFamily.semiBold,
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  heroTileLabel: {
+    color: 'rgba(255, 255, 255, 0.85)',
+    fontSize: 11,
+    fontFamily: fontFamily.medium,
     marginTop: 2,
   },
-  statDivider: {
-    width: 1,
-    height: '60%',
-  },
   checklistContainer: {
-    padding: spacing.medium,
-    borderRadius: 14,
+    padding: 16,
+    borderRadius: 18,
     borderWidth: 1,
-    marginTop: spacing.small,
+    marginTop: spacing.medium,
+  },
+  checklistHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  checklistMedallion: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
   },
   checklistHeader: {
-    fontSize: textScale(11),
+    fontSize: 12,
     fontFamily: fontFamily.bold,
-    letterSpacing: 1,
-    marginBottom: spacing.small,
+    letterSpacing: 0.8,
   },
   subtaskRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: spacing.small - 2,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    marginBottom: 6,
+    minHeight: 44,
   },
   checkboxBox: {
-    width: 20,
-    height: 20,
-    borderRadius: 5,
-    borderWidth: 1.5,
+    width: 24,
+    height: 24,
+    borderRadius: 8,
+    borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: spacing.small,
-  },
-  checkboxCheckmark: {
-    color: '#FFFFFF',
-    fontSize: textScale(11),
-    fontWeight: 'bold',
+    marginRight: 10,
   },
   subtaskTitle: {
-    fontSize: textScale(14),
-    fontFamily: fontFamily.regular,
+    fontSize: 14,
     flex: 1,
   },
   modalBackdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
     justifyContent: 'flex-end',
   },
   modalSheet: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     borderTopWidth: 1,
-    padding: spacing.medium,
-    maxHeight: '75%',
+    padding: 20,
+    maxHeight: '80%',
+  },
+  modalGrabber: {
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(150, 150, 150, 0.35)',
+    alignSelf: 'center',
+    marginBottom: 14,
   },
   modalHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.medium,
+    marginBottom: 16,
   },
   modalTitle: {
-    fontSize: textScale(17),
+    fontSize: 17,
     fontFamily: fontFamily.bold,
   },
-  modalCloseText: {
-    fontSize: textScale(18),
-    padding: spacing.small,
+  modalCloseBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   taskPickRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: spacing.medium,
-    borderRadius: 12,
+    padding: 12,
+    borderRadius: 14,
     borderWidth: 1,
-    marginBottom: spacing.small,
+    marginBottom: 10,
+    minHeight: 52,
+  },
+  pickIconMedallion: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
   },
   taskPickTitle: {
-    fontSize: textScale(14),
+    fontSize: 14,
     flex: 1,
   },
   durationBadge: {
-    fontSize: textScale(12),
-    fontFamily: fontFamily.regular,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
     marginLeft: spacing.small,
+  },
+  durationBadgeText: {
+    fontSize: 12,
+    fontFamily: fontFamily.medium,
+  },
+  benefitsCard: {
+    padding: 18,
+    borderRadius: 22,
+    borderWidth: 1.5,
+    borderBottomWidth: 4, // Elevate 3D bevel
+    marginTop: spacing.medium,
+    shadowColor: '#475569',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  benefitsHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  benefitsIconBadge: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(0, 163, 255, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+  },
+  benefitsTitle: {
+    fontSize: 12,
+    fontFamily: fontFamily.bold,
+    letterSpacing: 0.8,
+  },
+  benefitItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  checkPill: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#DCFCE7',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+    marginTop: 2,
+  },
+  benefitTextCol: {
+    flex: 1,
+  },
+  benefitHeadline: {
+    fontSize: 13,
+    fontFamily: fontFamily.bold,
+    marginBottom: 2,
+  },
+  benefitDesc: {
+    fontSize: 12,
+    fontFamily: fontFamily.regular,
+    lineHeight: 17,
   },
 });
 

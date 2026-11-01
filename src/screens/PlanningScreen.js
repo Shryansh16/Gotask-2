@@ -8,25 +8,26 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   StatusBar,
-  Alert,
 } from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 import {useTheme} from '../context/ThemeContext';
 import {usePlanning} from '../context/PlanningContext';
 import {useTasks} from '../context/TaskContext';
 import {fontFamily} from '../common/fonts';
-import {textScale, moderateScale} from '../styles/responsiveStyles';
 import {spacing} from '../styles/spacing';
 import {getTextA11yProps} from '../utility/accessibility';
-import HemburgerButton from '../modules/HemburgerButton';
+import ScreenContainer from '../design-system/ScreenContainer';
+import Header from '../design-system/Header';
 import EmptyState from '../components/EmptyState';
+import ElevateTabBar from '../components/ElevateTabBar';
+import ElevateQuests from '../components/ElevateQuests';
 
 const DURATION_PRESETS = [15, 25, 45, 60];
 
 export const PlanningScreen = ({navigation}) => {
   const {theme, isDark} = useTheme();
-  const {toggleTaskComplete} = useTasks();
+  const {toggleTaskComplete, stats} = useTasks();
   const {
     todayTasks,
     upcomingTasks,
@@ -54,94 +55,78 @@ export const PlanningScreen = ({navigation}) => {
   const capacityPercent = Math.round(capacityRatio * 100);
 
   return (
-    <SafeAreaView
-      style={[styles.safeArea, {backgroundColor: theme.background}]}>
+    <ScreenContainer scrollable={false} contentPadding={0}>
       <StatusBar
         backgroundColor={theme.background}
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
 
-      {/* Header */}
-      <View style={[styles.headerRow, {borderColor: theme.border}]}>
-        <HemburgerButton navigation={navigation} />
-        <View style={styles.headerTitleContainer}>
-          <Text
-            {...getTextA11yProps(1.3)}
-            style={[styles.headerTitle, {color: theme.textPrimary}]}>
-            Daily Planning
-          </Text>
-        </View>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('FocusScreen')}
-          style={[styles.quickFocusBtn, {backgroundColor: theme.primary}]}
-          accessibilityRole="button"
-          accessibilityLabel="Open Focus Mode">
-          <Text {...getTextA11yProps(1.2)} style={styles.quickFocusBtnText}>
-            ⏱ Focus
-          </Text>
-        </TouchableOpacity>
-      </View>
+      {/* Editorial Header */}
+      <Header
+        title="Daily Planning"
+        subtitle="Manage daily workload & timeline"
+        navigation={navigation}
+        rightAction={{
+          icon: 'clock',
+          label: 'Focus',
+          onPress: () => navigation.navigate('FocusScreen'),
+          accessibilityLabel: 'Open Focus Mode',
+        }}
+      />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}>
-        {/* Workload Capacity Card (P6.8) */}
+        {/* Elevate Daily Quests System (Image 2) */}
+        <ElevateQuests
+          completedTasksCount={stats?.completed || 0}
+          streakDays={stats?.streak || 1}
+          focusSessionsCount={stats?.streak > 0 ? 1 : 0}
+          onPressQuest={() => {}}
+        />
+
+        {/* Elevate Capacity Hero */}
         <View
           style={[
             styles.capacityCard,
             {
-              backgroundColor: theme.surface,
-              borderColor: workloadAnalysis.isOverloaded
-                ? theme.danger
-                : theme.border,
+              backgroundColor: theme.primary,
             },
+            theme.cardShadow,
           ]}>
-          <View style={styles.capacityHeaderRow}>
-            <View>
-              <Text
-                {...getTextA11yProps(1.2)}
-                style={[styles.capacityTitle, {color: theme.textPrimary}]}>
-                Today's Planned Load
-              </Text>
-              <Text
-                {...getTextA11yProps(1.2)}
-                style={[
-                  styles.capacitySubtitle,
-                  {
-                    color: workloadAnalysis.isOverloaded
-                      ? theme.danger
-                      : theme.textSecondary,
-                  },
-                ]}>
-                {workloadAnalysis.message}
-              </Text>
+          <View style={styles.capacityHeroHeader}>
+            <View style={styles.heroBadge}>
+              <Feather name="activity" size={13} color="#FEF08A" style={{marginRight: 5}} />
+              <Text style={styles.heroBadgeText}>PLANNED CAPACITY</Text>
             </View>
             <View style={styles.capacityNumbersCol}>
               <Text
                 {...getTextA11yProps(1.3)}
-                style={[
-                  styles.capacityMinsText,
-                  {
-                    color: workloadAnalysis.isOverloaded
-                      ? theme.danger
-                      : theme.primary,
-                  },
-                ]}>
+                style={styles.capacityMinsText}>
                 {todayEstimatedMinutes}m
-              </Text>
-              <Text
-                {...getTextA11yProps(1.1)}
-                style={[styles.capacityLimitText, {color: theme.textMuted}]}>
-                / {dailyCapacityMinutes}m max
+                <Text style={styles.capacityLimitText}> / {dailyCapacityMinutes}m</Text>
               </Text>
             </View>
           </View>
+
+          <Text
+            {...getTextA11yProps(1.1)}
+            style={[
+              styles.capacitySubtitle,
+              {
+                color: workloadAnalysis.isOverloaded
+                  ? '#FECACA'
+                  : 'rgba(255, 255, 255, 0.85)',
+              },
+            ]}>
+            {workloadAnalysis.message}
+          </Text>
 
           {/* Progress Bar */}
           <View
             style={[
               styles.capacityProgressBar,
-              {backgroundColor: theme.surfaceSecondary},
+              {backgroundColor: 'rgba(255, 255, 255, 0.22)'},
             ]}>
             <View
               style={[
@@ -149,8 +134,8 @@ export const PlanningScreen = ({navigation}) => {
                 {
                   width: `${capacityPercent}%`,
                   backgroundColor: workloadAnalysis.isOverloaded
-                    ? theme.danger
-                    : theme.primary,
+                    ? '#EF4444'
+                    : '#10B981',
                 },
               ]}
             />
@@ -162,14 +147,25 @@ export const PlanningScreen = ({navigation}) => {
           <View
             style={[
               styles.overdueBanner,
-              {backgroundColor: theme.warningLight, borderColor: theme.warning},
+              {
+                backgroundColor: isDark ? 'rgba(217, 119, 6, 0.12)' : '#FEF3C7',
+                borderColor: theme.warning,
+              },
             ]}>
-            <View style={{flex: 1}}>
-              <Text
-                {...getTextA11yProps(1.2)}
-                style={[styles.overdueBannerTitle, {color: theme.warning}]}>
-                ⚠️ {overdueTasks.length} Unfinished Tasks
-              </Text>
+            <View style={{flex: 1, marginRight: spacing.small}}>
+              <View style={styles.overdueTitleRow}>
+                <Feather
+                  name="alert-circle"
+                  size={15}
+                  color={theme.warning}
+                  style={{marginRight: 6}}
+                />
+                <Text
+                  {...getTextA11yProps(1.2)}
+                  style={[styles.overdueBannerTitle, {color: theme.warning}]}>
+                  {overdueTasks.length} Unfinished Tasks
+                </Text>
+              </View>
               <Text
                 {...getTextA11yProps(1.1)}
                 style={[styles.overdueBannerSub, {color: theme.textSecondary}]}>
@@ -187,21 +183,33 @@ export const PlanningScreen = ({navigation}) => {
               <Text
                 {...getTextA11yProps(1.2)}
                 style={styles.batchRescheduleBtnText}>
-                Plan for Today
+                Plan Today
               </Text>
             </TouchableOpacity>
           </View>
         )}
 
-        {/* Section Filter Tabs */}
+        {/* Section Filter Tabs — Elevate 3D Tactile Pills */}
         <View style={styles.tabBar}>
           <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel={`Today tasks, ${todayTasks.length} items`}
             onPress={() => setActiveTab('today')}
             style={[
               styles.tabBtn,
               {
+                backgroundColor:
+                  activeTab === 'today'
+                    ? isDark ? '#1E1B4B' : '#EEF2FF'
+                    : isDark ? '#1E293B' : '#F8FAFC',
+                borderColor:
+                  activeTab === 'today'
+                    ? '#4F46E5'
+                    : isDark ? '#334155' : '#E2E8F0',
                 borderBottomColor:
-                  activeTab === 'today' ? theme.primary : 'transparent',
+                  activeTab === 'today'
+                    ? '#3730A3'
+                    : isDark ? '#0F172A' : '#CBD5E1',
               },
             ]}>
             <Text
@@ -210,7 +218,7 @@ export const PlanningScreen = ({navigation}) => {
                 styles.tabBtnText,
                 {
                   color:
-                    activeTab === 'today' ? theme.primary : theme.textSecondary,
+                    activeTab === 'today' ? '#4F46E5' : theme.textSecondary,
                   fontFamily:
                     activeTab === 'today' ? fontFamily.bold : fontFamily.medium,
                 },
@@ -220,12 +228,24 @@ export const PlanningScreen = ({navigation}) => {
           </TouchableOpacity>
 
           <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel={`Overdue tasks, ${overdueTasks.length} items`}
             onPress={() => setActiveTab('overdue')}
             style={[
               styles.tabBtn,
               {
+                backgroundColor:
+                  activeTab === 'overdue'
+                    ? isDark ? '#2C1515' : '#FEF2F2'
+                    : isDark ? '#1E293B' : '#F8FAFC',
+                borderColor:
+                  activeTab === 'overdue'
+                    ? '#EF4444'
+                    : isDark ? '#334155' : '#E2E8F0',
                 borderBottomColor:
-                  activeTab === 'overdue' ? theme.primary : 'transparent',
+                  activeTab === 'overdue'
+                    ? '#991B1B'
+                    : isDark ? '#0F172A' : '#CBD5E1',
               },
             ]}>
             <Text
@@ -234,9 +254,7 @@ export const PlanningScreen = ({navigation}) => {
                 styles.tabBtnText,
                 {
                   color:
-                    activeTab === 'overdue'
-                      ? theme.primary
-                      : theme.textSecondary,
+                    activeTab === 'overdue' ? '#EF4444' : theme.textSecondary,
                   fontFamily:
                     activeTab === 'overdue'
                       ? fontFamily.bold
@@ -248,12 +266,24 @@ export const PlanningScreen = ({navigation}) => {
           </TouchableOpacity>
 
           <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel={`Upcoming tasks, ${upcomingTasks.length} items`}
             onPress={() => setActiveTab('upcoming')}
             style={[
               styles.tabBtn,
               {
+                backgroundColor:
+                  activeTab === 'upcoming'
+                    ? isDark ? '#0C4A6E' : '#F0F9FF'
+                    : isDark ? '#1E293B' : '#F8FAFC',
+                borderColor:
+                  activeTab === 'upcoming'
+                    ? '#0284C7'
+                    : isDark ? '#334155' : '#E2E8F0',
                 borderBottomColor:
-                  activeTab === 'upcoming' ? theme.primary : 'transparent',
+                  activeTab === 'upcoming'
+                    ? '#075985'
+                    : isDark ? '#0F172A' : '#CBD5E1',
               },
             ]}>
             <Text
@@ -262,9 +292,7 @@ export const PlanningScreen = ({navigation}) => {
                 styles.tabBtnText,
                 {
                   color:
-                    activeTab === 'upcoming'
-                      ? theme.primary
-                      : theme.textSecondary,
+                    activeTab === 'upcoming' ? '#0284C7' : theme.textSecondary,
                   fontFamily:
                     activeTab === 'upcoming'
                       ? fontFamily.bold
@@ -281,7 +309,7 @@ export const PlanningScreen = ({navigation}) => {
           <View style={styles.taskListContainer}>
             {todayTasks.length === 0 ? (
               <EmptyState
-                icon="calendar-check"
+                icon="check-circle"
                 title="All Planned Work Complete"
                 message="No more tasks planned for today. Enjoy your progress or add a task!"
               />
@@ -306,9 +334,14 @@ export const PlanningScreen = ({navigation}) => {
                             ? theme.primary
                             : 'transparent',
                         },
-                      ]}>
+                      ]}
+                      accessibilityRole="checkbox"
+                      accessibilityState={{checked: task.completed}}
+                      accessibilityLabel={`Mark ${task.title} ${
+                        task.completed ? 'incomplete' : 'complete'
+                      }`}>
                       {task.completed && (
-                        <Text style={styles.checkIcon}>✓</Text>
+                        <Feather name="check" size={13} color="#FFFFFF" />
                       )}
                     </TouchableOpacity>
                     <View style={{flex: 1, marginLeft: spacing.small}}>
@@ -316,7 +349,14 @@ export const PlanningScreen = ({navigation}) => {
                         {...getTextA11yProps(1.2)}
                         style={[
                           styles.planningTaskTitle,
-                          {color: theme.textPrimary},
+                          {
+                            color: task.completed
+                              ? theme.textMuted
+                              : theme.textPrimary,
+                            textDecorationLine: task.completed
+                              ? 'line-through'
+                              : 'none',
+                          },
                         ]}>
                         {task.title}
                       </Text>
@@ -339,19 +379,29 @@ export const PlanningScreen = ({navigation}) => {
                       ]}
                       accessibilityRole="button"
                       accessibilityLabel={`Start focus session for ${task.title}`}>
+                      <Feather
+                        name="play"
+                        size={11}
+                        color={theme.primary}
+                        style={{marginRight: 4}}
+                      />
                       <Text
                         {...getTextA11yProps(1.1)}
                         style={[
                           styles.focusTaskActionBtnText,
                           {color: theme.primary},
                         ]}>
-                        Focus ▶
+                        Focus
                       </Text>
                     </TouchableOpacity>
                   </View>
 
                   {/* Duration Presets Selector (P6.2) */}
-                  <View style={styles.durationSelectorRow}>
+                  <View
+                    style={[
+                      styles.durationSelectorRow,
+                      {borderColor: theme.divider},
+                    ]}>
                     <Text
                       {...getTextA11yProps(1.1)}
                       style={[
@@ -534,73 +584,64 @@ export const PlanningScreen = ({navigation}) => {
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+
+      {/* Elevate 5-Tab Tactile Bottom Navigation Bar */}
+      <ElevateTabBar activeTab="quests" navigation={navigation} />
+    </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.medium,
-    paddingVertical: spacing.small,
-    borderBottomWidth: 1,
-  },
-  headerTitleContainer: {
-    flex: 1,
-    marginLeft: spacing.small,
-  },
-  headerTitle: {
-    fontSize: textScale(20),
-    fontFamily: fontFamily.bold,
-  },
-  quickFocusBtn: {
-    paddingVertical: spacing.small - 2,
-    paddingHorizontal: spacing.medium,
-    borderRadius: 8,
-  },
-  quickFocusBtnText: {
-    color: '#FFFFFF',
-    fontSize: textScale(13),
-    fontFamily: fontFamily.bold,
-  },
   scrollContent: {
     padding: spacing.medium,
+    paddingBottom: 120, // Clearance for ElevateTabBar
   },
   capacityCard: {
-    borderRadius: 14,
-    borderWidth: 1,
-    padding: spacing.medium,
+    borderRadius: 22,
+    padding: 18,
     marginBottom: spacing.medium,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderBottomWidth: 5, // Elevate 3D bevel
   },
-  capacityHeaderRow: {
+  capacityHeroHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: spacing.small,
+    alignItems: 'center',
+    marginBottom: 8,
   },
-  capacityTitle: {
-    fontSize: textScale(15),
+  heroBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  heroBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 11,
     fontFamily: fontFamily.bold,
+    letterSpacing: 0.8,
   },
   capacitySubtitle: {
-    fontSize: textScale(12),
-    fontFamily: fontFamily.regular,
+    fontSize: 13,
+    fontFamily: fontFamily.medium,
     marginTop: 2,
+    marginBottom: 12,
   },
   capacityNumbersCol: {
     alignItems: 'flex-end',
   },
   capacityMinsText: {
-    fontSize: textScale(20),
+    fontSize: 20,
     fontFamily: fontFamily.bold,
+    color: '#FFFFFF',
   },
   capacityLimitText: {
-    fontSize: textScale(11),
-    fontFamily: fontFamily.regular,
+    fontSize: 12,
+    fontFamily: fontFamily.semiBold,
+    color: 'rgba(255, 255, 255, 0.75)',
   },
   capacityProgressBar: {
     height: 8,
@@ -616,54 +657,77 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
-    padding: spacing.medium,
+    borderLeftWidth: 6,
+    borderLeftColor: '#EF4444',
+    padding: 16,
     marginBottom: spacing.medium,
+    shadowColor: '#475569',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  overdueTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 2,
   },
   overdueBannerTitle: {
-    fontSize: textScale(13),
+    fontSize: 14,
     fontFamily: fontFamily.bold,
   },
   overdueBannerSub: {
-    fontSize: textScale(11),
+    fontSize: 12,
     fontFamily: fontFamily.regular,
-    marginTop: 2,
   },
   batchRescheduleBtn: {
     paddingVertical: spacing.small - 2,
-    paddingHorizontal: spacing.small + 2,
-    borderRadius: 8,
-    marginLeft: spacing.small,
+    paddingHorizontal: spacing.small + 4,
+    borderRadius: 6,
+    minHeight: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   batchRescheduleBtnText: {
     color: '#FFFFFF',
-    fontSize: textScale(11),
+    fontSize: 12,
     fontFamily: fontFamily.bold,
   },
   tabBar: {
     flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderColor: '#E1E5EA',
-    marginBottom: spacing.medium,
+    marginBottom: 16,
   },
   tabBtn: {
-    paddingVertical: spacing.small + 2,
-    paddingHorizontal: spacing.medium,
-    borderBottomWidth: 2,
-    marginRight: spacing.small,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderBottomWidth: 3, // Elevate 3D bevel
+    marginRight: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   tabBtnText: {
-    fontSize: textScale(13),
+    fontSize: 13,
   },
   taskListContainer: {
-    paddingBottom: spacing.large,
+    paddingBottom: 120, // Full clearance for navigation
   },
   planningTaskCard: {
-    borderRadius: 12,
+    borderRadius: 20,
     borderWidth: 1,
-    padding: spacing.medium,
-    marginBottom: spacing.small,
+    borderBottomWidth: 4, // Elevate 3D tactile bevel
+    borderLeftWidth: 6,
+    borderLeftColor: '#4F46E5',
+    padding: 16,
+    marginBottom: 14,
+    shadowColor: '#475569',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
   },
   taskCardTop: {
     flexDirection: 'row',
@@ -671,69 +735,73 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   checkCircle: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    borderWidth: 1.5,
+    width: 26,
+    height: 26,
+    borderRadius: 9,
+    borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  checkIcon: {
-    color: '#FFFFFF',
-    fontSize: textScale(12),
-    fontWeight: 'bold',
-  },
   planningTaskTitle: {
-    fontSize: textScale(14),
-    fontFamily: fontFamily.medium,
+    fontSize: 16,
+    fontFamily: fontFamily.bold,
   },
   planningTaskCat: {
-    fontSize: textScale(11),
-    fontFamily: fontFamily.regular,
+    fontSize: 12,
+    fontFamily: fontFamily.medium,
     marginTop: 2,
   },
   focusTaskActionBtn: {
-    paddingVertical: spacing.small - 3,
-    paddingHorizontal: spacing.small + 2,
-    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    minHeight: 34,
   },
   focusTaskActionBtnText: {
-    fontSize: textScale(12),
+    fontSize: 12,
     fontFamily: fontFamily.bold,
   },
   durationSelectorRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: spacing.small + 2,
-    paddingTop: spacing.small - 2,
+    marginTop: 10,
+    paddingTop: 8,
     borderTopWidth: 1,
-    borderColor: 'rgba(0,0,0,0.05)',
   },
   durationLabel: {
-    fontSize: textScale(11),
-    fontFamily: fontFamily.regular,
+    fontSize: 12,
+    fontFamily: fontFamily.medium,
     marginRight: spacing.small,
   },
   durationChip: {
-    paddingVertical: 2,
-    paddingHorizontal: spacing.small,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
     borderRadius: 10,
     marginRight: 6,
+    minHeight: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   durationChipText: {
-    fontSize: textScale(11),
+    fontSize: 11,
+    fontFamily: fontFamily.bold,
   },
   rescheduleRow: {
     flexDirection: 'row',
   },
   rescheduleActionBtn: {
-    paddingVertical: spacing.small - 3,
-    paddingHorizontal: spacing.small,
-    borderRadius: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 10,
     marginLeft: 6,
+    minHeight: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   rescheduleActionBtnText: {
-    fontSize: textScale(11),
+    fontSize: 11,
     fontFamily: fontFamily.bold,
   },
 });

@@ -3,6 +3,7 @@
 
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 import {useTheme} from '../context/ThemeContext';
 import {
   useHabits,
@@ -11,7 +12,6 @@ import {
   isHabitScheduledForDate,
 } from '../context/HabitContext';
 import {categoryMeta} from '../styles/theme';
-import {textScale, moderateScale} from '../styles/responsiveStyles';
 import {fontFamily} from '../common/fonts';
 import {spacing} from '../styles/spacing';
 import {CategoryBadge} from './Badge';
@@ -98,12 +98,21 @@ export const HabitCard = ({habit, onEdit}) => {
       style={[
         styles.cardContainer,
         {
-          backgroundColor: theme.surface,
-          borderColor: isDoneToday ? theme.success : theme.border,
+          backgroundColor: isDark ? '#151D2F' : '#FFFFFF',
+          borderColor: isDoneToday ? '#10B981' : isDark ? '#1E293B' : '#E2E8F0',
+          borderBottomColor: isDark ? '#0F172A' : '#CBD5E1',
         },
       ]}
       accessible={true}
       accessibilityLabel={`Habit ${habit.title}, ${frequencyLabel}, ${habit.currentStreak} day streak`}>
+      {/* 6px Signature Category Color Accent Strip */}
+      <View
+        style={[
+          styles.accentStrip,
+          {backgroundColor: meta.color},
+        ]}
+      />
+
       {/* Top Header Row */}
       <View style={styles.headerRow}>
         <View style={styles.badgeGroup}>
@@ -114,7 +123,7 @@ export const HabitCard = ({habit, onEdit}) => {
               {backgroundColor: theme.surfaceSecondary},
             ]}>
             <Text style={[styles.frequencyText, {color: theme.textSecondary}]}>
-              🗓️ {frequencyLabel}
+              {frequencyLabel}
             </Text>
           </View>
         </View>
@@ -126,19 +135,31 @@ export const HabitCard = ({habit, onEdit}) => {
             {
               backgroundColor:
                 habit.currentStreak > 0
-                  ? theme.primaryLight
+                  ? isDark
+                    ? '#2D2305'
+                    : '#FFFBEB'
+                  : isDark
+                  ? '#1E293B'
                   : theme.surfaceSecondary,
             },
           ]}>
+          <Feather
+            name="zap"
+            size={13}
+            color={
+              habit.currentStreak > 0 ? '#F59E0B' : theme.textSecondary
+            }
+            style={{marginRight: 4}}
+          />
           <Text
             style={[
               styles.streakBadgeText,
               {
                 color:
-                  habit.currentStreak > 0 ? theme.primary : theme.textSecondary,
+                  habit.currentStreak > 0 ? '#F59E0B' : theme.textSecondary,
               },
             ]}>
-            🔥 {habit.currentStreak}d
+            {habit.currentStreak}d streak
           </Text>
         </View>
       </View>
@@ -166,8 +187,14 @@ export const HabitCard = ({habit, onEdit}) => {
 
           {habit.reminderTime && habit.reminderEnabled ? (
             <View style={styles.reminderRow}>
+              <Feather
+                name="bell"
+                size={11}
+                color={theme.textSecondary}
+                style={{marginRight: 4}}
+              />
               <Text style={[styles.reminderText, {color: theme.textSecondary}]}>
-                🔔 Reminder: {habit.reminderTime}
+                Reminder: {habit.reminderTime}
               </Text>
             </View>
           ) : null}
@@ -193,13 +220,13 @@ export const HabitCard = ({habit, onEdit}) => {
             accessibilityLabel={`Mark ${habit.title} as ${
               isDoneToday ? 'incomplete' : 'complete'
             } for today`}>
-            <Text
-              style={[
-                styles.checkButtonIcon,
-                isDoneToday ? styles.iconWhite : {color: theme.primary},
-              ]}>
-              {isDoneToday ? '✓' : isSkippedToday ? '⏸' : '○'}
-            </Text>
+            {isDoneToday ? (
+              <Feather name="check" size={20} color="#FFFFFF" />
+            ) : isSkippedToday ? (
+              <Feather name="pause" size={16} color={theme.textSecondary} />
+            ) : (
+              <Feather name="circle" size={18} color={theme.primary} />
+            )}
           </TouchableOpacity>
         ) : (
           <View
@@ -259,18 +286,22 @@ export const HabitCard = ({habit, onEdit}) => {
                     ? 'skipped'
                     : 'not completed'
                 }`}>
-                <Text
-                  style={[
-                    styles.timelineDotText,
-                    {
-                      color: textColor,
-                      fontFamily: item.isToday
-                        ? fontFamily.bold
-                        : fontFamily.regular,
-                    },
-                  ]}>
-                  {item.isDone ? '✓' : item.dayLabel}
-                </Text>
+                {item.isDone ? (
+                  <Feather name="check" size={12} color="#FFFFFF" />
+                ) : (
+                  <Text
+                    style={[
+                      styles.timelineDotText,
+                      {
+                        color: textColor,
+                        fontFamily: item.isToday
+                          ? fontFamily.bold
+                          : fontFamily.regular,
+                      },
+                    ]}>
+                    {item.dayLabel}
+                  </Text>
+                )}
               </TouchableOpacity>
             );
           })}
@@ -281,7 +312,7 @@ export const HabitCard = ({habit, onEdit}) => {
       <View style={[styles.footerRow, {borderTopColor: theme.divider}]}>
         <View style={styles.statsRow}>
           <Text style={[styles.statsText, {color: theme.textSecondary}]}>
-            Best: ★ {habit.bestStreak}d • Total: {habit.totalCompleted} done
+            Best: {habit.bestStreak}d • Total: {habit.totalCompleted} done
           </Text>
         </View>
 
@@ -330,160 +361,169 @@ export const HabitCard = ({habit, onEdit}) => {
 
 const styles = StyleSheet.create({
   cardContainer: {
-    borderRadius: moderateScale(14),
-    padding: spacing.M,
-    marginVertical: spacing.XS,
-    marginHorizontal: spacing.M,
-    borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    borderRadius: 20,
+    padding: 16,
+    paddingLeft: 20,
+    marginVertical: 6,
+    borderWidth: 1.5,
+    borderBottomWidth: 4, // Elevate 3D bevel
+    overflow: 'hidden',
+    position: 'relative',
+    shadowColor: '#475569',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  accentStrip: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    width: 6,
   },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.S,
+    marginBottom: spacing.small,
   },
   badgeGroup: {
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
-    gap: spacing.XS,
   },
   frequencyBadge: {
-    paddingHorizontal: spacing.S,
-    paddingVertical: spacing.XXS,
-    borderRadius: moderateScale(6),
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    marginRight: 6,
+    marginBottom: 4,
   },
   frequencyText: {
-    fontSize: textScale(11),
+    fontSize: 11,
     fontFamily: fontFamily.medium,
   },
   streakBadge: {
-    paddingHorizontal: spacing.S,
-    paddingVertical: spacing.XXS,
-    borderRadius: moderateScale(12),
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    marginRight: 6,
+    marginBottom: 4,
   },
   streakBadgeText: {
-    fontSize: textScale(12),
+    fontSize: 12,
     fontFamily: fontFamily.bold,
   },
   contentRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.M,
+    marginBottom: spacing.medium,
   },
   titleColumn: {
     flex: 1,
-    paddingRight: spacing.M,
+    marginRight: spacing.medium,
   },
   title: {
-    fontSize: textScale(16),
-    fontFamily: fontFamily.semiBold,
-    marginBottom: spacing.XXS,
-  },
-  description: {
-    fontSize: textScale(13),
-    fontFamily: fontFamily.regular,
-    lineHeight: textScale(18),
-    marginBottom: spacing.XXS,
-  },
-  reminderRow: {
-    marginTop: spacing.XXS,
-  },
-  reminderText: {
-    fontSize: textScale(12),
-    fontFamily: fontFamily.medium,
-  },
-  checkButton: {
-    width: moderateScale(48),
-    height: moderateScale(48),
-    borderRadius: moderateScale(24),
-    borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkButtonIcon: {
-    fontSize: textScale(22),
+    fontSize: 16,
     fontFamily: fontFamily.bold,
-  },
-  offDayBadge: {
-    paddingHorizontal: spacing.M,
-    paddingVertical: spacing.S,
-    borderRadius: moderateScale(8),
-  },
-  offDayText: {
-    fontSize: textScale(12),
-    fontFamily: fontFamily.medium,
-  },
-  timelineContainer: {
-    marginBottom: spacing.M,
-  },
-  timelineLabel: {
-    fontSize: textScale(11),
-    fontFamily: fontFamily.medium,
-    marginBottom: spacing.XS,
-  },
-  timelineRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  timelineDot: {
-    width: moderateScale(36),
-    height: moderateScale(36),
-    borderRadius: moderateScale(18),
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  timelineDotText: {
-    fontSize: textScale(11),
-  },
-  footerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: spacing.S,
-    borderTopWidth: 1,
-  },
-  statsRow: {
-    flex: 1,
-  },
-  statsText: {
-    fontSize: textScale(12),
-    fontFamily: fontFamily.regular,
-  },
-  actionGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.S,
-  },
-  actionButton: {
-    paddingVertical: spacing.XXS,
-    paddingHorizontal: spacing.XS,
-    minHeight: 44,
-    justifyContent: 'center',
-  },
-  actionButtonText: {
-    fontSize: textScale(13),
-    fontFamily: fontFamily.semiBold,
+    lineHeight: 22,
   },
   titleDone: {
     textDecorationLine: 'line-through',
     opacity: 0.7,
   },
-  iconWhite: {
-    color: '#FFFFFF',
+  description: {
+    fontSize: 13,
+    fontFamily: fontFamily.regular,
+    lineHeight: 18,
+    marginTop: 2,
+  },
+  reminderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  reminderText: {
+    fontSize: 11,
+    fontFamily: fontFamily.regular,
+  },
+  checkButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  offDayBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  offDayText: {
+    fontSize: 12,
+    fontFamily: fontFamily.medium,
+  },
+  timelineContainer: {
+    marginBottom: spacing.small,
+  },
+  timelineLabel: {
+    fontSize: 11,
+    fontFamily: fontFamily.medium,
+    marginBottom: 6,
+  },
+  timelineRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  timelineDot: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   dotToday: {
-    borderWidth: 1.5,
+    borderWidth: 2,
   },
-  dotNormal: {
-    borderWidth: 0.5,
+  dotNormal: {},
+  timelineDotText: {
+    fontSize: 11,
+  },
+  footerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    paddingTop: 8,
+    marginTop: 4,
+  },
+  statsRow: {
+    flex: 1,
+  },
+  statsText: {
+    fontSize: 11,
+    fontFamily: fontFamily.regular,
+  },
+  actionGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginLeft: 6,
+    minHeight: 28,
+    justifyContent: 'center',
+  },
+  actionButtonText: {
+    fontSize: 11,
+    fontFamily: fontFamily.bold,
   },
 });
 

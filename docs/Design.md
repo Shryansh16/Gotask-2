@@ -586,3 +586,77 @@ The design foundation is ready for broader rollout when:
 ---
 
 **Final design principle:** GoTASK should feel quiet, clear, and reliable. The design system must make the product easier to use without forcing unnecessary complexity into the app or its codebase.
+
+
+---
+
+# 17. Complete UI/UX Redesign & Responsive Design System Specification (2026-10-31)
+
+## 17.1 Objective & Context
+* **Existing Application:** GoTASK (Bare React Native CLI 0.71.4, React 18.2.0).
+* **Primary Physical Target Device:** OnePlus 11R (6.74", 2772×1240 px, 20.1:9 aspect ratio, Android 13/14, curved punch-hole display).
+* **Platform Priority:** Android first, maintain iOS parity.
+* **Aesthetic Direction:** Editorial-Modern (architectural restraint, typography-led hierarchy, quiet confidence).
+* **Core Goal:** Eliminate generic AI-generated card clutter, multi-colored gradients, and emoji icons, establishing a cohesive, polished, production-grade product identity.
+
+## 17.2 Non-Negotiable Constraints & Architecture Rules
+1. **Preserve Business Logic & APIs:** All task, note, goal, habit, planning, focus timer, analytics, backup, and sync contracts remain 100% intact.
+2. **Framework & Engine:** Utilize `@shopify/restyle@2.4.2` alongside `react-native-safe-area-context` and `react-native-vector-icons`.
+3. **Android Inset Hardening (OnePlus 11R Fix):** Prohibit standard `'react-native'` `SafeAreaView`. All screens must wrap in safe-area aware containers consuming `useSafeAreaInsets()`, explicitly protecting top status bar / camera punch-hole (top ~44dp) and bottom gesture navigation pill (bottom ~24dp).
+4. **Fluid Clamped Typography:** Prohibit raw unconstrained `RFValue`. All typography scales with viewport width clamped between 0.9x and 1.25x to support Android system font scaling without clipping or breaking containers.
+5. **No Decorative Clutter:**
+   - No emoji replacement icons (use vector icons via `react-native-vector-icons`).
+   - No random gradients or saturated royal-blue card fills.
+   - No decorative or fake charts.
+   - No excessive 24–28px card radiuses.
+6. **Responsive Breakpoints:**
+   - Compact (<360dp): Single-column, collapsed action chips.
+   - Standard (360–599dp, OnePlus 11R @ 412dp): Balanced editorial layout, 2-column metrics, generous breathing room.
+   - Expanded (600–839dp): Foldables/tablets, dual-column layouts.
+   - Large (840dp+): Maximum content width constraint (max 720dp centered) to prevent stretched phone layouts.
+
+## 17.3 Editorial Color System & Tokens
+* **Light Theme:**
+  * Background: `#FAF9F6` (Bone White)
+  * Surface: `#FFFFFF` (Paper White)
+  * Surface Subtle: `#F2F1ED` (Stone Gray)
+  * Hairline Border: `#E7E5E0` (0.5dp architectural divider)
+  * Primary / Anchor: `#1A4D49` (Deep Forest Teal)
+  * Primary Light: `#E8F1F0` (Whisper Mint)
+  * Accent: `#B45309` (Warm Editorial Amber)
+  * Text Primary: `#14171A` (Near-Black Ink)
+  * Text Secondary: `#536471` (Architectural Slate)
+  * Text Tertiary: `#8899A6` (Muted Mineral)
+* **Dark Theme:**
+  * Background: `#0E1114` (Deep Charcoal Noir)
+  * Surface: `#15191E` (Obsidian Slate)
+  * Surface Subtle: `#1C2228` (Elevated Mist)
+  * Hairline Border: `#262D35` (Subtle Divider)
+  * Primary / Anchor: `#5EA8A0` (Soft Seafoam Teal)
+  * Primary Light: `#18302D`
+  * Accent: `#D97706`
+  * Text Primary: `#F1F3F5` (Soft Titanium)
+  * Text Secondary: `#8B98A5` (Muted Silver)
+  * Text Tertiary: `#5C6975`
+
+## 17.4 Component Architecture (`src/design-system/`)
+* `src/design-system/theme.js` — Shopify Restyle theme definition with colors, spacing, typography, and breakpoints.
+* `src/design-system/ScreenContainer.js` — Notch-safe, gesture-bar safe, keyboard-aware screen wrapper.
+* `src/design-system/Typography.js` — Styled, clamped semantic text primitives (`Display`, `Title`, `Headline`, `Body`, `Caption`, `Label`).
+* `src/design-system/Button.js` — Accessible buttons (`Primary`, `Secondary`, `Subtle`, `Danger`) with min 48×48dp touch targets.
+* `src/design-system/Card.js` — Editorial flat surface with hairline borders.
+* `src/design-system/Header.js` — Standardized notch-safe navigation header.
+
+## 17.5 Implementation & QA Gate
+* All 12 screens redesigned incrementally.
+* Verification on physical OnePlus 11R and Android emulators.
+* Zero regressions against 113 Jest tests and 21 backend integration tests.
+
+
+---
+
+## 17.6 Verbatim User Requirements & Verification Matrix
+
+Full requirements from both prompts have been recorded in [`docs/RedesignSpecification.md`](file:///d:/React%20Native/GOTask/docs/RedesignSpecification.md).
+Installed and verified dependency: `@shopify/restyle@2.4.2`.
+Status: All 12 screens and shared components updated with `ScreenContainer` and safe-area insets.

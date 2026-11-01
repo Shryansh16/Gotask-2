@@ -1,174 +1,206 @@
 // src/styles/theme.js
-// Modern, curated design system for GOTask aligned with docs/Design.md Section 4.1
+// Vibrant, Joyful, Elevate-Grade Design System for GoTASK
 
 export const lightTheme = {
   mode: 'light',
-  background: '#F7F8FA',
-  surface: '#FFFFFF',
-  surfaceSecondary: '#F0F2F5',
+  background: '#F8FAFC', // Crisp, clean slate-50 background
+  surface: '#FFFFFF', // Pristine white card surface
+  surfaceSecondary: '#F1F5F9', // Soft subtle slate-100
   surfaceElevated: '#FFFFFF',
 
-  // Brand colors (docs/Design.md Section 4.1 calm muted teal)
-  primary: '#286B68',
-  primaryLight: '#E6F2F0',
-  primaryDark: '#1E5250',
-  secondary: '#626B78',
-  secondaryLight: '#F0F2F5',
+  // Brand colors: Electric Indigo / Modern Violet (Elevate style)
+  primary: '#4F46E5',
+  primaryLight: '#EEF2FF',
+  primaryDark: '#3730A3',
+  elevateBlue: '#00A3FF',
+  elevateBlueDark: '#0082CC',
+  bevelColor: '#CBD5E1',
+  activeMint: '#DCFCE7',
+  activeMintBorder: '#22C55E',
+  iceBlue: '#F0F9FF',
+  iceBlueBorder: '#BAE6FD',
+  secondary: '#64748B',
+  secondaryLight: '#F1F5F9',
 
-  // Status & Priority
-  danger: '#B83B40',
+  // Vibrant Accents & Status (Elevate energetic palette)
+  danger: '#EF4444',
   dangerLight: '#FEF2F2',
-  warning: '#94651B',
-  warningLight: '#FEF9EE',
-  success: '#28734D',
-  successLight: '#EFF8F3',
-  info: '#286B68',
-  infoLight: '#E6F2F0',
+  warning: '#F59E0B',
+  warningLight: '#FFFBEB',
+  success: '#10B981',
+  successLight: '#ECFDF5',
+  info: '#3B82F6',
+  infoLight: '#EFF6FF',
+  accent: '#EC4899',
 
-  // Typography colors
-  textPrimary: '#20262E',
-  textSecondary: '#626B78',
-  textMuted: '#7B8490',
+  // Typography
+  textPrimary: '#0F172A', // Slate-900 (ultra sharp & readable)
+  textSecondary: '#475569', // Slate-600
+  textMuted: '#94A3B8', // Slate-400
   textInverse: '#FFFFFF',
 
   // Borders & Dividers
-  border: '#E1E5EA',
-  borderFocus: '#286B68',
-  divider: '#E1E5EA',
+  border: '#E2E8F0', // Clean Slate-200
+  borderFocus: '#4F46E5',
+  divider: '#F1F5F9',
 
-  // Shadows
-  shadowColor: '#20262E',
+  // Soft, Tactile Elevate Shadows
+  shadowColor: '#0F172A',
   cardShadow: {
-    shadowColor: '#20262E',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowColor: '#475569',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 3,
   },
   glowShadow: {
-    shadowColor: '#286B68',
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 4,
+    shadowColor: '#4F46E5',
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 6,
   },
 };
 
 export const darkTheme = {
   mode: 'dark',
-  background: '#121518',
-  surface: '#1B2025',
-  surfaceSecondary: '#242B31',
-  surfaceElevated: '#242B31',
+  background: '#0B0F19', // Deep luxurious midnight
+  surface: '#151D2F', // Elevated dark navy surface
+  surfaceSecondary: '#1E293B', // Slate-800
+  surfaceElevated: '#222F46',
 
-  // Brand colors (docs/Design.md Section 4.1 soft muted teal)
-  primary: '#78B8B0',
-  primaryLight: '#223C3A',
-  primaryDark: '#5E9992',
-  secondary: '#B0BAC4',
-  secondaryLight: '#242B31',
+  // Brand colors in Dark Mode
+  primary: '#818CF8', // Bright glowing indigo
+  primaryLight: '#1E1B4B',
+  primaryDark: '#6366F1',
+  elevateBlue: '#38BDF8',
+  elevateBlueDark: '#0284C7',
+  bevelColor: '#0F172A',
+  activeMint: '#064E3B',
+  activeMintBorder: '#10B981',
+  iceBlue: '#0C4A6E',
+  iceBlueBorder: '#0284C7',
+  secondary: '#94A3B8',
+  secondaryLight: '#1E293B',
 
-  // Status & Priority
-  danger: '#F08D91',
-  dangerLight: '#321D1F',
-  warning: '#E7BE78',
-  warningLight: '#322918',
-  success: '#86C9A1',
-  successLight: '#1A2E23',
-  info: '#78B8B0',
-  infoLight: '#223C3A',
+  // Status & Accents
+  danger: '#F87171',
+  dangerLight: '#2C1515',
+  warning: '#FBBF24',
+  warningLight: '#2D2305',
+  success: '#34D399',
+  successLight: '#0E2E20',
+  info: '#60A5FA',
+  infoLight: '#172554',
+  accent: '#F472B6',
 
-  // Typography colors
-  textPrimary: '#EDF1F4',
-  textSecondary: '#B0BAC4',
-  textMuted: '#9AA5B0',
-  textInverse: '#121518',
+  // Typography
+  textPrimary: '#F8FAFC',
+  textSecondary: '#CBD5E1',
+  textMuted: '#64748B',
+  textInverse: '#0B0F19',
 
   // Borders & Dividers
-  border: '#303940',
-  borderFocus: '#78B8B0',
-  divider: '#303940',
+  border: '#1E293B',
+  borderFocus: '#818CF8',
+  divider: '#1E293B',
 
   // Shadows
   shadowColor: '#000000',
   cardShadow: {
     shadowColor: '#000000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 3,
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+    elevation: 4,
   },
   glowShadow: {
-    shadowColor: '#78B8B0',
-    shadowOffset: {width: 0, height: 4},
+    shadowColor: '#818CF8',
+    shadowOffset: {width: 0, height: 6},
     shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 6,
+    shadowRadius: 14,
+    elevation: 5,
   },
 };
 
 export const categoryMeta = {
   All: {
     name: 'All',
-    color: '#286B68',
-    bgColor: '#E6F2F0',
-    icon: 'folder-open',
+    label: 'All',
+    icon: 'layers',
+    color: '#4F46E5',
+    bgColor: '#EEF2FF',
   },
   Work: {
     name: 'Work',
-    color: '#4F46E5',
-    bgColor: '#EEF2FF',
+    label: 'Work',
     icon: 'briefcase',
+    color: '#8B5CF6', // Vibrant Purple
+    bgColor: '#F5F3FF',
   },
   Personal: {
     name: 'Personal',
-    color: '#06B6D4',
-    bgColor: '#ECFEFF',
+    label: 'Personal',
     icon: 'user',
+    color: '#3B82F6', // Cobalt Blue
+    bgColor: '#EFF6FF',
   },
   Shopping: {
     name: 'Shopping',
-    color: '#EC4899',
-    bgColor: '#FDF2F8',
-    icon: 'shopping-cart',
+    label: 'Shopping',
+    icon: 'shopping-bag',
+    color: '#F97316', // Vibrant Orange
+    bgColor: '#FFF7ED',
   },
   Health: {
     name: 'Health',
-    color: '#28734D',
-    bgColor: '#EFF8F3',
-    icon: 'heartbeat',
+    label: 'Health',
+    icon: 'activity',
+    color: '#10B981', // Fresh Emerald
+    bgColor: '#ECFDF5',
   },
   Study: {
     name: 'Study',
-    color: '#8B5CF6',
-    bgColor: '#F5F3FF',
-    icon: 'book',
+    label: 'Study',
+    icon: 'book-open',
+    color: '#EC4899', // Bright Pink
+    bgColor: '#FDF2F8',
   },
   Finance: {
     name: 'Finance',
-    color: '#94651B',
-    bgColor: '#FFFBEB',
+    label: 'Finance',
     icon: 'dollar-sign',
+    color: '#F59E0B', // Golden Amber
+    bgColor: '#FFFBEB',
+  },
+  Ideas: {
+    name: 'Ideas',
+    label: 'Ideas',
+    icon: 'compass',
+    color: '#06B6D4', // Vibrant Cyan
+    bgColor: '#ECFEFF',
   },
 };
 
 export const priorityMeta = {
   high: {
     label: 'High',
-    color: '#B83B40',
-    bgColor: '#FEF2F2',
-    dotColor: '#B83B40',
+    color: '#EF4444',
+    bgColor: '#FEE2E2',
+    dotColor: '#EF4444',
   },
   medium: {
     label: 'Medium',
-    color: '#94651B',
-    bgColor: '#FFFBEB',
-    dotColor: '#94651B',
+    color: '#F59E0B',
+    bgColor: '#FEF3C7',
+    dotColor: '#F59E0B',
   },
   low: {
     label: 'Low',
-    color: '#28734D',
-    bgColor: '#ECFDF5',
-    dotColor: '#28734D',
+    color: '#10B981',
+    bgColor: '#D1FAE5',
+    dotColor: '#10B981',
   },
 };
+
+export default {lightTheme, darkTheme, categoryMeta, priorityMeta};

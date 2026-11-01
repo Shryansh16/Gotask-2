@@ -1,5 +1,6 @@
 import React from 'react';
 import {StatusBar, StyleSheet, View} from 'react-native';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 import Navigation from './navigation/navigation';
 import {ThemeProvider, useTheme} from './context/ThemeContext';
 import {TaskProvider} from './context/TaskContext';
@@ -24,19 +25,21 @@ const MainApp = () => {
 
 const App = () => {
   return (
-    <ThemeProvider>
-      <TaskProvider>
-        <PlanningProvider>
-          <NoteProvider>
-            <GoalProvider>
-              <HabitProvider>
-                <MainApp />
-              </HabitProvider>
-            </GoalProvider>
-          </NoteProvider>
-        </PlanningProvider>
-      </TaskProvider>
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <TaskProvider>
+          <PlanningProvider>
+            <NoteProvider>
+              <GoalProvider>
+                <HabitProvider>
+                  <MainApp />
+                </HabitProvider>
+              </GoalProvider>
+            </NoteProvider>
+          </PlanningProvider>
+        </TaskProvider>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 };
 

@@ -315,13 +315,13 @@ const styles = StyleSheet.create({
   },
   quickButtons: {
     flexDirection: 'row',
-    gap: 8,
   },
   incBtn: {
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
     borderWidth: 1,
+    marginRight: 8,
   },
   incBtnText: {
     fontSize: textScale(13),
@@ -389,7 +389,6 @@ const styles = StyleSheet.create({
   modalActions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    gap: 12,
     paddingHorizontal: spacing.md,
     paddingTop: spacing.md,
     borderTopWidth: StyleSheet.hairlineWidth,
@@ -399,6 +398,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     borderWidth: 1,
+    marginRight: 10,
   },
   cancelBtnText: {
     fontSize: textScale(14),

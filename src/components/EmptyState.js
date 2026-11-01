@@ -1,36 +1,55 @@
 // src/components/EmptyState.js
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 import {useTheme} from '../context/ThemeContext';
-import {textScale} from '../styles/responsiveStyles';
 import {fontFamily} from '../common/fonts';
-import {spacing} from '../styles/spacing';
 
 export const EmptyState = ({
-  icon = '✨',
+  vectorIcon,
+  icon = 'inbox',
   title = 'No Tasks Yet',
-  subtitle = 'You have no tasks in this view. Enjoy your free time or add something new to your list!',
+  subtitle,
+  message,
   buttonText,
   onButtonPress,
+  actionLabel,
+  onAction,
 }) => {
-  const {theme} = useTheme();
+  const {theme, isDark} = useTheme();
+
+  const resolvedIcon = vectorIcon || icon || 'inbox';
+  const resolvedSubtitle =
+    subtitle ||
+    message ||
+    'You have no tasks in this view. Enjoy your time or add something new to your list.';
+  const resolvedButtonText = buttonText || actionLabel;
+  const resolvedOnPress = onButtonPress || onAction;
 
   return (
     <View style={styles.container}>
-      <View style={[styles.iconCircle, {backgroundColor: theme.primaryLight}]}>
-        <Text style={styles.iconText}>{icon}</Text>
+      <View
+        style={[
+          styles.iconCircle,
+          {
+            backgroundColor: isDark ? '#1E1B4B' : '#EEF2FF',
+          },
+        ]}>
+        <Feather name={resolvedIcon} size={32} color="#4F46E5" />
       </View>
       <Text style={[styles.title, {color: theme.textPrimary}]}>{title}</Text>
       <Text style={[styles.subtitle, {color: theme.textSecondary}]}>
-        {subtitle}
+        {resolvedSubtitle}
       </Text>
 
-      {Boolean(buttonText && onButtonPress) && (
+      {Boolean(resolvedButtonText && resolvedOnPress) && (
         <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={onButtonPress}
-          style={[styles.button, {backgroundColor: theme.primary}]}>
-          <Text style={styles.buttonText}>{buttonText}</Text>
+          accessibilityRole="button"
+          accessibilityLabel={resolvedButtonText}
+          activeOpacity={0.8}
+          onPress={resolvedOnPress}
+          style={[styles.button, {backgroundColor: '#4F46E5'}]}>
+          <Text style={styles.buttonText}>{resolvedButtonText}</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -41,41 +60,47 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: spacing.PADDING_24,
-    paddingVertical: spacing.PADDING_40,
+    paddingHorizontal: 24,
+    paddingVertical: 36,
   },
   iconCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: 68,
+    height: 68,
+    borderRadius: 34,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: spacing.MARGIN_16,
-  },
-  iconText: {
-    fontSize: textScale(32),
+    marginBottom: 16,
   },
   title: {
-    fontSize: textScale(18),
+    fontSize: 18,
     fontFamily: fontFamily.bold,
     textAlign: 'center',
-    marginBottom: spacing.MARGIN_8,
+    marginBottom: 8,
+    letterSpacing: -0.3,
   },
   subtitle: {
-    fontSize: textScale(13),
+    fontSize: 13,
     fontFamily: fontFamily.regular,
     textAlign: 'center',
     lineHeight: 20,
-    marginBottom: spacing.MARGIN_20,
+    maxWidth: 290,
+    marginBottom: 20,
   },
   button: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 22,
     paddingVertical: 12,
     borderRadius: 14,
+    borderBottomWidth: 4,
+    borderBottomColor: '#3730A3',
+    shadowColor: '#4F46E5',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 4,
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: textScale(14),
+    fontSize: 14,
     fontFamily: fontFamily.bold,
   },
 });

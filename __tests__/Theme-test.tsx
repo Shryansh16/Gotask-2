@@ -21,26 +21,26 @@ import {A11Y_POLICIES, getTextA11yProps} from '../src/utility/accessibility';
 describe('Design System Tokens (docs/Design.md Section 4.1)', () => {
   it('defines calm muted teal and neutral tokens for light theme', () => {
     expect(lightTheme.mode).toBe('light');
-    expect(lightTheme.primary).toBe('#286B68');
-    expect(lightTheme.background).toBe('#F7F8FA');
+    expect(lightTheme.primary).toBe('#4F46E5');
+    expect(lightTheme.background).toBe('#F8FAFC');
     expect(lightTheme.surface).toBe('#FFFFFF');
-    expect(lightTheme.border).toBe('#E1E5EA');
-    expect(lightTheme.textPrimary).toBe('#20262E');
-    expect(lightTheme.success).toBe('#28734D');
-    expect(lightTheme.danger).toBe('#B83B40');
-    expect(lightTheme.warning).toBe('#94651B');
+    expect(lightTheme.border).toBe('#E2E8F0');
+    expect(lightTheme.textPrimary).toBe('#0F172A');
+    expect(lightTheme.success).toBe('#10B981');
+    expect(lightTheme.danger).toBe('#EF4444');
+    expect(lightTheme.warning).toBe('#F59E0B');
   });
 
   it('defines soft muted teal and dark neutral tokens for dark theme', () => {
     expect(darkTheme.mode).toBe('dark');
-    expect(darkTheme.primary).toBe('#78B8B0');
-    expect(darkTheme.background).toBe('#121518');
-    expect(darkTheme.surface).toBe('#1B2025');
-    expect(darkTheme.border).toBe('#303940');
-    expect(darkTheme.textPrimary).toBe('#EDF1F4');
-    expect(darkTheme.success).toBe('#86C9A1');
-    expect(darkTheme.danger).toBe('#F08D91');
-    expect(darkTheme.warning).toBe('#E7BE78');
+    expect(darkTheme.primary).toBe('#818CF8');
+    expect(darkTheme.background).toBe('#0B0F19');
+    expect(darkTheme.surface).toBe('#151D2F');
+    expect(darkTheme.border).toBe('#1E293B');
+    expect(darkTheme.textPrimary).toBe('#F8FAFC');
+    expect(darkTheme.success).toBe('#34D399');
+    expect(darkTheme.danger).toBe('#F87171');
+    expect(darkTheme.warning).toBe('#FBBF24');
   });
 
   it('provides complete category metadata mapping', () => {
@@ -66,9 +66,9 @@ describe('Design System Tokens (docs/Design.md Section 4.1)', () => {
     expect(priorityMeta.high.label).toBe('High');
     expect(priorityMeta.medium.label).toBe('Medium');
     expect(priorityMeta.low.label).toBe('Low');
-    expect(priorityMeta.high.color).toBe('#B83B40');
-    expect(priorityMeta.medium.color).toBe('#94651B');
-    expect(priorityMeta.low.color).toBe('#28734D');
+    expect(priorityMeta.high.color).toBe('#EF4444');
+    expect(priorityMeta.medium.color).toBe('#F59E0B');
+    expect(priorityMeta.low.color).toBe('#10B981');
   });
 });
 

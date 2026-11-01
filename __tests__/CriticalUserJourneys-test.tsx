@@ -3,12 +3,12 @@
  * Verifies core end-to-end workflows across Tasks, Goals, Habits, Planning, and Data Reliability.
  */
 
-import {createBackupPayload, validateBackup} from '../src/services/backupService';
-import {migrateData} from '../src/services/migrationService';
-import {detectConflict, resolveItemConflict} from '../src/services/syncEngine';
-import {evaluateDayWorkload, evaluateFocusTransition} from '../src/context/PlanningContext';
-import {computeTaskMetrics} from '../src/services/analyticsService';
-import {evaluateAchievements} from '../src/services/motivationService';
+import { createBackupPayload, validateBackup } from '../src/services/backupService';
+import { migrateData } from '../src/services/migrationService';
+import { detectConflict, resolveItemConflict } from '../src/services/syncEngine';
+import { evaluateDayWorkload, evaluateFocusTransition } from '../src/context/PlanningContext';
+import { computeTaskMetrics } from '../src/services/analyticsService';
+import { evaluateAchievements } from '../src/services/motivationService';
 
 describe('Phase 10: Critical User Journeys (E2E Regression)', () => {
   // ----------------------------------------------------
@@ -25,8 +25,8 @@ describe('Phase 10: Critical User Journeys (E2E Regression)', () => {
         dueDate: 'Today',
         completed: false,
         subtasks: [
-          {id: 'sub_1', title: 'Compile benchmark numbers', completed: false},
-          {id: 'sub_2', title: 'Draft system diagram', completed: false},
+          { id: 'sub_1', title: 'Compile benchmark numbers', completed: false },
+          { id: 'sub_2', title: 'Draft system diagram', completed: false },
         ],
         updatedAt: '2026-10-31T10:00:00.000Z',
       };
@@ -66,9 +66,9 @@ describe('Phase 10: Critical User Journeys (E2E Regression)', () => {
         targetValue: 10,
         progress: 30,
         milestones: [
-          {id: 'm1', title: 'Complete Phase 1-5 Core Layers', completed: true},
-          {id: 'm2', title: 'Implement AI and Analytics', completed: true},
-          {id: 'm3', title: 'Pass Release Verification', completed: false},
+          { id: 'm1', title: 'Complete Phase 1-5 Core Layers', completed: true },
+          { id: 'm2', title: 'Implement AI and Analytics', completed: true },
+          { id: 'm3', title: 'Pass Release Verification', completed: false },
         ],
       };
 
@@ -80,7 +80,7 @@ describe('Phase 10: Critical User Journeys (E2E Regression)', () => {
 
       // 3. Evaluate motivational achievements
       const unlockedBadges = evaluateAchievements({
-        tasks: [{id: 't1', completed: true}],
+        tasks: [{ id: 't1', completed: true }],
         goals: [goal],
         habits: [],
         focusSessions: [],
@@ -109,13 +109,13 @@ describe('Phase 10: Critical User Journeys (E2E Regression)', () => {
       expect(workload.overflowMinutes).toBe(90);
 
       // 2. Focus Timer State Machine Transitions
-      const startTransition = evaluateFocusTransition({currentStatus: 'idle', action: 'start'});
+      const startTransition = evaluateFocusTransition({ currentStatus: 'idle', action: 'start' });
       expect(startTransition.nextStatus).toBe('running');
 
-      const pauseTransition = evaluateFocusTransition({currentStatus: 'running', action: 'pause'});
+      const pauseTransition = evaluateFocusTransition({ currentStatus: 'running', action: 'pause' });
       expect(pauseTransition.nextStatus).toBe('paused');
 
-      const finishTransition = evaluateFocusTransition({currentStatus: 'running', action: 'tick_0'});
+      const finishTransition = evaluateFocusTransition({ currentStatus: 'running', action: 'tick_0' });
       expect(finishTransition.nextStatus).toBe('completed');
       expect(finishTransition.timerAction).toBe('stop_log');
     });
@@ -128,10 +128,10 @@ describe('Phase 10: Critical User Journeys (E2E Regression)', () => {
     it('creates tamper-proof snapshot, rejects corrupted JSON, and resolves LWW conflicts without data loss', () => {
       // 1. Create backup snapshot
       const sampleWorkspace = {
-        tasks: [{id: 't_backup_1', title: 'Verify release checklist', completed: true}],
-        notes: [{id: 'n_backup_1', title: 'Architecture decisions'}],
-        goals: [{id: 'g_backup_1', title: 'Ship v2.0'}],
-        habits: [{id: 'h_backup_1', name: 'Daily Standup'}],
+        tasks: [{ id: 't_backup_1', title: 'Verify release checklist', completed: true }],
+        notes: [{ id: 'n_backup_1', title: 'Architecture decisions' }],
+        goals: [{ id: 'g_backup_1', title: 'Ship v2.0' }],
+        habits: [{ id: 'h_backup_1', name: 'Daily Standup' }],
       };
 
       const backup = createBackupPayload(sampleWorkspace);
@@ -144,7 +144,7 @@ describe('Phase 10: Critical User Journeys (E2E Regression)', () => {
 
       // 3. Reject tampered backup
       const tampered = JSON.parse(JSON.stringify(backup));
-      tampered.data.tasks.push({id: 'injected_task', title: 'Hacked payload'});
+      tampered.data.tasks.push({ id: 'injected_task', title: 'Hacked payload' });
       const tamperedValidation = validateBackup(tampered);
       expect(tamperedValidation.isValid).toBe(false);
       expect(tamperedValidation.error).toContain('checksum mismatch');
@@ -152,7 +152,7 @@ describe('Phase 10: Critical User Journeys (E2E Regression)', () => {
       // 4. Schema Migration
       const legacyPayload = {
         schemaVersion: '1.0.0',
-        tasks: [{id: 't_legacy', title: 'Old task without schema v2 attributes'}],
+        tasks: [{ id: 't_legacy', title: 'Old task without schema v2 attributes' }],
       };
       const migrated = migrateData(legacyPayload);
       expect(migrated.tasks[0].subtasks).toEqual([]);

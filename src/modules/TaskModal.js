@@ -14,13 +14,12 @@ import {
   Keyboard,
   Alert,
 } from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 import {useTheme} from '../context/ThemeContext';
 import {useTasks} from '../context/TaskContext';
-import {textScale} from '../styles/responsiveStyles';
 import {fontFamily} from '../common/fonts';
 import {spacing} from '../styles/spacing';
 import {categoryMeta, priorityMeta} from '../styles/theme';
-import {apiService} from '../services/apiService';
 import {parseNaturalLanguageTask, suggestSubtasks} from '../services/aiService';
 
 export const TaskModal = ({
@@ -168,16 +167,17 @@ export const TaskModal = ({
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             style={styles.keyboardContainer}>
             <View
-              style={[styles.modalContainer, {backgroundColor: theme.surface}]}>
+              style={[
+                styles.modalContainer,
+                {backgroundColor: theme.surface, borderColor: theme.border},
+              ]}>
               {/* Header Bar */}
               <View style={[styles.header, {borderBottomColor: theme.divider}]}>
                 <Text style={[styles.headerTitle, {color: theme.textPrimary}]}>
                   {isEdit ? 'Edit Task' : 'New Task'}
                 </Text>
                 <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-                  <Text style={[styles.closeIcon, {color: theme.textMuted}]}>
-                    ✕
-                  </Text>
+                  <Feather name="x" size={20} color={theme.textMuted} />
                 </TouchableOpacity>
               </View>
 
@@ -200,8 +200,14 @@ export const TaskModal = ({
                         borderColor: theme.border,
                       },
                     ]}>
+                    <Feather
+                      name="cpu"
+                      size={11}
+                      color={theme.primary}
+                      style={{marginRight: 4}}
+                    />
                     <Text style={[styles.aiParseText, {color: theme.primary}]}>
-                      ✨ AI Parse
+                      AI Parse
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -378,45 +384,47 @@ export const TaskModal = ({
                     style={[styles.pinToggleText, {color: theme.textPrimary}]}>
                     Pin task to top
                   </Text>
-                  <Text
-                    style={[
-                      styles.pinToggleIcon,
-                      {color: isPinned ? theme.primary : theme.textMuted},
-                    ]}>
-                    {isPinned ? '★ Pinned' : '☆ Pin'}
-                  </Text>
+                  <View style={styles.pinIconRow}>
+                    <Feather
+                      name="star"
+                      size={15}
+                      color={isPinned ? theme.primary : theme.textMuted}
+                      style={{marginRight: 4}}
+                    />
+                    <Text
+                      style={[
+                        styles.pinToggleSub,
+                        {color: isPinned ? theme.primary : theme.textMuted},
+                      ]}>
+                      {isPinned ? 'Pinned' : 'Pin'}
+                    </Text>
+                  </View>
                 </TouchableOpacity>
 
                 {/* Checklist / Subtasks */}
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: spacing.xs,
-                  }}>
+                <View style={styles.subtasksHeaderRow}>
                   <Text
                     style={[
                       styles.inputLabel,
-                      {color: theme.textSecondary, marginBottom: 0},
+                      {color: theme.textSecondary, marginTop: 0},
                     ]}>
                     Checklist Items ({subtasks.length})
                   </Text>
                   <TouchableOpacity
                     onPress={handleAiDecompose}
-                    style={{
-                      paddingHorizontal: spacing.sm,
-                      paddingVertical: 4,
-                      borderRadius: 6,
-                      backgroundColor: theme.primary + '18',
-                    }}>
+                    style={[
+                      styles.aiBreakdownBtn,
+                      {backgroundColor: theme.primaryLight},
+                    ]}>
+                    <Feather
+                      name="list"
+                      size={11}
+                      color={theme.primary}
+                      style={{marginRight: 4}}
+                    />
                     <Text
-                      style={{
-                        fontSize: textScale(11),
-                        fontFamily: fontFamily.poppinsMedium,
-                        color: theme.primary,
-                      }}>
-                      ✨ AI Breakdown
+                      style={[styles.aiBreakdownText, {color: theme.primary}]}>
+                      AI Breakdown
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -439,13 +447,7 @@ export const TaskModal = ({
                     <TouchableOpacity
                       onPress={() => handleRemoveSubtask(sub.id)}
                       style={styles.subtaskDeleteBtn}>
-                      <Text
-                        style={[
-                          styles.subtaskDeleteIcon,
-                          {color: theme.danger},
-                        ]}>
-                        ✕
-                      </Text>
+                      <Feather name="x" size={14} color={theme.danger} />
                     </TouchableOpacity>
                   </View>
                 ))}
@@ -472,7 +474,7 @@ export const TaskModal = ({
                       styles.addSubtaskBtn,
                       {backgroundColor: theme.primary},
                     ]}>
-                    <Text style={styles.addSubtaskBtnText}>+ Add</Text>
+                    <Text style={styles.addSubtaskBtnText}>Add</Text>
                   </TouchableOpacity>
                 </View>
               </ScrollView>
@@ -514,79 +516,78 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   keyboardContainer: {
-    maxHeight: '90%',
+    maxHeight: '92%',
   },
   modalContainer: {
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    paddingTop: spacing.PADDING_20,
-    paddingBottom: Platform.OS === 'ios' ? 34 : spacing.PADDING_20,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    borderTopWidth: 1,
+    paddingTop: spacing.medium,
+    paddingBottom: Platform.OS === 'ios' ? 34 : spacing.medium,
     maxHeight: '100%',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.PADDING_20,
-    paddingBottom: spacing.PADDING_14,
+    paddingHorizontal: spacing.medium,
+    paddingBottom: 12,
     borderBottomWidth: 1,
   },
   headerTitle: {
-    fontSize: textScale(18),
+    fontSize: 17,
     fontFamily: fontFamily.bold,
   },
   closeBtn: {
-    padding: 6,
-  },
-  closeIcon: {
-    fontSize: textScale(18),
-    fontFamily: fontFamily.bold,
+    padding: 4,
   },
   formScroll: {
-    paddingHorizontal: spacing.PADDING_20,
-    paddingVertical: spacing.PADDING_12,
-    maxHeight: 460,
+    paddingHorizontal: spacing.medium,
+    paddingVertical: 10,
+    maxHeight: 480,
   },
   titleLabelRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: spacing.MARGIN_12,
-    marginBottom: spacing.MARGIN_6,
+    marginTop: 8,
+    marginBottom: 4,
   },
   aiParsePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 8,
+    borderRadius: 6,
     borderWidth: 1,
   },
   aiParseText: {
-    fontSize: textScale(11),
+    fontSize: 11,
     fontFamily: fontFamily.bold,
   },
   inputLabel: {
-    fontSize: textScale(12),
+    fontSize: 11,
     fontFamily: fontFamily.bold,
-    marginTop: spacing.MARGIN_12,
-    marginBottom: spacing.MARGIN_6,
+    marginTop: 10,
+    marginBottom: 4,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   textInput: {
-    height: 48,
-    borderRadius: 14,
+    height: 44,
+    borderRadius: 8,
     borderWidth: 1,
-    paddingHorizontal: spacing.PADDING_14,
-    fontSize: textScale(14),
+    paddingHorizontal: 12,
+    fontSize: 14,
     fontFamily: fontFamily.regular,
   },
   textArea: {
-    height: 80,
-    borderRadius: 14,
+    height: 72,
+    borderRadius: 8,
     borderWidth: 1,
-    paddingHorizontal: spacing.PADDING_14,
-    paddingVertical: 10,
-    fontSize: textScale(13),
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 13,
     fontFamily: fontFamily.regular,
     textAlignVertical: 'top',
   },
@@ -595,19 +596,18 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   chip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
     borderWidth: 1,
-    marginRight: 8,
+    marginRight: 6,
   },
   chipText: {
-    fontSize: textScale(12),
-    fontFamily: fontFamily.bold,
+    fontSize: 12,
+    fontFamily: fontFamily.medium,
   },
   rowSelector: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     marginBottom: 4,
   },
   priorityChip: {
@@ -615,18 +615,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
-    borderRadius: 12,
+    paddingVertical: 9,
+    borderRadius: 10,
     marginHorizontal: 3,
   },
   priorityDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 6,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 5,
   },
   priorityChipText: {
-    fontSize: textScale(12),
+    fontSize: 12,
     fontFamily: fontFamily.bold,
   },
   dueChip: {
@@ -634,111 +634,139 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 9,
-    borderRadius: 12,
+    borderRadius: 10,
     borderWidth: 1,
     marginHorizontal: 3,
   },
   dueChipText: {
-    fontSize: textScale(11),
-    fontFamily: fontFamily.bold,
+    fontSize: 11,
+    fontFamily: fontFamily.medium,
   },
   pinToggleRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: spacing.PADDING_12,
-    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 8,
     borderWidth: 1,
-    marginTop: spacing.MARGIN_14,
+    marginTop: 10,
+    marginBottom: 10,
   },
   pinToggleText: {
-    fontSize: textScale(13),
-    fontFamily: fontFamily.regular,
+    fontSize: 13,
+    fontFamily: fontFamily.medium,
   },
-  pinToggleIcon: {
-    fontSize: textScale(13),
+  pinIconRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  pinToggleSub: {
+    fontSize: 12,
+    fontFamily: fontFamily.bold,
+  },
+  subtasksHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 6,
+    marginBottom: 6,
+  },
+  aiBreakdownBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  aiBreakdownText: {
+    fontSize: 11,
     fontFamily: fontFamily.bold,
   },
   subtaskRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6,
     borderWidth: 1,
-    marginBottom: 6,
+    marginBottom: 4,
   },
   subtaskText: {
+    fontSize: 12,
     flex: 1,
-    fontSize: textScale(13),
-    fontFamily: fontFamily.regular,
   },
   subtaskDeleteBtn: {
     padding: 4,
-  },
-  subtaskDeleteIcon: {
-    fontSize: textScale(13),
-    fontFamily: fontFamily.bold,
   },
   addSubtaskRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 6,
-    marginBottom: spacing.MARGIN_16,
+    marginBottom: 10,
   },
   addSubtaskInput: {
     flex: 1,
     height: 42,
-    borderRadius: 12,
+    borderRadius: 10,
     borderWidth: 1,
     paddingHorizontal: 12,
-    fontSize: textScale(12),
-    fontFamily: fontFamily.regular,
+    fontSize: 13,
     marginRight: 8,
   },
   addSubtaskBtn: {
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     height: 42,
-    borderRadius: 12,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
   addSubtaskBtnText: {
     color: '#FFFFFF',
-    fontSize: textScale(12),
+    fontSize: 12,
     fontFamily: fontFamily.bold,
   },
   footer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.PADDING_20,
-    paddingTop: spacing.PADDING_14,
+    alignItems: 'center',
+    paddingHorizontal: spacing.medium,
+    paddingTop: 12,
+    paddingBottom: 4,
     borderTopWidth: 1,
   },
   cancelBtn: {
     flex: 1,
     height: 48,
     borderRadius: 14,
-    borderWidth: 1,
+    borderWidth: 1.5,
+    borderBottomWidth: 3,
+    borderBottomColor: '#CBD5E1',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 10,
   },
   cancelBtnText: {
-    fontSize: textScale(14),
+    fontSize: 13,
     fontFamily: fontFamily.bold,
   },
   submitBtn: {
     flex: 2,
     height: 48,
     borderRadius: 14,
+    borderBottomWidth: 4,
+    borderBottomColor: '#3730A3',
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#4F46E5',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 3,
   },
   submitBtnText: {
     color: '#FFFFFF',
-    fontSize: textScale(14),
+    fontSize: 13,
     fontFamily: fontFamily.bold,
   },
 });

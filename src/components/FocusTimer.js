@@ -7,17 +7,18 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  AccessibilityInfo,
+  useWindowDimensions,
 } from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 import {useTheme} from '../context/ThemeContext';
 import {usePlanning, TIMER_MODES} from '../context/PlanningContext';
 import {fontFamily} from '../common/fonts';
-import {textScale, moderateScale} from '../styles/responsiveStyles';
 import {spacing} from '../styles/spacing';
 import {getTextA11yProps} from '../utility/accessibility';
 
 export const FocusTimer = ({onCompleteTask}) => {
   const {theme} = useTheme();
+  const {width} = useWindowDimensions();
   const {
     timerStatus,
     activeMode,
@@ -44,6 +45,8 @@ export const FocusTimer = ({onCompleteTask}) => {
   const progressFraction =
     totalSeconds > 0 ? (totalSeconds - remainingSeconds) / totalSeconds : 0;
   const progressPercent = Math.min(100, Math.round(progressFraction * 100));
+
+  const ringSize = Math.min(Math.max(width * 0.52, 180), 220);
 
   return (
     <View
@@ -98,6 +101,9 @@ export const FocusTimer = ({onCompleteTask}) => {
           style={[
             styles.timerRingOuter,
             {
+              width: ringSize,
+              height: ringSize,
+              borderRadius: ringSize / 2,
               borderColor:
                 timerStatus === 'running'
                   ? theme.primary
@@ -120,7 +126,7 @@ export const FocusTimer = ({onCompleteTask}) => {
               : timerStatus === 'paused'
               ? 'Paused'
               : timerStatus === 'completed'
-              ? 'Completed! 🎉'
+              ? 'Completed'
               : 'Ready'}
           </Text>
         </View>
@@ -172,14 +178,20 @@ export const FocusTimer = ({onCompleteTask}) => {
               onPress={onCompleteTask}
               style={[
                 styles.completeTaskBtn,
-                {backgroundColor: theme.successLight},
+                {backgroundColor: theme.primaryLight},
               ]}
               accessibilityRole="button"
               accessibilityLabel={`Mark ${activeTask.title} as completed`}>
+              <Feather
+                name="check"
+                size={14}
+                color={theme.primary}
+                style={{marginRight: 4}}
+              />
               <Text
                 {...getTextA11yProps(1.2)}
-                style={[styles.completeTaskBtnText, {color: theme.success}]}>
-                ✓ Complete
+                style={[styles.completeTaskBtnText, {color: theme.primary}]}>
+                Done
               </Text>
             </TouchableOpacity>
           )}
@@ -194,10 +206,16 @@ export const FocusTimer = ({onCompleteTask}) => {
             style={[styles.primaryActionBtn, {backgroundColor: theme.primary}]}
             accessibilityRole="button"
             accessibilityLabel="Start Focus Session">
+            <Feather
+              name="play"
+              size={16}
+              color="#FFFFFF"
+              style={{marginRight: 8}}
+            />
             <Text
               {...getTextA11yProps(1.2)}
               style={styles.primaryActionBtnText}>
-              ▶ Start Focus
+              Start Focus
             </Text>
           </TouchableOpacity>
         )}
@@ -208,10 +226,16 @@ export const FocusTimer = ({onCompleteTask}) => {
             style={[styles.primaryActionBtn, {backgroundColor: theme.warning}]}
             accessibilityRole="button"
             accessibilityLabel="Pause Focus Session">
+            <Feather
+              name="pause"
+              size={16}
+              color="#FFFFFF"
+              style={{marginRight: 8}}
+            />
             <Text
               {...getTextA11yProps(1.2)}
               style={styles.primaryActionBtnText}>
-              ⏸ Pause
+              Pause
             </Text>
           </TouchableOpacity>
         )}
@@ -223,10 +247,16 @@ export const FocusTimer = ({onCompleteTask}) => {
               style={[styles.dualActionBtn, {backgroundColor: theme.primary}]}
               accessibilityRole="button"
               accessibilityLabel="Resume Focus Session">
+              <Feather
+                name="play"
+                size={16}
+                color="#FFFFFF"
+                style={{marginRight: 6}}
+              />
               <Text
                 {...getTextA11yProps(1.2)}
                 style={styles.primaryActionBtnText}>
-                ▶ Resume
+                Resume
               </Text>
             </TouchableOpacity>
 
@@ -242,13 +272,19 @@ export const FocusTimer = ({onCompleteTask}) => {
               ]}
               accessibilityRole="button"
               accessibilityLabel="Reset Focus Session">
+              <Feather
+                name="rotate-ccw"
+                size={15}
+                color={theme.textSecondary}
+                style={{marginRight: 6}}
+              />
               <Text
                 {...getTextA11yProps(1.2)}
                 style={[
                   styles.dualActionSecondaryText,
                   {color: theme.textSecondary},
                 ]}>
-                ↺ Reset
+                Reset
               </Text>
             </TouchableOpacity>
           </View>
@@ -260,10 +296,16 @@ export const FocusTimer = ({onCompleteTask}) => {
             style={[styles.primaryActionBtn, {backgroundColor: theme.primary}]}
             accessibilityRole="button"
             accessibilityLabel="Start New Focus Session">
+            <Feather
+              name="plus"
+              size={16}
+              color="#FFFFFF"
+              style={{marginRight: 6}}
+            />
             <Text
               {...getTextA11yProps(1.2)}
               style={styles.primaryActionBtnText}>
-              + Start Next Session
+              Start Next Session
             </Text>
           </TouchableOpacity>
         )}
@@ -274,10 +316,16 @@ export const FocusTimer = ({onCompleteTask}) => {
 
 const styles = StyleSheet.create({
   cardContainer: {
-    padding: spacing.medium,
-    borderRadius: 16,
-    borderWidth: 1,
+    padding: 20,
+    borderRadius: 22,
+    borderWidth: 1.5,
+    borderBottomWidth: 4, // Elevate 3D bevel
     marginVertical: spacing.small,
+    shadowColor: '#4F46E5',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 3,
   },
   modeTabsRow: {
     flexDirection: 'row',
@@ -285,88 +333,100 @@ const styles = StyleSheet.create({
     marginBottom: spacing.medium,
   },
   modeTab: {
-    paddingVertical: spacing.small - 2,
-    paddingHorizontal: spacing.small + 2,
-    borderRadius: 20,
-    borderWidth: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderBottomWidth: 3, // Elevate 3D bevel
+    minHeight: 34,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modeTabText: {
-    fontSize: textScale(12),
+    fontSize: 12,
   },
   timerCenterContainer: {
     alignItems: 'center',
     marginVertical: spacing.medium,
   },
   timerRingOuter: {
-    width: moderateScale(190),
-    height: moderateScale(190),
-    borderRadius: moderateScale(95),
-    borderWidth: 4,
+    borderWidth: 8,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.medium,
+    shadowColor: '#4F46E5',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 4,
   },
   timerDigits: {
-    fontSize: textScale(38),
+    fontSize: 44,
     fontFamily: fontFamily.bold,
     letterSpacing: 1.5,
   },
   timerStatusLabel: {
-    fontSize: textScale(13),
-    fontFamily: fontFamily.regular,
+    fontSize: 14,
+    fontFamily: fontFamily.bold,
     marginTop: 4,
   },
   progressTrack: {
     width: '100%',
-    height: 6,
-    borderRadius: 3,
+    height: 8,
+    borderRadius: 4,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    borderRadius: 3,
+    borderRadius: 4,
   },
   activeTaskBanner: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: spacing.medium - 2,
-    borderRadius: 12,
+    borderRadius: 8,
     borderWidth: 1,
     marginVertical: spacing.small,
   },
   activeTaskPrefix: {
-    fontSize: textScale(10),
+    fontSize: 10,
     fontFamily: fontFamily.bold,
     letterSpacing: 1,
     marginBottom: 2,
   },
   activeTaskTitle: {
-    fontSize: textScale(14),
+    fontSize: 14,
     fontFamily: fontFamily.medium,
   },
   completeTaskBtn: {
-    paddingVertical: spacing.small - 2,
-    paddingHorizontal: spacing.small + 2,
-    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: spacing.small - 3,
+    paddingHorizontal: spacing.small + 4,
+    borderRadius: 6,
     marginLeft: spacing.small,
+    minHeight: 32,
   },
   completeTaskBtnText: {
-    fontSize: textScale(12),
+    fontSize: 12,
     fontFamily: fontFamily.bold,
   },
   controlsRow: {
     marginTop: spacing.small,
   },
   primaryActionBtn: {
+    flexDirection: 'row',
     paddingVertical: spacing.medium - 2,
-    borderRadius: 12,
+    borderRadius: 14,
+    borderBottomWidth: 4,
+    borderBottomColor: '#0082CC',
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 48,
+    minHeight: 50,
   },
   primaryActionBtnText: {
     color: '#FFFFFF',
-    fontSize: textScale(15),
+    fontSize: 15,
     fontFamily: fontFamily.bold,
   },
   pausedButtonsRow: {
@@ -375,15 +435,18 @@ const styles = StyleSheet.create({
   },
   dualActionBtn: {
     flex: 1,
+    flexDirection: 'row',
     marginHorizontal: 4,
     paddingVertical: spacing.medium - 2,
-    borderRadius: 12,
+    borderRadius: 14,
+    borderBottomWidth: 4,
+    borderBottomColor: '#0082CC',
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 48,
+    minHeight: 50,
   },
   dualActionSecondaryText: {
-    fontSize: textScale(14),
+    fontSize: 14,
     fontFamily: fontFamily.bold,
   },
 });

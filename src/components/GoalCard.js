@@ -3,10 +3,10 @@
 
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 import {useTheme} from '../context/ThemeContext';
 import {useGoal, GOAL_TYPES} from '../context/GoalContext';
 import {categoryMeta} from '../styles/theme';
-import {textScale, moderateScale} from '../styles/responsiveStyles';
 import {fontFamily} from '../common/fonts';
 import {spacing} from '../styles/spacing';
 import {CategoryBadge} from './Badge';
@@ -54,22 +54,22 @@ export const GoalCard = ({goal, onEdit, onUpdateProgress, onViewHistory}) => {
   if (stats.status === 'completed') {
     statusBadgeBg = theme.successLight;
     statusBadgeText = theme.success;
-    statusLabel = 'Completed ✓';
+    statusLabel = 'Completed';
     progressColor = theme.success;
   } else if (stats.status === 'overdue') {
     statusBadgeBg = theme.dangerLight;
     statusBadgeText = theme.danger;
-    statusLabel = 'Overdue ⚠️';
+    statusLabel = 'Overdue';
     progressColor = theme.danger;
   } else if (stats.status === 'at_risk') {
     statusBadgeBg = theme.warningLight;
     statusBadgeText = theme.warning;
-    statusLabel = 'At Risk ⏳';
+    statusLabel = 'At Risk';
     progressColor = theme.warning;
   } else if (stats.status === 'archived') {
     statusBadgeBg = theme.surfaceSecondary;
     statusBadgeText = theme.textMuted;
-    statusLabel = 'Archived 📦';
+    statusLabel = 'Archived';
     progressColor = theme.textMuted;
   }
 
@@ -91,9 +91,17 @@ export const GoalCard = ({goal, onEdit, onUpdateProgress, onViewHistory}) => {
         {
           backgroundColor: theme.surface,
           borderColor: theme.border,
+          borderBottomColor: isDark ? '#0F172A' : '#CBD5E1',
         },
-        theme.cardShadow,
       ]}>
+      {/* 6px Signature Category Color Accent Strip */}
+      <View
+        style={[
+          styles.accentStrip,
+          {backgroundColor: meta.color},
+        ]}
+      />
+
       {/* Top Meta Header */}
       <View style={styles.topRow}>
         <View style={styles.badgesRow}>
@@ -114,8 +122,9 @@ export const GoalCard = ({goal, onEdit, onUpdateProgress, onViewHistory}) => {
           accessible={true}
           accessibilityRole="button"
           accessibilityLabel="Edit goal"
+          style={styles.iconButton}
           hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}>
-          <Text style={[styles.editIconText, {color: theme.textMuted}]}>✎</Text>
+          <Feather name="edit-2" size={15} color={theme.textMuted} />
         </TouchableOpacity>
       </View>
 
@@ -137,14 +146,30 @@ export const GoalCard = ({goal, onEdit, onUpdateProgress, onViewHistory}) => {
       {/* Target Date & Type Info */}
       <View style={styles.infoRow}>
         {formattedTargetDate && (
-          <Text style={[styles.targetDateText, {color: theme.textMuted}]}>
-            🎯 Due {formattedTargetDate}
-          </Text>
+          <View style={styles.infoPill}>
+            <Feather
+              name="calendar"
+              size={12}
+              color={theme.textMuted}
+              style={{marginRight: 4}}
+            />
+            <Text style={[styles.targetDateText, {color: theme.textMuted}]}>
+              Due {formattedTargetDate}
+            </Text>
+          </View>
         )}
         {goal.linkedTaskIds && goal.linkedTaskIds.length > 0 && (
-          <Text style={[styles.linkedTasksText, {color: theme.primary}]}>
-            🔗 {goal.linkedTaskIds.length} tasks linked
-          </Text>
+          <View style={styles.infoPill}>
+            <Feather
+              name="link-2"
+              size={12}
+              color={theme.primary}
+              style={{marginRight: 4}}
+            />
+            <Text style={[styles.linkedTasksText, {color: theme.primary}]}>
+              {goal.linkedTaskIds.length} tasks linked
+            </Text>
+          </View>
         )}
       </View>
 
@@ -208,7 +233,7 @@ export const GoalCard = ({goal, onEdit, onUpdateProgress, onViewHistory}) => {
                   },
                 ]}>
                 {milestone.isCompleted && (
-                  <Text style={styles.checkIconText}>✓</Text>
+                  <Feather name="check" size={12} color="#FFFFFF" />
                 )}
               </View>
               <Text
@@ -258,9 +283,15 @@ export const GoalCard = ({goal, onEdit, onUpdateProgress, onViewHistory}) => {
               accessible={true}
               accessibilityRole="button"
               accessibilityLabel="View history">
+              <Feather
+                name="clock"
+                size={12}
+                color={theme.textSecondary}
+                style={{marginRight: 4}}
+              />
               <Text
                 style={[styles.quickActionText, {color: theme.textSecondary}]}>
-                📜 History
+                History
               </Text>
             </TouchableOpacity>
           )}
@@ -275,9 +306,11 @@ export const GoalCard = ({goal, onEdit, onUpdateProgress, onViewHistory}) => {
             accessibilityLabel={
               goal.isArchived ? 'Restore goal' : 'Archive goal'
             }>
-            <Text style={[styles.actionIcon, {color: theme.textMuted}]}>
-              {goal.isArchived ? '📦' : '🗄️'}
-            </Text>
+            <Feather
+              name={goal.isArchived ? 'rotate-ccw' : 'archive'}
+              size={15}
+              color={theme.textMuted}
+            />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -286,7 +319,7 @@ export const GoalCard = ({goal, onEdit, onUpdateProgress, onViewHistory}) => {
             accessible={true}
             accessibilityRole="button"
             accessibilityLabel="Delete goal">
-            <Text style={[styles.actionIcon, {color: theme.danger}]}>🗑</Text>
+            <Feather name="trash-2" size={15} color={theme.danger} />
           </TouchableOpacity>
         </View>
       </View>
@@ -296,47 +329,61 @@ export const GoalCard = ({goal, onEdit, onUpdateProgress, onViewHistory}) => {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 14,
-    borderWidth: 1,
-    padding: spacing.md,
-    marginBottom: spacing.md,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderBottomWidth: 4, // Elevate 3D bevel
+    borderBottomColor: '#CBD5E1',
+    padding: 16,
+    paddingLeft: 20,
+    marginBottom: 14,
+    overflow: 'hidden',
+    position: 'relative',
+    shadowColor: '#475569',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  accentStrip: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    width: 6,
   },
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: spacing.xs,
+    marginBottom: spacing.small,
   },
   badgesRow: {
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
-    gap: 6,
   },
   statusBadge: {
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 10,
+    marginLeft: 6,
   },
   statusBadgeText: {
-    fontSize: textScale(11),
+    fontSize: 11,
     fontFamily: fontFamily.semiBold,
   },
-  editIconText: {
-    fontSize: textScale(16),
-  },
   title: {
-    fontSize: textScale(16),
+    fontSize: 16,
     fontFamily: fontFamily.bold,
-    marginTop: spacing.xs,
+    marginTop: 4,
     marginBottom: 4,
-    lineHeight: textScale(22),
+    lineHeight: 22,
   },
   description: {
-    fontSize: textScale(13),
+    fontSize: 13,
     fontFamily: fontFamily.regular,
-    lineHeight: textScale(18),
-    marginBottom: spacing.xs,
+    lineHeight: 18,
+    marginBottom: 6,
   },
   infoRow: {
     flexDirection: 'row',
@@ -344,17 +391,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginVertical: 4,
   },
+  infoPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   targetDateText: {
-    fontSize: textScale(11),
+    fontSize: 12,
     fontFamily: fontFamily.medium,
   },
   linkedTasksText: {
-    fontSize: textScale(11),
+    fontSize: 12,
     fontFamily: fontFamily.medium,
   },
   progressContainer: {
-    marginTop: spacing.xs,
-    marginBottom: spacing.xs,
+    marginTop: 6,
+    marginBottom: 6,
   },
   progressHeader: {
     flexDirection: 'row',
@@ -363,28 +414,28 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   progressValues: {
-    fontSize: textScale(12),
+    fontSize: 12,
     fontFamily: fontFamily.medium,
   },
   progressPercent: {
-    fontSize: textScale(13),
+    fontSize: 13,
     fontFamily: fontFamily.bold,
   },
   progressBarTrack: {
-    height: 8,
-    borderRadius: 4,
+    height: 6,
+    borderRadius: 3,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    borderRadius: 4,
+    borderRadius: 3,
   },
   milestonesSection: {
-    marginTop: spacing.xs,
-    paddingTop: spacing.xs,
+    marginTop: 6,
+    paddingTop: 6,
   },
   milestonesSectionTitle: {
-    fontSize: textScale(11),
+    fontSize: 11,
     fontFamily: fontFamily.semiBold,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -394,10 +445,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 4,
+    minHeight: 32,
   },
   milestoneCheckbox: {
-    width: moderateScale(18),
-    height: moderateScale(18),
+    width: 20,
+    height: 20,
     borderRadius: 4,
     borderWidth: 1.5,
     alignItems: 'center',
@@ -405,13 +457,8 @@ const styles = StyleSheet.create({
     marginRight: 8,
     backgroundColor: 'transparent',
   },
-  checkIconText: {
-    color: '#FFFFFF',
-    fontSize: textScale(11),
-    fontWeight: 'bold',
-  },
   milestoneTitle: {
-    fontSize: textScale(13),
+    fontSize: 13,
     fontFamily: fontFamily.regular,
     flex: 1,
   },
@@ -422,34 +469,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderTopWidth: StyleSheet.hairlineWidth,
-    paddingTop: spacing.xs,
-    marginTop: spacing.xs,
+    borderTopWidth: 1,
+    paddingTop: 8,
+    marginTop: 8,
   },
   actionButtons: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
   },
   quickActionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 8,
+    borderRadius: 6,
+    marginRight: 6,
+    minHeight: 30,
   },
   quickActionText: {
-    fontSize: textScale(12),
+    fontSize: 12,
     fontFamily: fontFamily.semiBold,
   },
   secondaryActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
   },
   iconButton: {
-    padding: 4,
-  },
-  actionIcon: {
-    fontSize: textScale(15),
+    padding: 6,
+    minWidth: 32,
+    minHeight: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

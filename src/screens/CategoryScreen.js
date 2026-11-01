@@ -1,7 +1,6 @@
 // src/screens/CategoryScreen.js
 import React, {useState, useMemo} from 'react';
 import {
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -9,8 +8,8 @@ import {
   TouchableOpacity,
   TextInput,
   StatusBar,
-  Image,
 } from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 import {useNavigation} from '@react-navigation/native';
 import {useTheme} from '../context/ThemeContext';
 import {useTasks} from '../context/TaskContext';
@@ -18,9 +17,10 @@ import TaskCard from '../components/TaskCard';
 import EmptyState from '../components/EmptyState';
 import TaskModal from '../modules/TaskModal';
 import {categoryMeta} from '../styles/theme';
-import {textScale} from '../styles/responsiveStyles';
 import {fontFamily} from '../common/fonts';
 import {spacing} from '../styles/spacing';
+import ScreenContainer from '../design-system/ScreenContainer';
+import Header from '../design-system/Header';
 
 const CategoryScreen = ({route}) => {
   const params = route?.params || {};
@@ -91,32 +91,25 @@ const CategoryScreen = ({route}) => {
   };
 
   return (
-    <SafeAreaView
-      style={[styles.mainContainer, {backgroundColor: theme.background}]}>
+    <ScreenContainer scrollable={false} contentPadding={0}>
       <StatusBar
         backgroundColor={theme.background}
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
 
-      {/* Top Header Bar */}
-      <View style={[styles.topBar, {borderBottomColor: theme.divider}]}>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => navigation.goBack()}
-          style={[styles.backBtn, {backgroundColor: theme.surfaceSecondary}]}>
-          <Text style={[styles.backIcon, {color: theme.textPrimary}]}>←</Text>
-        </TouchableOpacity>
-
-        <Text style={[styles.navTitle, {color: theme.textPrimary}]}>
-          {categoryName}
-        </Text>
-
-        <TouchableOpacity
-          onPress={() => setIsModalVisible(true)}
-          style={[styles.addNavBtn, {backgroundColor: meta.color}]}>
-          <Text style={styles.addNavBtnText}>+ Add</Text>
-        </TouchableOpacity>
-      </View>
+      {/* Editorial Header */}
+      <Header
+        title={categoryName}
+        subtitle={`${stats.completed}/${stats.total} completed (${progressPercent}%)`}
+        navigation={navigation}
+        showBack={true}
+        rightAction={{
+          icon: 'plus',
+          label: 'Add',
+          onPress: () => setIsModalVisible(true),
+          accessibilityLabel: `Add ${categoryName} task`,
+        }}
+      />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -125,29 +118,38 @@ const CategoryScreen = ({route}) => {
         <View
           style={[
             styles.heroBanner,
-            {backgroundColor: meta.bgColor, borderColor: meta.color},
+            {backgroundColor: theme.surface, borderColor: theme.border},
           ]}>
           <View style={styles.heroTop}>
             <View>
-              <Text style={[styles.heroTitle, {color: meta.color}]}>
+              <Text style={[styles.heroTitle, {color: theme.textPrimary}]}>
                 {categoryName}
               </Text>
               <Text style={[styles.heroSubtitle, {color: theme.textSecondary}]}>
                 {stats.completed} of {stats.total} tasks completed
               </Text>
             </View>
-            <View style={[styles.percentBadge, {backgroundColor: meta.color}]}>
-              <Text style={styles.percentText}>{progressPercent}%</Text>
+            <View
+              style={[
+                styles.percentBadge,
+                {backgroundColor: theme.primaryLight},
+              ]}>
+              <Text style={[styles.percentText, {color: theme.primary}]}>
+                {progressPercent}%
+              </Text>
             </View>
           </View>
 
           {/* Progress Bar */}
           <View
-            style={[styles.progressBg, {backgroundColor: 'rgba(0,0,0,0.06)'}]}>
+            style={[
+              styles.progressBg,
+              {backgroundColor: theme.surfaceSecondary},
+            ]}>
             <View
               style={[
                 styles.progressFill,
-                {width: `${progressPercent}%`, backgroundColor: meta.color},
+                {width: `${progressPercent}%`, backgroundColor: theme.primary},
               ]}
             />
           </View>
@@ -162,9 +164,14 @@ const CategoryScreen = ({route}) => {
               borderColor: theme.border,
             },
           ]}>
-          <Text style={styles.searchIcon}>🔍</Text>
+          <Feather
+            name="search"
+            size={16}
+            color={theme.textMuted}
+            style={{marginRight: 8}}
+          />
           <TextInput
-            placeholder={`Search ${categoryName} tasks...`}
+            placeholder={`Search in ${categoryName}...`}
             placeholderTextColor={theme.textMuted}
             value={search}
             onChangeText={setSearch}
@@ -172,9 +179,7 @@ const CategoryScreen = ({route}) => {
           />
           {Boolean(search) && (
             <TouchableOpacity onPress={() => setSearch('')}>
-              <Text style={[styles.clearIcon, {color: theme.textMuted}]}>
-                ✕
-              </Text>
+              <Feather name="x" size={16} color={theme.textMuted} />
             </TouchableOpacity>
           )}
         </View>
@@ -186,20 +191,30 @@ const CategoryScreen = ({route}) => {
             return (
               <TouchableOpacity
                 key={status}
+                accessibilityRole="button"
+                accessibilityLabel={`Filter by ${status}`}
                 onPress={() => setFilterStatus(status)}
                 style={[
                   styles.statusPill,
                   {
                     backgroundColor: isSelected
-                      ? meta.color
-                      : theme.surfaceSecondary,
-                    borderColor: isSelected ? meta.color : theme.border,
+                      ? theme.primary
+                      : isDark
+                      ? '#1E293B'
+                      : '#FFFFFF',
+                    borderColor: isSelected ? theme.primary : theme.border,
+                    marginRight: 8,
                   },
                 ]}>
                 <Text
                   style={[
                     styles.statusPillText,
-                    {color: isSelected ? '#FFFFFF' : theme.textSecondary},
+                    {
+                      color: isSelected ? '#FFFFFF' : theme.textSecondary,
+                      fontFamily: isSelected
+                        ? fontFamily.bold
+                        : fontFamily.medium,
+                    },
                   ]}>
                   {status.charAt(0).toUpperCase() + status.slice(1)}
                 </Text>
@@ -211,11 +226,11 @@ const CategoryScreen = ({route}) => {
         {/* Task Cards List */}
         {categoryTasks.length === 0 ? (
           <EmptyState
-            icon="📂"
+            icon="folder"
             title={`No ${filterStatus !== 'all' ? filterStatus : ''} Tasks`}
-            subtitle={`Nothing to see here in ${categoryName}. Add a new task to stay organized!`}
-            buttonText={`+ New ${categoryName} Task`}
-            onButtonPress={() => setIsModalVisible(true)}
+            message={`Nothing to see here in ${categoryName}. Add a new task to stay organized!`}
+            actionLabel={`+ New ${categoryName} Task`}
+            onAction={() => setIsModalVisible(true)}
           />
         ) : (
           <View style={styles.taskList}>
@@ -228,10 +243,12 @@ const CategoryScreen = ({route}) => {
 
       {/* Floating Action Button */}
       <TouchableOpacity
+        accessibilityRole="button"
+        accessibilityLabel={`Add task to ${categoryName}`}
         activeOpacity={0.85}
         onPress={() => setIsModalVisible(true)}
-        style={[styles.fab, {backgroundColor: meta.color}, theme.glowShadow]}>
-        <Text style={styles.fabPlus}>+</Text>
+        style={[styles.fab, {backgroundColor: '#4F46E5', shadowColor: '#4F46E5'}]}>
+        <Feather name="plus" size={26} color="#FFFFFF" />
       </TouchableOpacity>
 
       {/* Task Creation / Edit Modal */}
@@ -241,71 +258,40 @@ const CategoryScreen = ({route}) => {
         initialCategory={categoryName}
         initialTask={editingTask}
       />
-    </SafeAreaView>
+    </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-  },
-  topBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.PADDING_16,
-    paddingVertical: spacing.PADDING_12,
-    borderBottomWidth: 1,
-  },
-  backBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  backIcon: {
-    fontSize: textScale(18),
-    fontFamily: fontFamily.bold,
-  },
-  navTitle: {
-    fontSize: textScale(17),
-    fontFamily: fontFamily.bold,
-  },
-  addNavBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 12,
-  },
-  addNavBtnText: {
-    color: '#FFFFFF',
-    fontSize: textScale(12),
-    fontFamily: fontFamily.bold,
-  },
   scrollContent: {
-    paddingHorizontal: spacing.PADDING_16,
-    paddingTop: spacing.PADDING_16,
-    paddingBottom: 90,
+    padding: spacing.medium,
+    paddingBottom: 130, // Clearance for FAB
   },
   heroBanner: {
     borderRadius: 22,
-    padding: spacing.PADDING_16,
-    borderWidth: 1,
-    marginBottom: spacing.MARGIN_14,
+    borderWidth: 1.5,
+    borderBottomWidth: 4, // Elevate 3D bevel
+    borderBottomColor: '#CBD5E1',
+    padding: 18,
+    marginBottom: 14,
+    shadowColor: '#475569',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.07,
+    shadowRadius: 10,
+    elevation: 3,
   },
   heroTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.MARGIN_12,
+    marginBottom: spacing.small,
   },
   heroTitle: {
-    fontSize: textScale(22),
+    fontSize: 20,
     fontFamily: fontFamily.bold,
   },
   heroSubtitle: {
-    fontSize: textScale(12),
-    fontFamily: fontFamily.regular,
+    fontSize: 13,
     marginTop: 2,
   },
   percentBadge: {
@@ -314,56 +300,59 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   percentText: {
-    color: '#FFFFFF',
-    fontSize: textScale(12),
+    fontSize: 13,
     fontFamily: fontFamily.bold,
   },
   progressBg: {
-    height: 6,
-    borderRadius: 3,
+    height: 8,
+    borderRadius: 4,
     overflow: 'hidden',
+    marginTop: 6,
   },
   progressFill: {
     height: '100%',
-    borderRadius: 3,
+    borderRadius: 4,
   },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 44,
+    height: 48,
     borderRadius: 14,
     borderWidth: 1,
-    paddingHorizontal: 12,
-    marginBottom: spacing.MARGIN_12,
-  },
-  searchIcon: {
-    fontSize: textScale(14),
-    marginRight: 8,
+    paddingHorizontal: 14,
+    marginBottom: 12,
+    shadowColor: '#475569',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
   },
   searchInput: {
     flex: 1,
-    fontSize: textScale(13),
+    fontSize: 14,
     fontFamily: fontFamily.regular,
     paddingVertical: 0,
   },
-  clearIcon: {
-    fontSize: textScale(13),
+  clearBtn: {
     padding: 4,
   },
   pillsRow: {
     flexDirection: 'row',
-    marginBottom: spacing.MARGIN_14,
+    alignItems: 'center',
+    marginBottom: 16,
   },
   statusPill: {
     paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 12,
-    borderWidth: 1,
-    marginRight: 8,
+    paddingVertical: 7,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderBottomWidth: 3, // Elevate 3D bevel
+    minHeight: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   statusPillText: {
-    fontSize: textScale(11),
-    fontFamily: fontFamily.bold,
+    fontSize: 12,
   },
   taskList: {
     marginTop: 4,
@@ -377,13 +366,13 @@ const styles = StyleSheet.create({
     borderRadius: 29,
     alignItems: 'center',
     justifyContent: 'center',
+    borderBottomWidth: 4, // Elevate 3D bevel
+    borderBottomColor: '#3730A3',
+    elevation: 6,
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
     zIndex: 99,
-  },
-  fabPlus: {
-    color: '#FFFFFF',
-    fontSize: textScale(30),
-    fontFamily: fontFamily.bold,
-    marginTop: -3,
   },
 });
 

@@ -9,29 +9,29 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
-  SafeAreaView,
   StatusBar,
   FlatList,
-  Platform,
 } from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 import {useTheme} from '../context/ThemeContext';
 import {useGoal} from '../context/GoalContext';
 import {categoryMeta} from '../styles/theme';
-import {textScale, moderateScale} from '../styles/responsiveStyles';
 import {fontFamily} from '../common/fonts';
 import {spacing} from '../styles/spacing';
-import HemburgerButton from '../modules/HemburgerButton';
+import ScreenContainer from '../design-system/ScreenContainer';
+import Header from '../design-system/Header';
 import GoalCard from '../components/GoalCard';
 import GoalModal from '../modules/GoalModal';
 import ProgressModal from '../modules/ProgressModal';
 import EmptyState from '../components/EmptyState';
+import ElevateTabBar from '../components/ElevateTabBar';
 
 const FILTER_TABS = [
   {key: 'all', label: 'All'},
   {key: 'active', label: 'Active'},
   {key: 'completed', label: 'Completed'},
-  {key: 'at_risk', label: 'At Risk ⚠️'},
-  {key: 'archived', label: 'Archived 📦'},
+  {key: 'at_risk', label: 'At Risk'},
+  {key: 'archived', label: 'Archived'},
 ];
 
 export const GoalsScreen = ({navigation}) => {
@@ -45,7 +45,7 @@ export const GoalsScreen = ({navigation}) => {
   const [progressModalVisible, setProgressModalVisible] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState(null);
 
-  const categories = ['All', ...Object.keys(categoryMeta)];
+  const categories = Array.from(new Set(['All', ...Object.keys(categoryMeta)]));
 
   const handleCreateNew = () => {
     setSelectedGoal(null);
@@ -133,36 +133,23 @@ export const GoalsScreen = ({navigation}) => {
   }, [goals]);
 
   return (
-    <SafeAreaView
-      style={[styles.container, {backgroundColor: theme.background}]}>
+    <ScreenContainer scrollable={false} contentPadding={0}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor={theme.background}
       />
 
-      {/* Top Header Bar */}
-      <View style={[styles.header, {borderBottomColor: theme.divider}]}>
-        <View style={styles.headerLeft}>
-          <HemburgerButton onPressButton={() => navigation.openDrawer()} />
-          <View>
-            <Text style={[styles.headerTitle, {color: theme.textPrimary}]}>
-              Goals & Progress 🎯
-            </Text>
-            <Text style={[styles.headerSubtitle, {color: theme.textSecondary}]}>
-              Connect actions to long-term outcomes
-            </Text>
-          </View>
-        </View>
-
-        <TouchableOpacity
-          onPress={toggleTheme}
-          accessible={true}
-          accessibilityRole="button"
-          accessibilityLabel={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-          style={[styles.themeBtn, {backgroundColor: theme.surfaceSecondary}]}>
-          <Text style={styles.themeIcon}>{isDark ? '☀️' : '🌙'}</Text>
-        </TouchableOpacity>
-      </View>
+      {/* Editorial Header */}
+      <Header
+        title="Goals & Targets"
+        subtitle="Align daily focus with long-term vision"
+        navigation={navigation}
+        rightAction={{
+          icon: isDark ? 'sun' : 'moon',
+          onPress: toggleTheme,
+          accessibilityLabel: `Switch to ${isDark ? 'light' : 'dark'} mode`,
+        }}
+      />
 
       {/* Undo Delete Notice Banner */}
       {Boolean(lastDeletedGoal) && (
@@ -183,6 +170,12 @@ export const GoalsScreen = ({navigation}) => {
             accessible={true}
             accessibilityRole="button"
             accessibilityLabel="Undo goal deletion">
+            <Feather
+              name="rotate-ccw"
+              size={12}
+              color={theme.primary}
+              style={{marginRight: 4}}
+            />
             <Text style={[styles.undoBtnText, {color: theme.primary}]}>
               Undo
             </Text>
@@ -190,69 +183,55 @@ export const GoalsScreen = ({navigation}) => {
         </View>
       )}
 
-      {/* Summary KPI Cards Row */}
-      <View style={styles.statsRow}>
-        <View
-          style={[
-            styles.statCard,
-            {backgroundColor: theme.surface, borderColor: theme.border},
-            theme.cardShadow,
-          ]}>
-          <Text style={[styles.statValue, {color: theme.textPrimary}]}>
-            {statsSummary.total}
-          </Text>
-          <Text style={[styles.statLabel, {color: theme.textMuted}]}>
-            Total Goals
-          </Text>
+      {/* Elevate Goal Mastery Hero */}
+      <View
+        style={[
+          styles.goalHero,
+          {backgroundColor: theme.primary},
+          theme.cardShadow,
+        ]}>
+        <View style={styles.goalHeroHeader}>
+          <View style={styles.heroBadge}>
+            <Feather name="target" size={13} color="#FEF08A" style={{marginRight: 5}} />
+            <Text style={styles.heroBadgeText}>GOAL MASTERY</Text>
+          </View>
+          <Text style={styles.heroAvgPercent}>{statsSummary.avgProgress}% Avg Pace</Text>
         </View>
 
-        <View
-          style={[
-            styles.statCard,
-            {backgroundColor: theme.surface, borderColor: theme.border},
-            theme.cardShadow,
-          ]}>
-          <Text style={[styles.statValue, {color: theme.success}]}>
-            {statsSummary.completed}
-          </Text>
-          <Text style={[styles.statLabel, {color: theme.textMuted}]}>
-            Completed
-          </Text>
-        </View>
-
-        <View
-          style={[
-            styles.statCard,
-            {backgroundColor: theme.surface, borderColor: theme.border},
-            theme.cardShadow,
-          ]}>
-          <Text
+        {/* Dynamic Glowing Progress Track */}
+        <View style={styles.progressTrackBackground}>
+          <View
             style={[
-              styles.statValue,
-              {
-                color:
-                  statsSummary.atRisk > 0 ? theme.warning : theme.textPrimary,
-              },
-            ]}>
-            {statsSummary.atRisk}
-          </Text>
-          <Text style={[styles.statLabel, {color: theme.textMuted}]}>
-            At Risk ⚠️
-          </Text>
+              styles.progressTrackFill,
+              {width: `${Math.min(100, Math.max(0, statsSummary.avgProgress))}%`},
+            ]}
+          />
         </View>
 
-        <View
-          style={[
-            styles.statCard,
-            {backgroundColor: theme.surface, borderColor: theme.border},
-            theme.cardShadow,
-          ]}>
-          <Text style={[styles.statValue, {color: theme.primary}]}>
-            {statsSummary.avgProgress}%
-          </Text>
-          <Text style={[styles.statLabel, {color: theme.textMuted}]}>
-            Avg Progress
-          </Text>
+        {/* 3 Metric Pills Row */}
+        <View style={styles.heroPillsRow}>
+          <View style={styles.heroMetricPill}>
+            <Text style={styles.heroMetricValue}>{statsSummary.total}</Text>
+            <Text style={styles.heroMetricLabel}>Total</Text>
+          </View>
+
+          <View style={styles.heroMetricPill}>
+            <Text style={[styles.heroMetricValue, {color: '#A7F3D0'}]}>
+              {statsSummary.completed}
+            </Text>
+            <Text style={styles.heroMetricLabel}>Done</Text>
+          </View>
+
+          <View style={styles.heroMetricPill}>
+            <Text
+              style={[
+                styles.heroMetricValue,
+                {color: statsSummary.atRisk > 0 ? '#FECACA' : '#FFFFFF'},
+              ]}>
+              {statsSummary.atRisk}
+            </Text>
+            <Text style={styles.heroMetricLabel}>At Risk</Text>
+          </View>
         </View>
       </View>
 
@@ -266,12 +245,17 @@ export const GoalsScreen = ({navigation}) => {
               borderColor: theme.border,
             },
           ]}>
-          <Text style={[styles.searchIcon, {color: theme.textMuted}]}>🔍</Text>
+          <Feather
+            name="search"
+            size={16}
+            color={theme.textMuted}
+            style={{marginRight: 8}}
+          />
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Search goals, descriptions, categories..."
-            placeholderTextColor={theme.placeholder}
+            placeholder="Search goals, milestones, tags..."
+            placeholderTextColor={theme.textMuted}
             style={[styles.searchInput, {color: theme.textPrimary}]}
             accessible={true}
             accessibilityLabel="Search goals input"
@@ -280,9 +264,7 @@ export const GoalsScreen = ({navigation}) => {
             <TouchableOpacity
               onPress={() => setSearchQuery('')}
               hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}>
-              <Text style={[styles.clearSearchIcon, {color: theme.textMuted}]}>
-                ✕
-              </Text>
+              <Feather name="x" size={16} color={theme.textMuted} />
             </TouchableOpacity>
           )}
         </View>
@@ -305,15 +287,24 @@ export const GoalsScreen = ({navigation}) => {
                   {
                     backgroundColor: isSelected
                       ? theme.primary
-                      : theme.surfaceSecondary,
-                    borderColor: isSelected ? theme.primary : theme.border,
+                      : isDark ? '#1E293B' : '#FFFFFF',
+                    borderColor: isSelected
+                      ? theme.primary
+                      : isDark ? '#334155' : '#E2E8F0',
+                    borderBottomColor: isSelected
+                      ? '#3730A3'
+                      : isDark ? '#0F172A' : '#CBD5E1',
                   },
                 ]}>
                 <Text
                   style={[
                     styles.tabChipText,
-                    {color: theme.textSecondary},
-                    isSelected && styles.selectedWhiteText,
+                    {
+                      color: isSelected ? '#FFFFFF' : theme.textSecondary,
+                      fontFamily: isSelected
+                        ? fontFamily.bold
+                        : fontFamily.medium,
+                    },
                   ]}>
                   {tab.label}
                 </Text>
@@ -331,7 +322,6 @@ export const GoalsScreen = ({navigation}) => {
           contentContainerStyle={styles.categoriesScroll}>
           {categories.map(cat => {
             const isSelected = activeCategory === cat;
-            const meta = categoryMeta[cat] || {color: theme.primary};
             return (
               <TouchableOpacity
                 key={cat}
@@ -340,16 +330,25 @@ export const GoalsScreen = ({navigation}) => {
                   styles.categoryPill,
                   {
                     backgroundColor: isSelected
-                      ? meta.color
-                      : theme.surfaceSecondary,
-                    borderColor: isSelected ? meta.color : theme.border,
+                      ? theme.primary
+                      : isDark ? '#1E293B' : '#FFFFFF',
+                    borderColor: isSelected
+                      ? theme.primary
+                      : isDark ? '#334155' : '#E2E8F0',
+                    borderBottomColor: isSelected
+                      ? '#3730A3'
+                      : isDark ? '#0F172A' : '#CBD5E1',
                   },
                 ]}>
                 <Text
                   style={[
                     styles.categoryPillText,
-                    {color: theme.textPrimary},
-                    isSelected && styles.selectedWhiteText,
+                    {
+                      color: isSelected ? '#FFFFFF' : theme.textPrimary,
+                      fontFamily: isSelected
+                        ? fontFamily.bold
+                        : fontFamily.regular,
+                    },
                   ]}>
                   {cat}
                 </Text>
@@ -375,6 +374,7 @@ export const GoalsScreen = ({navigation}) => {
         )}
         ListEmptyComponent={
           <EmptyState
+            icon="target"
             title="No Goals Found"
             message={
               searchQuery
@@ -389,19 +389,18 @@ export const GoalsScreen = ({navigation}) => {
         }
       />
 
-      {/* Floating Action Button (FAB) */}
+      {/* Floating Action Button (FAB) safely anchored above Elevate bottom bar */}
       <TouchableOpacity
         onPress={handleCreateNew}
         accessible={true}
         accessibilityRole="button"
         accessibilityLabel="Create a new goal"
-        style={[
-          styles.fab,
-          {backgroundColor: theme.primary},
-          theme.cardShadow,
-        ]}>
-        <Text style={styles.fabText}>+</Text>
+        style={[styles.fab, {backgroundColor: theme.primary}]}>
+        <Feather name="plus" size={24} color="#FFFFFF" />
       </TouchableOpacity>
+
+      {/* Elevate 5-Tab Tactile Bottom Navigation Bar */}
+      <ElevateTabBar activeTab="quests" navigation={navigation} />
 
       {/* Modals */}
       <GoalModal
@@ -415,177 +414,189 @@ export const GoalsScreen = ({navigation}) => {
         onClose={() => setProgressModalVisible(false)}
         goal={selectedGoal}
       />
-    </SafeAreaView>
+    </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  headerTitle: {
-    fontSize: textScale(18),
-    fontFamily: fontFamily.bold,
-  },
-  headerSubtitle: {
-    fontSize: textScale(12),
-    fontFamily: fontFamily.regular,
-  },
-  themeBtn: {
-    width: moderateScale(38),
-    height: moderateScale(38),
-    borderRadius: 19,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  themeIcon: {
-    fontSize: textScale(16),
-  },
   undoBanner: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    marginHorizontal: spacing.md,
-    marginTop: spacing.xs,
-    paddingHorizontal: spacing.md,
+    alignItems: 'center',
+    paddingHorizontal: spacing.medium,
     paddingVertical: 8,
+    marginHorizontal: spacing.medium,
+    marginTop: spacing.small,
     borderRadius: 8,
     borderWidth: 1,
   },
   undoText: {
-    fontSize: textScale(13),
-    fontFamily: fontFamily.regular,
+    fontSize: 13,
+    fontFamily: fontFamily.medium,
   },
   undoBtn: {
-    paddingHorizontal: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
     paddingVertical: 4,
+    borderRadius: 6,
   },
   undoBtnText: {
-    fontSize: textScale(13),
+    fontSize: 12,
     fontFamily: fontFamily.bold,
   },
-  statsRow: {
-    flexDirection: 'row',
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.sm,
-    gap: 8,
-  },
-  statCard: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 6,
-    borderRadius: 10,
+  goalHero: {
+    borderRadius: 22,
+    padding: 18,
+    marginHorizontal: spacing.medium,
+    marginTop: spacing.small,
+    marginBottom: spacing.medium,
     borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderBottomWidth: 5, // Elevate 3D bevel
   },
-  statValue: {
-    fontSize: textScale(15),
+  goalHeroHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  heroBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  heroBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontFamily: fontFamily.bold,
+    letterSpacing: 0.8,
+  },
+  heroAvgPercent: {
+    color: '#FFFFFF',
+    fontSize: 13,
     fontFamily: fontFamily.bold,
   },
-  statLabel: {
-    fontSize: textScale(10),
+  progressTrackBackground: {
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.22)',
+    overflow: 'hidden',
+    marginBottom: 14,
+  },
+  progressTrackFill: {
+    height: '100%',
+    backgroundColor: '#10B981',
+    borderRadius: 4,
+  },
+  heroPillsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.15)',
+    borderRadius: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+  },
+  heroMetricPill: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  heroMetricValue: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontFamily: fontFamily.bold,
+  },
+  heroMetricLabel: {
+    color: 'rgba(255, 255, 255, 0.85)',
+    fontSize: 11,
     fontFamily: fontFamily.medium,
     marginTop: 2,
-    textAlign: 'center',
   },
   searchContainer: {
-    paddingHorizontal: spacing.md,
-    marginTop: spacing.sm,
+    paddingHorizontal: spacing.medium,
+    marginBottom: spacing.small,
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 10,
+    height: 48,
+    borderRadius: 14,
     borderWidth: 1,
-    paddingHorizontal: 10,
-    paddingVertical: Platform.OS === 'ios' ? 8 : 4,
-  },
-  searchIcon: {
-    fontSize: textScale(14),
-    marginRight: 8,
+    paddingHorizontal: 14,
+    shadowColor: '#475569',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
   },
   searchInput: {
     flex: 1,
-    fontSize: textScale(13),
+    fontSize: 14,
     fontFamily: fontFamily.regular,
-    padding: 0,
-  },
-  clearSearchIcon: {
-    fontSize: textScale(14),
-    paddingHorizontal: 4,
+    paddingVertical: 0,
   },
   tabsContainer: {
-    marginTop: spacing.xs,
+    marginBottom: 10,
+    height: 38,
   },
   tabsScroll: {
-    paddingHorizontal: spacing.md,
-    gap: 6,
+    paddingHorizontal: spacing.medium,
   },
   tabChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    borderWidth: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderBottomWidth: 3, // Elevate 3D bevel
+    minHeight: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
   },
   tabChipText: {
-    fontSize: textScale(12),
-    fontFamily: fontFamily.medium,
+    fontSize: 12,
   },
   categoriesContainer: {
-    marginTop: 6,
-    marginBottom: spacing.xs,
+    marginBottom: 12,
+    height: 36,
   },
   categoriesScroll: {
-    paddingHorizontal: spacing.md,
-    gap: 6,
+    paddingHorizontal: spacing.medium,
   },
   categoryPill: {
     paddingHorizontal: 12,
-    paddingVertical: 5,
+    paddingVertical: 6,
     borderRadius: 14,
-    borderWidth: 1,
+    borderWidth: 1.5,
+    borderBottomWidth: 3, // Elevate 3D bevel
+    minHeight: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
   },
   categoryPillText: {
-    fontSize: textScale(12),
-    fontFamily: fontFamily.medium,
+    fontSize: 11,
   },
   listContent: {
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.xs,
-    paddingBottom: 80,
+    paddingHorizontal: spacing.medium,
+    paddingBottom: 150, // Clearance for FAB and Elevate bottom bar
   },
   fab: {
     position: 'absolute',
     right: 20,
-    bottom: 24,
-    width: moderateScale(54),
-    height: moderateScale(54),
+    bottom: 78, // Floats cleanly right above Elevate bottom bar
+    width: 54,
+    height: 54,
     borderRadius: 27,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  fabText: {
-    color: '#FFFFFF',
-    fontSize: textScale(28),
-    lineHeight: textScale(30),
-    fontWeight: '300',
-  },
-  selectedWhiteText: {
-    color: '#FFFFFF',
+    borderBottomWidth: 4, // Elevate 3D bevel
+    borderBottomColor: '#3730A3',
+    elevation: 8,
+    zIndex: 99,
   },
 });
 

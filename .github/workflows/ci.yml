@@ -28,3 +28,4 @@ jobs:
 
       - name: Run Mobile Test Suites & Critical Journeys
         run: npm test -- --watchAll=false
+

@@ -472,7 +472,6 @@ const styles = StyleSheet.create({
   chipsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.xs,
     marginVertical: spacing.sm,
   },
   chip: {
@@ -480,6 +479,8 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(8),
     paddingHorizontal: spacing.sm,
     paddingVertical: moderateScale(4),
+    marginRight: spacing.xs,
+    marginBottom: spacing.xs,
   },
   chipText: {
     fontSize: textScale(11),
@@ -504,10 +505,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: moderateScale(4),
-    gap: spacing.xs,
   },
   subtaskBullet: {
     fontSize: textScale(14),
+    marginRight: spacing.xs,
   },
   subtaskTitle: {
     flex: 1,
@@ -522,13 +523,14 @@ const styles = StyleSheet.create({
   tagsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.xs,
     marginTop: spacing.sm,
   },
   tagBadge: {
     borderRadius: moderateScale(6),
     paddingHorizontal: spacing.xs,
     paddingVertical: moderateScale(2),
+    marginRight: spacing.xs,
+    marginBottom: spacing.xs,
   },
   tagText: {
     fontSize: textScale(10),
@@ -536,7 +538,6 @@ const styles = StyleSheet.create({
   },
   footerRow: {
     flexDirection: 'row',
-    gap: spacing.sm,
     paddingTop: spacing.sm,
     borderTopWidth: 1,
   },
@@ -546,6 +547,7 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(12),
     paddingVertical: moderateScale(12),
     alignItems: 'center',
+    marginRight: spacing.sm,
   },
   cancelBtnText: {
     fontSize: textScale(13),

@@ -1,7 +1,6 @@
 // src/screens/Settings.js
 import React, {useState, useEffect} from 'react';
 import {
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,6 +12,7 @@ import {
   Switch,
   Platform,
 } from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 import {useNavigation} from '@react-navigation/native';
 import {useTheme} from '../context/ThemeContext';
 import {useTasks} from '../context/TaskContext';
@@ -24,11 +24,12 @@ import {
   createBackupPayload,
   prepareRestoreData,
 } from '../services/backupService';
-import HemburgerButton from '../modules/HemburgerButton';
 import apiService from '../services/apiService';
-import {textScale} from '../styles/responsiveStyles';
 import {fontFamily} from '../common/fonts';
 import {spacing} from '../styles/spacing';
+import ScreenContainer from '../design-system/ScreenContainer';
+import Header from '../design-system/Header';
+import ElevateTabBar from '../components/ElevateTabBar';
 
 const Settings = () => {
   const navigation = useNavigation();
@@ -78,13 +79,13 @@ const Settings = () => {
       setServerStatus(isUp ? 'online' : 'offline');
       if (isUp) {
         Alert.alert(
-          'Connected! 🎉',
+          'Connected!',
           'Backend server is reachable and responsive.',
         );
       } else {
         Alert.alert(
-          'Connection Failed ⚠️',
-          `Cannot reach ${serverUrl}.\n\nTips:\n- Ensure "node backend/server.js" is running.\n- For Android emulator, use "http://10.0.2.2:5000".\n- For physical phones, use your computer\'s Wi-Fi IP.`,
+          'Connection Failed',
+          `Cannot reach ${serverUrl}.\n\nTips:\n- Ensure "node backend/server.js" is running.\n- For Android emulator, use "http://10.0.2.2:5000".\n- For physical phones, use your computer's Wi-Fi IP.`,
         );
       }
     } catch (e) {
@@ -134,7 +135,7 @@ const Settings = () => {
       });
 
       Alert.alert(
-        'Backup Snapshot Created 📦',
+        'Backup Snapshot Created',
         `Version: ${payload.schemaVersion}\nChecksum: ${payload.checksum}\n\nTasks: ${payload.recordCounts.tasks}\nNotes: ${payload.recordCounts.notes}\nGoals: ${payload.recordCounts.goals}\nHabits: ${payload.recordCounts.habits}\nFocus Sessions: ${payload.recordCounts.focusSessions}\n\nIntegrity verified. Upload to cloud server?`,
         [
           {text: 'Keep Local', style: 'cancel'},
@@ -161,7 +162,7 @@ const Settings = () => {
 
   const handleRestoreBackup = async () => {
     Alert.alert(
-      'Restore Server Backup 📥',
+      'Restore Server Backup',
       'This will fetch the latest verified backup from the server, validate its checksum, migrate schemas, and restore records.',
       [
         {text: 'Cancel', style: 'cancel'},
@@ -179,11 +180,11 @@ const Settings = () => {
             try {
               const prepared = prepareRestoreData(res.backup);
               Alert.alert(
-                'Restore Verified ✅',
+                'Restore Verified',
                 `Restored:\n- ${prepared.recordCounts.tasks} tasks\n- ${prepared.recordCounts.notes} notes\n- ${prepared.recordCounts.goals} goals\n- ${prepared.recordCounts.habits} habits\n- ${prepared.recordCounts.focusSessions} focus sessions\n\nIntegrity verified & schema up to date!`,
               );
             } catch (err) {
-              Alert.alert('Corrupt Backup Blocked 🛑', err.message);
+              Alert.alert('Corrupt Backup Blocked', err.message);
             }
           },
         },
@@ -196,7 +197,7 @@ const Settings = () => {
       const res = await apiService.resolveSync(tasks);
       if (res.success) {
         Alert.alert(
-          'Sync Reconciliation Complete ⚡',
+          'Sync Reconciliation Complete',
           `Processed: ${res.processedCount} tasks\nUpdated: ${res.updatedCount}\nUnchanged: ${res.unchangedCount}\n\nDeterministic LWW conflict resolution completed.`,
         );
       } else {
@@ -212,7 +213,7 @@ const Settings = () => {
 
   const handleResetData = () => {
     Alert.alert(
-      '⚠️ Reset All Data',
+      'Reset All Data',
       'This will delete all local tasks and profile data. This action cannot be undone.',
       [
         {text: 'Cancel', style: 'cancel'},
@@ -229,44 +230,79 @@ const Settings = () => {
   };
 
   return (
-    <SafeAreaView
-      style={[styles.mainContainer, {backgroundColor: theme.background}]}>
+    <ScreenContainer scrollable={false} contentPadding={0}>
       <StatusBar
         backgroundColor={theme.background}
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
 
-      {/* Header */}
-      <View style={[styles.header, {borderBottomColor: theme.divider}]}>
-        <HemburgerButton onPressButton={() => navigation.openDrawer()} />
-        <Text style={[styles.headerTitle, {color: theme.textPrimary}]}>
-          Settings & Sync
-        </Text>
-        <View style={{width: 40}} />
-      </View>
+      {/* Editorial Header */}
+      <Header
+        title="Settings & System"
+        subtitle="Preferences, theme & cloud connectivity"
+        navigation={navigation}
+      />
 
       <ScrollView
+        style={{flex: 1}}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}>
-        {/* Appearance / Theme Selector */}
+        {/* Appearance Studio */}
         <View
           style={[
             styles.card,
-            {backgroundColor: theme.surface, borderColor: theme.border},
+            {
+              backgroundColor: theme.surface,
+              borderColor: theme.border,
+              borderLeftColor: theme.primary,
+              borderLeftWidth: 5,
+            },
             theme.cardShadow,
           ]}>
-          <Text style={[styles.cardTitle, {color: theme.textPrimary}]}>
-            🎨 Appearance
-          </Text>
-          <Text style={[styles.cardSubtitle, {color: theme.textMuted}]}>
-            Customize the look and feel of GOTask
-          </Text>
+          <View style={styles.cardHeaderWithIcon}>
+            <View
+              style={[
+                styles.headerMedallion,
+                {backgroundColor: theme.primaryLight},
+              ]}>
+              <Feather name="moon" size={16} color={theme.primary} />
+            </View>
+            <View style={{flex: 1}}>
+              <Text style={[styles.cardTitle, {color: theme.textPrimary}]}>
+                Appearance Studio
+              </Text>
+              <Text style={[styles.cardSubtitle, {color: theme.textMuted}]}>
+                Choose your visual theme experience
+              </Text>
+            </View>
+          </View>
 
           <View style={styles.themeOptionsRow}>
             {[
-              {id: 'light', label: '☀️ Light', sub: 'Bright & Crisp'},
-              {id: 'dark', label: '🌙 Dark', sub: 'Deep & Sleek'},
-              {id: 'system', label: '⚙️ Auto', sub: 'System sync'},
+              {
+                id: 'light',
+                label: 'Light',
+                icon: 'sun',
+                sub: 'Crisp & Warm',
+                iconBg: '#FEF3C7',
+                iconColor: '#D97706',
+              },
+              {
+                id: 'dark',
+                label: 'Dark',
+                icon: 'moon',
+                sub: 'Deep Obsidian',
+                iconBg: '#312E81',
+                iconColor: '#818CF8',
+              },
+              {
+                id: 'system',
+                label: 'System',
+                icon: 'smartphone',
+                sub: 'Follows OS',
+                iconBg: '#CFFAFE',
+                iconColor: '#0891B2',
+              },
             ].map(opt => {
               const isSelected = themeMode === opt.id;
               return (
@@ -281,12 +317,31 @@ const Settings = () => {
                         ? theme.primaryLight
                         : theme.surfaceSecondary,
                       borderColor: isSelected ? theme.primary : theme.border,
+                      borderWidth: 1.5,
+                      borderBottomWidth: 3,
+                      borderBottomColor: isSelected
+                        ? '#3730A3'
+                        : isDark
+                        ? '#0F172A'
+                        : '#CBD5E1',
                     },
                   ]}>
+                  <View
+                    style={[
+                      styles.themeIconCircle,
+                      {backgroundColor: opt.iconBg},
+                    ]}>
+                    <Feather name={opt.icon} size={16} color={opt.iconColor} />
+                  </View>
                   <Text
                     style={[
                       styles.themeOptionLabel,
-                      {color: isSelected ? theme.primary : theme.textPrimary},
+                      {
+                        color: isSelected ? theme.primary : theme.textPrimary,
+                        fontFamily: isSelected
+                          ? fontFamily.bold
+                          : fontFamily.semiBold,
+                      },
                     ]}>
                     {opt.label}
                   </Text>
@@ -297,6 +352,15 @@ const Settings = () => {
                     ]}>
                     {opt.sub}
                   </Text>
+                  {isSelected && (
+                    <View
+                      style={[
+                        styles.themeActiveBadge,
+                        {backgroundColor: theme.primary},
+                      ]}>
+                      <Feather name="check" size={10} color="#FFFFFF" />
+                    </View>
+                  )}
                 </TouchableOpacity>
               );
             })}
@@ -307,13 +371,32 @@ const Settings = () => {
         <View
           style={[
             styles.card,
-            {backgroundColor: theme.surface, borderColor: theme.border},
+            {
+              backgroundColor: theme.surface,
+              borderColor: theme.border,
+              borderLeftColor: '#06B6D4',
+              borderLeftWidth: 5,
+            },
             theme.cardShadow,
           ]}>
           <View style={styles.cardHeaderRow}>
-            <Text style={[styles.cardTitle, {color: theme.textPrimary}]}>
-              🌐 Cloud Sync & Backend API
-            </Text>
+            <View style={styles.cardHeaderWithIcon}>
+              <View
+                style={[
+                  styles.headerMedallion,
+                  {backgroundColor: '#CFFAFE'},
+                ]}>
+                <Feather name="cloud" size={16} color="#0891B2" />
+              </View>
+              <View>
+                <Text style={[styles.cardTitle, {color: theme.textPrimary}]}>
+                  Cloud Sync & Server
+                </Text>
+                <Text style={[styles.cardSubtitle, {color: theme.textMuted}]}>
+                  Bidirectional REST server sync
+                </Text>
+              </View>
+            </View>
             {serverStatus && (
               <View
                 style={[
@@ -321,29 +404,32 @@ const Settings = () => {
                   {
                     backgroundColor:
                       serverStatus === 'online'
-                        ? theme.successLight
+                        ? '#D1FAE5'
                         : theme.dangerLight,
                   },
                 ]}>
+                <View
+                  style={[
+                    styles.statusDot,
+                    {
+                      backgroundColor:
+                        serverStatus === 'online' ? '#10B981' : theme.danger,
+                    },
+                  ]}
+                />
                 <Text
                   style={[
                     styles.statusBadgeText,
                     {
                       color:
-                        serverStatus === 'online'
-                          ? theme.success
-                          : theme.danger,
+                        serverStatus === 'online' ? '#047857' : theme.danger,
                     },
                   ]}>
-                  {serverStatus === 'online' ? 'Online ●' : 'Offline ✕'}
+                  {serverStatus === 'online' ? 'Online' : 'Offline'}
                 </Text>
               </View>
             )}
           </View>
-
-          <Text style={[styles.cardSubtitle, {color: theme.textMuted}]}>
-            Connect to GOTask REST Server for bidirectional sync
-          </Text>
 
           <Text style={[styles.inputLabel, {color: theme.textSecondary}]}>
             Server Endpoint URL
@@ -377,12 +463,19 @@ const Settings = () => {
               }
               style={[
                 styles.presetBtn,
-                {backgroundColor: theme.surfaceSecondary},
+                {
+                  backgroundColor: theme.surfaceSecondary,
+                  borderColor: theme.border,
+                },
               ]}>
+              <Feather
+                name="monitor"
+                size={12}
+                color={theme.textSecondary}
+                style={{marginRight: 5}}
+              />
               <Text style={[styles.presetText, {color: theme.textSecondary}]}>
-                {Platform.OS === 'android'
-                  ? '📱 Emulator (10.0.2.2)'
-                  : '💻 Localhost'}
+                {Platform.OS === 'android' ? 'Emulator (10.0.2.2)' : 'Localhost'}
               </Text>
             </TouchableOpacity>
 
@@ -390,10 +483,19 @@ const Settings = () => {
               onPress={() => handleSetQuickUrl('http://192.168.1.100:5000')}
               style={[
                 styles.presetBtn,
-                {backgroundColor: theme.surfaceSecondary},
+                {
+                  backgroundColor: theme.surfaceSecondary,
+                  borderColor: theme.border,
+                },
               ]}>
+              <Feather
+                name="wifi"
+                size={12}
+                color={theme.textSecondary}
+                style={{marginRight: 5}}
+              />
               <Text style={[styles.presetText, {color: theme.textSecondary}]}>
-                📶 Wi-Fi LAN
+                Wi-Fi LAN
               </Text>
             </TouchableOpacity>
           </View>
@@ -411,17 +513,32 @@ const Settings = () => {
                   borderColor: theme.border,
                 },
               ]}>
+              <Feather
+                name="activity"
+                size={14}
+                color={theme.textPrimary}
+                style={{marginRight: 6}}
+              />
               <Text style={[styles.actionBtnText, {color: theme.textPrimary}]}>
-                {isTestingServer ? 'Pinging...' : 'Test Connection 🔍'}
+                {isTestingServer ? 'Pinging...' : 'Test Connection'}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={handleSaveServerUrl}
-              style={[styles.actionBtn, {backgroundColor: theme.primary}]}>
+              style={[
+                styles.actionBtn,
+                {backgroundColor: theme.primary, borderColor: theme.primary},
+              ]}>
+              <Feather
+                name="check"
+                size={14}
+                color="#FFFFFF"
+                style={{marginRight: 6}}
+              />
               <Text style={[styles.actionBtnText, {color: '#FFFFFF'}]}>
-                Save URL 💾
+                Save URL
               </Text>
             </TouchableOpacity>
           </View>
@@ -430,9 +547,21 @@ const Settings = () => {
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={triggerSync}
-            style={[styles.fullSyncBtn, {backgroundColor: theme.primaryLight}]}>
+            style={[
+              styles.fullSyncBtn,
+              {
+                backgroundColor: theme.primaryLight,
+                borderColor: theme.primary,
+              },
+            ]}>
+            <Feather
+              name="refresh-cw"
+              size={14}
+              color={theme.primary}
+              style={{marginRight: 8}}
+            />
             <Text style={[styles.fullSyncText, {color: theme.primary}]}>
-              {syncStatus === 'syncing' ? 'Syncing...' : '🔄 Sync Tasks Now'}
+              {syncStatus === 'syncing' ? 'Syncing...' : 'Sync Tasks Now'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -441,15 +570,41 @@ const Settings = () => {
         <View
           style={[
             styles.card,
-            {backgroundColor: theme.surface, borderColor: theme.border},
+            {
+              backgroundColor: theme.surface,
+              borderColor: theme.border,
+              borderLeftColor: '#8B5CF6',
+              borderLeftWidth: 5,
+            },
             theme.cardShadow,
           ]}>
-          <Text style={[styles.cardTitle, {color: theme.textPrimary}]}>
-            🔔 Preferences
-          </Text>
+          <View style={styles.cardHeaderWithIcon}>
+            <View
+              style={[
+                styles.headerMedallion,
+                {backgroundColor: '#EDE9FE'},
+              ]}>
+              <Feather name="sliders" size={16} color="#7C3AED" />
+            </View>
+            <View>
+              <Text style={[styles.cardTitle, {color: theme.textPrimary}]}>
+                Tactile Experience
+              </Text>
+              <Text style={[styles.cardSubtitle, {color: theme.textMuted}]}>
+                Haptics, sounds and interaction feedback
+              </Text>
+            </View>
+          </View>
 
           <View style={styles.toggleRow}>
-            <View>
+            <View
+              style={[
+                styles.toggleIconCircle,
+                {backgroundColor: '#FEF3C7'},
+              ]}>
+              <Feather name="bell" size={16} color="#D97706" />
+            </View>
+            <View style={{flex: 1, marginHorizontal: spacing.small}}>
               <Text style={[styles.toggleTitle, {color: theme.textPrimary}]}>
                 Sound & Completion Chimes
               </Text>
@@ -464,10 +619,17 @@ const Settings = () => {
             />
           </View>
 
-          <View style={[styles.sep, {backgroundColor: theme.divider}]} />
+          <View style={[styles.sep, {backgroundColor: theme.border}]} />
 
           <View style={styles.toggleRow}>
-            <View>
+            <View
+              style={[
+                styles.toggleIconCircle,
+                {backgroundColor: '#D1FAE5'},
+              ]}>
+              <Feather name="smartphone" size={16} color="#059669" />
+            </View>
+            <View style={{flex: 1, marginHorizontal: spacing.small}}>
               <Text style={[styles.toggleTitle, {color: theme.textPrimary}]}>
                 Haptic Feedback
               </Text>
@@ -482,10 +644,17 @@ const Settings = () => {
             />
           </View>
 
-          <View style={[styles.sep, {backgroundColor: theme.divider}]} />
+          <View style={[styles.sep, {backgroundColor: theme.border}]} />
 
           <View style={styles.toggleRow}>
-            <View>
+            <View
+              style={[
+                styles.toggleIconCircle,
+                {backgroundColor: '#EEF2FF'},
+              ]}>
+              <Feather name="zap" size={16} color="#4F46E5" />
+            </View>
+            <View style={{flex: 1, marginHorizontal: spacing.small}}>
               <Text style={[styles.toggleTitle, {color: theme.textPrimary}]}>
                 Auto-Sync on Launch
               </Text>
@@ -505,279 +674,483 @@ const Settings = () => {
         <View
           style={[
             styles.card,
-            {backgroundColor: theme.surface, borderColor: theme.border},
+            {
+              backgroundColor: theme.surface,
+              borderColor: theme.border,
+              borderLeftColor: '#10B981',
+              borderLeftWidth: 5,
+            },
             theme.cardShadow,
           ]}>
-          <Text style={[styles.cardTitle, {color: theme.textPrimary}]}>
-            🗄️ Data Management
-          </Text>
+          <View style={styles.cardHeaderWithIcon}>
+            <View
+              style={[
+                styles.headerMedallion,
+                {backgroundColor: '#D1FAE5'},
+              ]}>
+              <Feather name="database" size={16} color="#059669" />
+            </View>
+            <View>
+              <Text style={[styles.cardTitle, {color: theme.textPrimary}]}>
+                Data Management
+              </Text>
+              <Text style={[styles.cardSubtitle, {color: theme.textMuted}]}>
+                Backup, snapshot restore and maintenance
+              </Text>
+            </View>
+          </View>
 
           <TouchableOpacity
+            activeOpacity={0.8}
             onPress={handleExportBackup}
             style={[
               styles.manageBtn,
-              {backgroundColor: theme.surfaceSecondary},
+              {
+                backgroundColor: theme.surfaceSecondary,
+                borderColor: theme.border,
+              },
             ]}>
-            <Text style={[styles.manageBtnText, {color: theme.primary}]}>
-              💾 Export Backup Snapshot
-            </Text>
+            <View
+              style={[
+                styles.btnMedallion,
+                {backgroundColor: '#EEF2FF'},
+              ]}>
+              <Feather name="download" size={15} color="#4F46E5" />
+            </View>
+            <View style={{flex: 1}}>
+              <Text style={[styles.manageBtnText, {color: theme.textPrimary}]}>
+                Export Backup Snapshot
+              </Text>
+              <Text style={[styles.manageBtnSub, {color: theme.textMuted}]}>
+                Save verified JSON payload with checksum
+              </Text>
+            </View>
+            <Feather name="chevron-right" size={16} color={theme.textMuted} />
           </TouchableOpacity>
 
           <TouchableOpacity
+            activeOpacity={0.8}
             onPress={handleRestoreBackup}
             style={[
               styles.manageBtn,
-              {backgroundColor: theme.surfaceSecondary, marginTop: 8},
+              {
+                backgroundColor: theme.surfaceSecondary,
+                borderColor: theme.border,
+                marginTop: 10,
+              },
             ]}>
-            <Text style={[styles.manageBtnText, {color: theme.primary}]}>
-              📥 Restore Server Backup
-            </Text>
+            <View
+              style={[
+                styles.btnMedallion,
+                {backgroundColor: '#CFFAFE'},
+              ]}>
+              <Feather name="upload" size={15} color="#0891B2" />
+            </View>
+            <View style={{flex: 1}}>
+              <Text style={[styles.manageBtnText, {color: theme.textPrimary}]}>
+                Restore Server Backup
+              </Text>
+              <Text style={[styles.manageBtnSub, {color: theme.textMuted}]}>
+                Validate and migrate remote backup
+              </Text>
+            </View>
+            <Feather name="chevron-right" size={16} color={theme.textMuted} />
           </TouchableOpacity>
 
           <TouchableOpacity
+            activeOpacity={0.8}
             onPress={handleReconcileSync}
             style={[
               styles.manageBtn,
-              {backgroundColor: theme.surfaceSecondary, marginTop: 8},
+              {
+                backgroundColor: theme.surfaceSecondary,
+                borderColor: theme.border,
+                marginTop: 10,
+              },
             ]}>
-            <Text style={[styles.manageBtnText, {color: theme.primary}]}>
-              ⚡ Reconcile Sync (LWW)
-            </Text>
+            <View
+              style={[
+                styles.btnMedallion,
+                {backgroundColor: '#D1FAE5'},
+              ]}>
+              <Feather name="check-circle" size={15} color="#059669" />
+            </View>
+            <View style={{flex: 1}}>
+              <Text style={[styles.manageBtnText, {color: theme.textPrimary}]}>
+                Reconcile Sync (LWW)
+              </Text>
+              <Text style={[styles.manageBtnSub, {color: theme.textMuted}]}>
+                Deterministic last-write-wins resolution
+              </Text>
+            </View>
+            <Feather name="chevron-right" size={16} color={theme.textMuted} />
           </TouchableOpacity>
 
           <TouchableOpacity
+            activeOpacity={0.8}
             onPress={handleClearCompleted}
             style={[
               styles.manageBtn,
-              {backgroundColor: theme.surfaceSecondary, marginTop: 8},
+              {
+                backgroundColor: theme.surfaceSecondary,
+                borderColor: theme.border,
+                marginTop: 10,
+              },
             ]}>
-            <Text style={[styles.manageBtnText, {color: theme.warning}]}>
-              🧹 Clear Completed Tasks
-            </Text>
+            <View
+              style={[
+                styles.btnMedallion,
+                {backgroundColor: '#FEF3C7'},
+              ]}>
+              <Feather name="trash-2" size={15} color="#D97706" />
+            </View>
+            <View style={{flex: 1}}>
+              <Text style={[styles.manageBtnText, {color: theme.textPrimary}]}>
+                Clear Completed Tasks
+              </Text>
+              <Text style={[styles.manageBtnSub, {color: theme.textMuted}]}>
+                Clean up finished tasks from active view
+              </Text>
+            </View>
+            <Feather name="chevron-right" size={16} color={theme.textMuted} />
           </TouchableOpacity>
 
           <TouchableOpacity
+            activeOpacity={0.8}
             onPress={seedSampleTasks}
             style={[
               styles.manageBtn,
-              {backgroundColor: theme.surfaceSecondary, marginTop: 8},
+              {
+                backgroundColor: theme.surfaceSecondary,
+                borderColor: theme.border,
+                marginTop: 10,
+              },
             ]}>
-            <Text style={[styles.manageBtnText, {color: theme.primary}]}>
-              📦 Restore Demo Tasks
-            </Text>
+            <View
+              style={[
+                styles.btnMedallion,
+                {backgroundColor: '#EDE9FE'},
+              ]}>
+              <Feather name="box" size={15} color="#7C3AED" />
+            </View>
+            <View style={{flex: 1}}>
+              <Text style={[styles.manageBtnText, {color: theme.textPrimary}]}>
+                Restore Demo Tasks
+              </Text>
+              <Text style={[styles.manageBtnSub, {color: theme.textMuted}]}>
+                Add sample tasks and categories
+              </Text>
+            </View>
+            <Feather name="chevron-right" size={16} color={theme.textMuted} />
           </TouchableOpacity>
 
           <TouchableOpacity
+            activeOpacity={0.8}
             onPress={handleResetData}
             style={[
               styles.manageBtn,
-              {backgroundColor: theme.dangerLight, marginTop: 8},
+              {
+                backgroundColor: theme.dangerLight,
+                borderColor: theme.danger,
+                marginTop: 10,
+              },
             ]}>
-            <Text style={[styles.manageBtnText, {color: theme.danger}]}>
-              🗑️ Reset All Local Data
-            </Text>
+            <View
+              style={[
+                styles.btnMedallion,
+                {backgroundColor: '#FEE2E2'},
+              ]}>
+              <Feather name="alert-triangle" size={15} color="#EF4444" />
+            </View>
+            <View style={{flex: 1}}>
+              <Text style={[styles.manageBtnText, {color: theme.danger}]}>
+                Reset All Local Data
+              </Text>
+              <Text style={[styles.manageBtnSub, {color: theme.danger}]}>
+                Wipe all local tasks and profile data
+              </Text>
+            </View>
+            <Feather name="chevron-right" size={16} color={theme.danger} />
           </TouchableOpacity>
         </View>
 
-        {/* About App Info */}
+        {/* Elevate Brand Footer */}
         <View style={styles.aboutContainer}>
-          <Text style={[styles.aboutBrand, {color: theme.primary}]}>
+          <View
+            style={[
+              styles.aboutIconMedallion,
+              {backgroundColor: theme.primaryLight},
+            ]}>
+            <Feather name="check-circle" size={24} color={theme.primary} />
+          </View>
+          <Text style={[styles.aboutBrand, {color: theme.textPrimary}]}>
             GoTask Mobile
           </Text>
-          <Text style={[styles.aboutVersion, {color: theme.textMuted}]}>
-            Version 2.0.0 • Architecture Revamp
-          </Text>
+          <View
+            style={[
+              styles.versionPill,
+              {backgroundColor: theme.surfaceSecondary},
+            ]}>
+            <Text style={[styles.aboutVersion, {color: theme.primary}]}>
+              v2.0.0 • Editorial-Modern
+            </Text>
+          </View>
           <Text style={[styles.aboutDesc, {color: theme.textMuted}]}>
-            Crafted for speed, clean Poppins typography, offline-first
-            reliability, and seamless multi-device sync.
+            Engineered for delightful productivity, tactile feedback, and offline-first reliability.
           </Text>
         </View>
       </ScrollView>
-    </SafeAreaView>
+
+      {/* Elevate 5-Tab Tactile Bottom Navigation Bar */}
+      <ElevateTabBar activeTab="me" navigation={navigation} />
+    </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.PADDING_16,
-    paddingVertical: spacing.PADDING_12,
-    borderBottomWidth: 1,
-  },
-  headerTitle: {
-    fontSize: textScale(18),
-    fontFamily: fontFamily.bold,
-  },
   scrollContent: {
-    padding: spacing.PADDING_16,
-    paddingBottom: spacing.PADDING_40,
+    padding: spacing.medium,
+    paddingBottom: 120, // Full bottom clearance
   },
   card: {
+    padding: 16,
     borderRadius: 20,
-    padding: spacing.PADDING_18,
-    borderWidth: 1,
-    marginBottom: spacing.MARGIN_16,
+    borderWidth: 1.5,
+    borderBottomWidth: 4, // Elevate 3D bevel
+    borderBottomColor: '#CBD5E1',
+    marginBottom: spacing.medium,
   },
   cardHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 12,
+  },
+  cardHeaderWithIcon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  headerMedallion: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
   },
   cardTitle: {
-    fontSize: textScale(15),
+    fontSize: 16,
     fontFamily: fontFamily.bold,
   },
   cardSubtitle: {
-    fontSize: textScale(12),
+    fontSize: 12,
     fontFamily: fontFamily.regular,
-    marginTop: 2,
-    marginBottom: 12,
+    marginTop: 1,
   },
   themeOptionsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 6,
+    marginTop: 4,
   },
   themeOptionBtn: {
     flex: 1,
-    marginHorizontal: 4,
-    borderRadius: 14,
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: 8,
-    borderWidth: 1.5,
+    borderRadius: 14,
     alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 4,
+    position: 'relative',
+  },
+  themeIconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
   },
   themeOptionLabel: {
-    fontSize: textScale(13),
-    fontFamily: fontFamily.bold,
+    fontSize: 13,
   },
   themeOptionSub: {
-    fontSize: textScale(10),
-    fontFamily: fontFamily.regular,
+    fontSize: 10,
+    fontFamily: fontFamily.medium,
     marginTop: 2,
   },
+  themeActiveBadge: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 6,
+  },
+  statusBadgeText: {
+    fontSize: 12,
+    fontFamily: fontFamily.bold,
+  },
   inputLabel: {
-    fontSize: textScale(12),
-    fontFamily: fontFamily.medium,
+    fontSize: 12,
+    fontFamily: fontFamily.bold,
     marginBottom: 6,
   },
   input: {
-    height: 46,
+    height: 48,
     borderRadius: 12,
-    paddingHorizontal: 12,
     borderWidth: 1,
-    fontSize: textScale(13),
-    fontFamily: fontFamily.regular,
+    paddingHorizontal: 14,
+    fontSize: 13,
+    fontFamily: fontFamily.medium,
+    marginBottom: 10,
   },
   presetsRow: {
     flexDirection: 'row',
-    marginTop: 8,
-    justifyContent: 'flex-start',
+    marginBottom: 12,
   },
   presetBtn: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 10,
+    borderWidth: 1,
     marginRight: 8,
   },
   presetText: {
-    fontSize: textScale(11),
-    fontFamily: fontFamily.medium,
+    fontSize: 11,
+    fontFamily: fontFamily.semiBold,
   },
   buttonsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 14,
+    marginBottom: 10,
   },
   actionBtn: {
     flex: 1,
-    height: 44,
-    borderRadius: 12,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 4,
+    height: 44,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'transparent',
+    marginHorizontal: 3,
   },
   actionBtnText: {
-    fontSize: textScale(12),
+    fontSize: 13,
     fontFamily: fontFamily.bold,
   },
   fullSyncBtn: {
-    marginTop: 12,
-    height: 44,
-    borderRadius: 12,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    height: 44,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginTop: 2,
   },
   fullSyncText: {
-    fontSize: textScale(13),
-    fontFamily: fontFamily.bold,
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 10,
-  },
-  statusBadgeText: {
-    fontSize: textScale(10),
+    fontSize: 13,
     fontFamily: fontFamily.bold,
   },
   toggleRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 8,
   },
+  toggleIconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   toggleTitle: {
-    fontSize: textScale(13),
-    fontFamily: fontFamily.medium,
+    fontSize: 14,
+    fontFamily: fontFamily.bold,
   },
   toggleSub: {
-    fontSize: textScale(11),
-    fontFamily: fontFamily.regular,
+    fontSize: 12,
     marginTop: 2,
   },
   sep: {
     height: 1,
-    marginVertical: 4,
+    marginVertical: 6,
   },
   manageBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 14,
-    borderRadius: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    minHeight: 52,
+  },
+  btnMedallion: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
   },
   manageBtnText: {
-    fontSize: textScale(13),
+    fontSize: 14,
     fontFamily: fontFamily.bold,
+  },
+  manageBtnSub: {
+    fontSize: 11,
+    fontFamily: fontFamily.regular,
+    marginTop: 1,
   },
   aboutContainer: {
     alignItems: 'center',
-    marginTop: 12,
-    marginBottom: 20,
-    paddingHorizontal: 20,
+    marginTop: spacing.small,
+    marginBottom: spacing.large,
+    paddingHorizontal: spacing.medium,
+  },
+  aboutIconMedallion: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
   },
   aboutBrand: {
-    fontSize: textScale(16),
+    fontSize: 18,
     fontFamily: fontFamily.bold,
   },
+  versionPill: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginTop: 4,
+    marginBottom: 8,
+  },
   aboutVersion: {
-    fontSize: textScale(11),
-    fontFamily: fontFamily.medium,
-    marginTop: 2,
+    fontSize: 12,
+    fontFamily: fontFamily.bold,
   },
   aboutDesc: {
-    fontSize: textScale(11),
-    fontFamily: fontFamily.regular,
+    fontSize: 12,
     textAlign: 'center',
-    marginTop: 6,
-    lineHeight: 16,
+    lineHeight: 18,
+    fontFamily: fontFamily.regular,
   },
 });
 

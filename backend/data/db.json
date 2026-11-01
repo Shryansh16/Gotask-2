@@ -50,10 +50,652 @@
       "id": "restored_task_1",
       "title": "Restored Task Modified",
       "completed": true,
-      "updatedAt": "2026-10-31T12:35:35.129Z"
+      "updatedAt": "2026-11-01T16:18:46.930Z"
     }
   ],
   "auditLogs": [
+    {
+      "id": "audit_1793549921949_i6fly",
+      "timestamp": "2026-11-01T16:18:41.949Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "task_1793549921883_muls",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793549921933_rapay",
+      "timestamp": "2026-11-01T16:18:41.933Z",
+      "action": "sync_resolve",
+      "entityType": "system",
+      "entityId": "sync",
+      "actor": "human",
+      "details": {
+        "mergedCount": 2,
+        "conflictsCount": 1
+      }
+    },
+    {
+      "id": "audit_1793549921929_z8307",
+      "timestamp": "2026-11-01T16:18:41.929Z",
+      "action": "backup_import",
+      "entityType": "system",
+      "entityId": "backup",
+      "actor": "human",
+      "details": {
+        "schemaVersion": "2.0.0"
+      }
+    },
+    {
+      "id": "audit_1793549921925_a9h28",
+      "timestamp": "2026-11-01T16:18:41.925Z",
+      "action": "backup_export",
+      "entityType": "system",
+      "entityId": "backup",
+      "actor": "human",
+      "details": {
+        "recordCounts": {
+          "tasks": 3,
+          "notes": 0,
+          "goals": 0,
+          "habits": 0,
+          "focusSessions": 22
+        }
+      }
+    },
+    {
+      "id": "audit_1793549921920_h6h9u",
+      "timestamp": "2026-11-01T16:18:41.920Z",
+      "action": "ai_decompose_goal",
+      "entityType": "goal",
+      "entityId": "Run 10km Marathon in spring",
+      "actor": "human",
+      "details": {
+        "milestonesCount": 4
+      }
+    },
+    {
+      "id": "audit_1793549921916_skac6",
+      "timestamp": "2026-11-01T16:18:41.916Z",
+      "action": "record_focus_session",
+      "entityType": "focus",
+      "entityId": "focus_1793549921914_oseo",
+      "actor": "human",
+      "details": {
+        "mode": "pomodoro",
+        "durationMinutes": 25
+      }
+    },
+    {
+      "id": "audit_1793549921909_sqjpp",
+      "timestamp": "2026-11-01T16:18:41.909Z",
+      "action": "agent_dispatch_create",
+      "entityType": "task",
+      "entityId": "agent_task_1793549921907",
+      "actor": "DevOps Orchestrator",
+      "details": {
+        "agentName": "DevOps Orchestrator",
+        "title": "Review production security headers and logs"
+      }
+    },
+    {
+      "id": "audit_1793549921904_3p240",
+      "timestamp": "2026-11-01T16:18:41.904Z",
+      "action": "update_task",
+      "entityType": "task",
+      "entityId": "task_1793549921883_muls",
+      "actor": "human",
+      "details": {
+        "completed": true,
+        "description": "Updated via test suite"
+      }
+    },
+    {
+      "id": "audit_1793549921899_rfryu",
+      "timestamp": "2026-11-01T16:18:41.899Z",
+      "action": "create_task",
+      "entityType": "task",
+      "entityId": "task_1793549921883_muls",
+      "actor": "human",
+      "details": {
+        "title": "Automated E2E Verification Task"
+      }
+    },
+    {
+      "id": "audit_1793548736161_lf227",
+      "timestamp": "2026-11-01T15:58:56.161Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "task_1793548736111_1zhy",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793548736156_i4sv5",
+      "timestamp": "2026-11-01T15:58:56.156Z",
+      "action": "sync_resolve",
+      "entityType": "system",
+      "entityId": "sync",
+      "actor": "human",
+      "details": {
+        "mergedCount": 2,
+        "conflictsCount": 1
+      }
+    },
+    {
+      "id": "audit_1793548736151_y54q2",
+      "timestamp": "2026-11-01T15:58:56.151Z",
+      "action": "backup_import",
+      "entityType": "system",
+      "entityId": "backup",
+      "actor": "human",
+      "details": {
+        "schemaVersion": "2.0.0"
+      }
+    },
+    {
+      "id": "audit_1793548736146_1n5h7",
+      "timestamp": "2026-11-01T15:58:56.146Z",
+      "action": "backup_export",
+      "entityType": "system",
+      "entityId": "backup",
+      "actor": "human",
+      "details": {
+        "recordCounts": {
+          "tasks": 3,
+          "notes": 0,
+          "goals": 0,
+          "habits": 0,
+          "focusSessions": 21
+        }
+      }
+    },
+    {
+      "id": "audit_1793548736142_uxrxs",
+      "timestamp": "2026-11-01T15:58:56.142Z",
+      "action": "ai_decompose_goal",
+      "entityType": "goal",
+      "entityId": "Run 10km Marathon in spring",
+      "actor": "human",
+      "details": {
+        "milestonesCount": 4
+      }
+    },
+    {
+      "id": "audit_1793548736137_vyef6",
+      "timestamp": "2026-11-01T15:58:56.137Z",
+      "action": "record_focus_session",
+      "entityType": "focus",
+      "entityId": "focus_1793548736134_2n4k",
+      "actor": "human",
+      "details": {
+        "mode": "pomodoro",
+        "durationMinutes": 25
+      }
+    },
+    {
+      "id": "audit_1793548736128_85v2n",
+      "timestamp": "2026-11-01T15:58:56.128Z",
+      "action": "agent_dispatch_create",
+      "entityType": "task",
+      "entityId": "agent_task_1793548736126",
+      "actor": "DevOps Orchestrator",
+      "details": {
+        "agentName": "DevOps Orchestrator",
+        "title": "Review production security headers and logs"
+      }
+    },
+    {
+      "id": "audit_1793548736121_uglhx",
+      "timestamp": "2026-11-01T15:58:56.121Z",
+      "action": "update_task",
+      "entityType": "task",
+      "entityId": "task_1793548736111_1zhy",
+      "actor": "human",
+      "details": {
+        "completed": true,
+        "description": "Updated via test suite"
+      }
+    },
+    {
+      "id": "audit_1793548736115_7gd8i",
+      "timestamp": "2026-11-01T15:58:56.115Z",
+      "action": "create_task",
+      "entityType": "task",
+      "entityId": "task_1793548736111_1zhy",
+      "actor": "human",
+      "details": {
+        "title": "Automated E2E Verification Task"
+      }
+    },
+    {
+      "id": "audit_1793548089719_803p3",
+      "timestamp": "2026-11-01T15:48:09.719Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "task_1793548089635_9rzr",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793548089713_j4w3h",
+      "timestamp": "2026-11-01T15:48:09.713Z",
+      "action": "sync_resolve",
+      "entityType": "system",
+      "entityId": "sync",
+      "actor": "human",
+      "details": {
+        "mergedCount": 2,
+        "conflictsCount": 1
+      }
+    },
+    {
+      "id": "audit_1793548089709_yp23j",
+      "timestamp": "2026-11-01T15:48:09.709Z",
+      "action": "backup_import",
+      "entityType": "system",
+      "entityId": "backup",
+      "actor": "human",
+      "details": {
+        "schemaVersion": "2.0.0"
+      }
+    },
+    {
+      "id": "audit_1793548089705_akbpa",
+      "timestamp": "2026-11-01T15:48:09.705Z",
+      "action": "backup_export",
+      "entityType": "system",
+      "entityId": "backup",
+      "actor": "human",
+      "details": {
+        "recordCounts": {
+          "tasks": 3,
+          "notes": 0,
+          "goals": 0,
+          "habits": 0,
+          "focusSessions": 20
+        }
+      }
+    },
+    {
+      "id": "audit_1793548089701_cqulb",
+      "timestamp": "2026-11-01T15:48:09.701Z",
+      "action": "ai_decompose_goal",
+      "entityType": "goal",
+      "entityId": "Run 10km Marathon in spring",
+      "actor": "human",
+      "details": {
+        "milestonesCount": 4
+      }
+    },
+    {
+      "id": "audit_1793548089697_3d4lp",
+      "timestamp": "2026-11-01T15:48:09.697Z",
+      "action": "record_focus_session",
+      "entityType": "focus",
+      "entityId": "focus_1793548089695_6d55",
+      "actor": "human",
+      "details": {
+        "mode": "pomodoro",
+        "durationMinutes": 25
+      }
+    },
+    {
+      "id": "audit_1793548089688_oenrg",
+      "timestamp": "2026-11-01T15:48:09.688Z",
+      "action": "agent_dispatch_create",
+      "entityType": "task",
+      "entityId": "agent_task_1793548089684",
+      "actor": "DevOps Orchestrator",
+      "details": {
+        "agentName": "DevOps Orchestrator",
+        "title": "Review production security headers and logs"
+      }
+    },
+    {
+      "id": "audit_1793548089675_k8zsj",
+      "timestamp": "2026-11-01T15:48:09.675Z",
+      "action": "update_task",
+      "entityType": "task",
+      "entityId": "task_1793548089635_9rzr",
+      "actor": "human",
+      "details": {
+        "completed": true,
+        "description": "Updated via test suite"
+      }
+    },
+    {
+      "id": "audit_1793548089649_4651m",
+      "timestamp": "2026-11-01T15:48:09.649Z",
+      "action": "create_task",
+      "entityType": "task",
+      "entityId": "task_1793548089635_9rzr",
+      "actor": "human",
+      "details": {
+        "title": "Automated E2E Verification Task"
+      }
+    },
+    {
+      "id": "audit_1793476286646_ykmfw",
+      "timestamp": "2026-10-31T19:51:26.646Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "task_1793476286508_47g1",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793476286642_9jn70",
+      "timestamp": "2026-10-31T19:51:26.642Z",
+      "action": "sync_resolve",
+      "entityType": "system",
+      "entityId": "sync",
+      "actor": "human",
+      "details": {
+        "mergedCount": 2,
+        "conflictsCount": 1
+      }
+    },
+    {
+      "id": "audit_1793476286637_mgjj4",
+      "timestamp": "2026-10-31T19:51:26.637Z",
+      "action": "backup_import",
+      "entityType": "system",
+      "entityId": "backup",
+      "actor": "human",
+      "details": {
+        "schemaVersion": "2.0.0"
+      }
+    },
+    {
+      "id": "audit_1793476286632_oxvl9",
+      "timestamp": "2026-10-31T19:51:26.632Z",
+      "action": "backup_export",
+      "entityType": "system",
+      "entityId": "backup",
+      "actor": "human",
+      "details": {
+        "recordCounts": {
+          "tasks": 3,
+          "notes": 0,
+          "goals": 0,
+          "habits": 0,
+          "focusSessions": 19
+        }
+      }
+    },
+    {
+      "id": "audit_1793476286627_medo4",
+      "timestamp": "2026-10-31T19:51:26.627Z",
+      "action": "ai_decompose_goal",
+      "entityType": "goal",
+      "entityId": "Run 10km Marathon in spring",
+      "actor": "human",
+      "details": {
+        "milestonesCount": 4
+      }
+    },
+    {
+      "id": "audit_1793476286623_gtg9s",
+      "timestamp": "2026-10-31T19:51:26.623Z",
+      "action": "record_focus_session",
+      "entityType": "focus",
+      "entityId": "focus_1793476286620_xf6u",
+      "actor": "human",
+      "details": {
+        "mode": "pomodoro",
+        "durationMinutes": 25
+      }
+    },
+    {
+      "id": "audit_1793476286603_rulfv",
+      "timestamp": "2026-10-31T19:51:26.603Z",
+      "action": "agent_dispatch_create",
+      "entityType": "task",
+      "entityId": "agent_task_1793476286594",
+      "actor": "DevOps Orchestrator",
+      "details": {
+        "agentName": "DevOps Orchestrator",
+        "title": "Review production security headers and logs"
+      }
+    },
+    {
+      "id": "audit_1793476286581_hmv5l",
+      "timestamp": "2026-10-31T19:51:26.581Z",
+      "action": "update_task",
+      "entityType": "task",
+      "entityId": "task_1793476286508_47g1",
+      "actor": "human",
+      "details": {
+        "completed": true,
+        "description": "Updated via test suite"
+      }
+    },
+    {
+      "id": "audit_1793476286554_ja6z0",
+      "timestamp": "2026-10-31T19:51:26.554Z",
+      "action": "create_task",
+      "entityType": "task",
+      "entityId": "task_1793476286508_47g1",
+      "actor": "human",
+      "details": {
+        "title": "Automated E2E Verification Task"
+      }
+    },
+    {
+      "id": "audit_1793473198987_1m0hh",
+      "timestamp": "2026-10-31T18:59:58.987Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "task_1793473198886_b549",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793473198983_p8atd",
+      "timestamp": "2026-10-31T18:59:58.983Z",
+      "action": "sync_resolve",
+      "entityType": "system",
+      "entityId": "sync",
+      "actor": "human",
+      "details": {
+        "mergedCount": 2,
+        "conflictsCount": 1
+      }
+    },
+    {
+      "id": "audit_1793473198978_q8exz",
+      "timestamp": "2026-10-31T18:59:58.978Z",
+      "action": "backup_import",
+      "entityType": "system",
+      "entityId": "backup",
+      "actor": "human",
+      "details": {
+        "schemaVersion": "2.0.0"
+      }
+    },
+    {
+      "id": "audit_1793473198974_8j6ec",
+      "timestamp": "2026-10-31T18:59:58.974Z",
+      "action": "backup_export",
+      "entityType": "system",
+      "entityId": "backup",
+      "actor": "human",
+      "details": {
+        "recordCounts": {
+          "tasks": 3,
+          "notes": 0,
+          "goals": 0,
+          "habits": 0,
+          "focusSessions": 18
+        }
+      }
+    },
+    {
+      "id": "audit_1793473198970_584tt",
+      "timestamp": "2026-10-31T18:59:58.970Z",
+      "action": "ai_decompose_goal",
+      "entityType": "goal",
+      "entityId": "Run 10km Marathon in spring",
+      "actor": "human",
+      "details": {
+        "milestonesCount": 4
+      }
+    },
+    {
+      "id": "audit_1793473198965_1c0gk",
+      "timestamp": "2026-10-31T18:59:58.965Z",
+      "action": "record_focus_session",
+      "entityType": "focus",
+      "entityId": "focus_1793473198962_9zt6",
+      "actor": "human",
+      "details": {
+        "mode": "pomodoro",
+        "durationMinutes": 25
+      }
+    },
+    {
+      "id": "audit_1793473198956_2pce8",
+      "timestamp": "2026-10-31T18:59:58.956Z",
+      "action": "agent_dispatch_create",
+      "entityType": "task",
+      "entityId": "agent_task_1793473198954",
+      "actor": "DevOps Orchestrator",
+      "details": {
+        "agentName": "DevOps Orchestrator",
+        "title": "Review production security headers and logs"
+      }
+    },
+    {
+      "id": "audit_1793473198951_r4de4",
+      "timestamp": "2026-10-31T18:59:58.951Z",
+      "action": "update_task",
+      "entityType": "task",
+      "entityId": "task_1793473198886_b549",
+      "actor": "human",
+      "details": {
+        "completed": true,
+        "description": "Updated via test suite"
+      }
+    },
+    {
+      "id": "audit_1793473198931_njcri",
+      "timestamp": "2026-10-31T18:59:58.931Z",
+      "action": "create_task",
+      "entityType": "task",
+      "entityId": "task_1793473198886_b549",
+      "actor": "human",
+      "details": {
+        "title": "Automated E2E Verification Task"
+      }
+    },
+    {
+      "id": "audit_1793470189108_i5u5p",
+      "timestamp": "2026-10-31T18:09:49.108Z",
+      "action": "delete_task",
+      "entityType": "task",
+      "entityId": "task_1793470189009_blz7",
+      "actor": "human",
+      "details": {}
+    },
+    {
+      "id": "audit_1793470189104_ldvnz",
+      "timestamp": "2026-10-31T18:09:49.104Z",
+      "action": "sync_resolve",
+      "entityType": "system",
+      "entityId": "sync",
+      "actor": "human",
+      "details": {
+        "mergedCount": 2,
+        "conflictsCount": 1
+      }
+    },
+    {
+      "id": "audit_1793470189100_1c13q",
+      "timestamp": "2026-10-31T18:09:49.100Z",
+      "action": "backup_import",
+      "entityType": "system",
+      "entityId": "backup",
+      "actor": "human",
+      "details": {
+        "schemaVersion": "2.0.0"
+      }
+    },
+    {
+      "id": "audit_1793470189096_px2py",
+      "timestamp": "2026-10-31T18:09:49.096Z",
+      "action": "backup_export",
+      "entityType": "system",
+      "entityId": "backup",
+      "actor": "human",
+      "details": {
+        "recordCounts": {
+          "tasks": 3,
+          "notes": 0,
+          "goals": 0,
+          "habits": 0,
+          "focusSessions": 17
+        }
+      }
+    },
+    {
+      "id": "audit_1793470189091_76ptz",
+      "timestamp": "2026-10-31T18:09:49.091Z",
+      "action": "ai_decompose_goal",
+      "entityType": "goal",
+      "entityId": "Run 10km Marathon in spring",
+      "actor": "human",
+      "details": {
+        "milestonesCount": 4
+      }
+    },
+    {
+      "id": "audit_1793470189087_596ek",
+      "timestamp": "2026-10-31T18:09:49.087Z",
+      "action": "record_focus_session",
+      "entityType": "focus",
+      "entityId": "focus_1793470189086_ilri",
+      "actor": "human",
+      "details": {
+        "mode": "pomodoro",
+        "durationMinutes": 25
+      }
+    },
+    {
+      "id": "audit_1793470189068_mtrad",
+      "timestamp": "2026-10-31T18:09:49.069Z",
+      "action": "agent_dispatch_create",
+      "entityType": "task",
+      "entityId": "agent_task_1793470189067",
+      "actor": "DevOps Orchestrator",
+      "details": {
+        "agentName": "DevOps Orchestrator",
+        "title": "Review production security headers and logs"
+      }
+    },
+    {
+      "id": "audit_1793470189063_n21io",
+      "timestamp": "2026-10-31T18:09:49.063Z",
+      "action": "update_task",
+      "entityType": "task",
+      "entityId": "task_1793470189009_blz7",
+      "actor": "human",
+      "details": {
+        "completed": true,
+        "description": "Updated via test suite"
+      }
+    },
+    {
+      "id": "audit_1793470189059_athap",
+      "timestamp": "2026-10-31T18:09:49.059Z",
+      "action": "create_task",
+      "entityType": "task",
+      "entityId": "task_1793470189009_blz7",
+      "actor": "human",
+      "details": {
+        "title": "Automated E2E Verification Task"
+      }
+    },
     {
       "id": "audit_1793450130135_q1vt6",
       "timestamp": "2026-10-31T12:35:30.135Z",
@@ -1979,6 +2621,48 @@
   "goals": [],
   "habits": [],
   "focusSessions": [
+    {
+      "id": "focus_1793549921914_oseo",
+      "taskId": "task_1793549921883_muls",
+      "mode": "pomodoro",
+      "durationMinutes": 25,
+      "completedAt": 1793549921914
+    },
+    {
+      "id": "focus_1793548736134_2n4k",
+      "taskId": "task_1793548736111_1zhy",
+      "mode": "pomodoro",
+      "durationMinutes": 25,
+      "completedAt": 1793548736134
+    },
+    {
+      "id": "focus_1793548089695_6d55",
+      "taskId": "task_1793548089635_9rzr",
+      "mode": "pomodoro",
+      "durationMinutes": 25,
+      "completedAt": 1793548089695
+    },
+    {
+      "id": "focus_1793476286620_xf6u",
+      "taskId": "task_1793476286508_47g1",
+      "mode": "pomodoro",
+      "durationMinutes": 25,
+      "completedAt": 1793476286620
+    },
+    {
+      "id": "focus_1793473198962_9zt6",
+      "taskId": "task_1793473198886_b549",
+      "mode": "pomodoro",
+      "durationMinutes": 25,
+      "completedAt": 1793473198962
+    },
+    {
+      "id": "focus_1793470189086_ilri",
+      "taskId": "task_1793470189009_blz7",
+      "mode": "pomodoro",
+      "durationMinutes": 25,
+      "completedAt": 1793470189086
+    },
     {
       "id": "focus_1793450130115_ajln",
       "taskId": "task_1793450130099_muyp",

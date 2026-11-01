@@ -11,9 +11,7 @@ import {useNavigation} from '@react-navigation/native';
 import {useTasks} from '../context/TaskContext';
 import {useTheme} from '../context/ThemeContext';
 import CategoryCard from '../components/CategoryCard';
-import {textScale} from '../styles/responsiveStyles';
 import {fontFamily} from '../common/fonts';
-import {spacing} from '../styles/spacing';
 
 export const Categories = () => {
   const navigation = useNavigation();
@@ -33,14 +31,16 @@ export const Categories = () => {
     <View style={styles.container}>
       <View style={styles.headerRow}>
         <Text style={[styles.sectionTitle, {color: theme.textPrimary}]}>
-          Categories
+          Focus Categories
         </Text>
         {selectedCategory !== 'All' && (
           <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel={`Open ${selectedCategory} category view`}
             onPress={() => handleOpenCategoryScreen(selectedCategory)}
             style={styles.viewDetailBtn}>
             <Text style={[styles.viewDetailText, {color: theme.primary}]}>
-              Open {selectedCategory} →
+              View {selectedCategory} →
             </Text>
           </TouchableOpacity>
         )}
@@ -72,29 +72,31 @@ export const Categories = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: spacing.MARGIN_8,
+    marginBottom: 18,
   },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.PADDING_16,
-    marginBottom: spacing.MARGIN_10,
+    paddingHorizontal: 16,
+    marginBottom: 10,
   },
   sectionTitle: {
-    fontSize: textScale(18),
+    fontSize: 17,
     fontFamily: fontFamily.bold,
+    letterSpacing: -0.3,
   },
   viewDetailBtn: {
     paddingVertical: 2,
-    paddingHorizontal: 6,
+    paddingHorizontal: 4,
   },
   viewDetailText: {
-    fontSize: textScale(12),
+    fontSize: 13,
     fontFamily: fontFamily.bold,
   },
   scrollContent: {
-    paddingHorizontal: spacing.PADDING_16,
+    paddingHorizontal: 16,
+    paddingBottom: 6, // Prevents drop shadow clipping on Android
   },
 });
 

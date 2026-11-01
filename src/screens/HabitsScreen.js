@@ -9,29 +9,30 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
-  SafeAreaView,
   StatusBar,
   FlatList,
 } from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 import {useTheme} from '../context/ThemeContext';
 import {
   useHabits,
   isHabitScheduledForDate,
   HABIT_CATEGORIES,
 } from '../context/HabitContext';
-import {textScale, moderateScale} from '../styles/responsiveStyles';
 import {fontFamily} from '../common/fonts';
 import {spacing} from '../styles/spacing';
-import HemburgerButton from '../modules/HemburgerButton';
+import ScreenContainer from '../design-system/ScreenContainer';
+import Header from '../design-system/Header';
 import HabitCard from '../components/HabitCard';
 import HabitModal from '../modules/HabitModal';
 import EmptyState from '../components/EmptyState';
+import ElevateTabBar from '../components/ElevateTabBar';
 
 const FILTER_TABS = [
   {key: 'all', label: 'All Habits'},
-  {key: 'due_today', label: 'Due Today ⏳'},
-  {key: 'done_today', label: 'Done Today ✓'},
-  {key: 'archived', label: 'Archived 📦'},
+  {key: 'due_today', label: 'Due Today'},
+  {key: 'done_today', label: 'Done Today'},
+  {key: 'archived', label: 'Archived'},
 ];
 
 export const HabitsScreen = ({navigation}) => {
@@ -117,68 +118,65 @@ export const HabitsScreen = ({navigation}) => {
   );
 
   return (
-    <SafeAreaView
-      style={[styles.safeArea, {backgroundColor: theme.background}]}>
+    <ScreenContainer scrollable={false} contentPadding={0}>
       <StatusBar
         backgroundColor={theme.background}
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
 
-      {/* Header Bar */}
-      <View
-        style={[styles.headerContainer, {borderBottomColor: theme.divider}]}>
-        <View style={styles.headerLeft}>
-          <HemburgerButton navigation={navigation} />
-          <Text style={[styles.headerTitle, {color: theme.textPrimary}]}>
-            ⚡ Habits & Routines
-          </Text>
-        </View>
+      {/* Editorial Header */}
+      <Header
+        title="Habits & Rituals"
+        subtitle="Build compound discipline day by day"
+        navigation={navigation}
+        rightAction={{
+          icon: 'plus',
+          label: 'New Habit',
+          onPress: handleCreateNew,
+          accessibilityLabel: 'Add new habit',
+        }}
+      />
 
-        <TouchableOpacity
-          style={[styles.addIconButton, {backgroundColor: theme.primary}]}
-          onPress={handleCreateNew}
-          accessible={true}
-          accessibilityRole="button"
-          accessibilityLabel="Add new habit">
-          <Text style={styles.addIconText}>＋</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* KPI Consistency Overview Banner */}
+      {/* Elevate Habit Momentum Hero */}
       <View
         style={[
-          styles.kpiContainer,
-          {backgroundColor: theme.surface, borderColor: theme.border},
+          styles.habitHero,
+          {backgroundColor: theme.primary},
+          theme.cardShadow,
         ]}>
-        <View style={styles.kpiItem}>
-          <Text style={[styles.kpiValue, {color: theme.primary}]}>
-            {stats.todayCount}
-          </Text>
-          <Text style={[styles.kpiLabel, {color: theme.textSecondary}]}>
-            Scheduled Today
-          </Text>
+        <View style={styles.habitHeroHeader}>
+          <View style={styles.heroBadge}>
+            <Feather name="repeat" size={13} color="#FEF08A" style={{marginRight: 5}} />
+            <Text style={styles.heroBadgeText}>RITUAL MOMENTUM</Text>
+          </View>
+          <View style={styles.heroFlameCircle}>
+            <Text style={{fontSize: 14}}>🔥</Text>
+          </View>
         </View>
 
-        <View style={[styles.kpiDivider, {backgroundColor: theme.divider}]} />
+        <View style={styles.heroTilesRow}>
+          <View style={styles.heroTile}>
+            <Text style={styles.heroTileNumber}>{stats.todayCount}</Text>
+            <Text style={styles.heroTileLabel}>Due Today</Text>
+          </View>
 
-        <View style={styles.kpiItem}>
-          <Text style={[styles.kpiValue, {color: theme.success}]}>
-            {stats.completedToday}/{stats.todayCount}
-          </Text>
-          <Text style={[styles.kpiLabel, {color: theme.textSecondary}]}>
-            Done Today
-          </Text>
-        </View>
+          <View style={styles.heroTileDivider} />
 
-        <View style={[styles.kpiDivider, {backgroundColor: theme.divider}]} />
+          <View style={styles.heroTile}>
+            <Text style={[styles.heroTileNumber, {color: '#A7F3D0'}]}>
+              {stats.completedToday}/{stats.todayCount}
+            </Text>
+            <Text style={styles.heroTileLabel}>Completed</Text>
+          </View>
 
-        <View style={styles.kpiItem}>
-          <Text style={[styles.kpiValue, {color: theme.warning}]}>
-            🔥 {stats.longestStreak}d
-          </Text>
-          <Text style={[styles.kpiLabel, {color: theme.textSecondary}]}>
-            Best Streak
-          </Text>
+          <View style={styles.heroTileDivider} />
+
+          <View style={styles.heroTile}>
+            <Text style={[styles.heroTileNumber, {color: '#FEF08A'}]}>
+              {stats.longestStreak}d
+            </Text>
+            <Text style={styles.heroTileLabel}>Best Streak</Text>
+          </View>
         </View>
       </View>
 
@@ -214,7 +212,7 @@ export const HabitsScreen = ({navigation}) => {
           accessible={true}
           accessibilityRole="alert">
           <Text style={[styles.errorText, {color: theme.danger}]}>
-            ⚠️ {error} (tap to dismiss)
+            {error} (tap to dismiss)
           </Text>
         </TouchableOpacity>
       ) : null}
@@ -224,15 +222,21 @@ export const HabitsScreen = ({navigation}) => {
         <View
           style={[
             styles.searchContainer,
-            {backgroundColor: theme.surface, borderColor: theme.border},
+            {
+              backgroundColor: theme.surfaceSecondary,
+              borderColor: theme.border,
+            },
           ]}>
-          <Text style={[styles.searchIcon, {color: theme.textSecondary}]}>
-            🔍
-          </Text>
+          <Feather
+            name="search"
+            size={16}
+            color={theme.textMuted}
+            style={{marginRight: 8}}
+          />
           <TextInput
             style={[styles.searchInput, {color: theme.textPrimary}]}
             placeholder="Search habits and routines..."
-            placeholderTextColor={theme.textSecondary}
+            placeholderTextColor={theme.textMuted}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -240,7 +244,7 @@ export const HabitsScreen = ({navigation}) => {
             <TouchableOpacity
               onPress={() => setSearchQuery('')}
               style={styles.clearSearchButton}>
-              <Text style={{color: theme.textSecondary}}>✕</Text>
+              <Feather name="x" size={16} color={theme.textMuted} />
             </TouchableOpacity>
           ) : null}
         </View>
@@ -251,29 +255,36 @@ export const HabitsScreen = ({navigation}) => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.tabsContainer}>
+          contentContainerStyle={styles.tabsScrollContent}>
           {FILTER_TABS.map(tab => {
-            const isActive = activeTab === tab.key;
+            const isSelected = activeTab === tab.key;
             return (
               <TouchableOpacity
                 key={tab.key}
                 style={[
-                  styles.tabButton,
+                  styles.tabItem,
                   {
-                    backgroundColor: isActive ? theme.primary : theme.surface,
-                    borderColor: isActive ? theme.primary : theme.border,
+                    backgroundColor: isSelected
+                      ? theme.primary
+                      : isDark ? '#1E293B' : '#FFFFFF',
+                    borderColor: isSelected
+                      ? theme.primary
+                      : isDark ? '#334155' : '#E2E8F0',
+                    borderBottomColor: isSelected
+                      ? '#3730A3'
+                      : isDark ? '#0F172A' : '#CBD5E1',
                   },
                 ]}
                 onPress={() => setActiveTab(tab.key)}
                 accessible={true}
                 accessibilityRole="button"
-                accessibilityLabel={`Filter by ${tab.label}`}>
+                accessibilityLabel={tab.label}>
                 <Text
                   style={[
-                    styles.tabButtonText,
-                    isActive ? styles.textWhite : {color: theme.textPrimary},
+                    styles.tabItemText,
                     {
-                      fontFamily: isActive
+                      color: isSelected ? '#FFFFFF' : theme.textSecondary,
+                      fontFamily: isSelected
                         ? fontFamily.bold
                         : fontFamily.medium,
                     },
@@ -286,33 +297,41 @@ export const HabitsScreen = ({navigation}) => {
         </ScrollView>
       </View>
 
-      {/* Category Pills */}
-      <View style={styles.categoryWrapper}>
+      {/* Categories Horizontal Scroller */}
+      <View style={styles.categoriesWrapper}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoryContainer}>
+          contentContainerStyle={styles.categoryScrollContent}>
           {categories.map(cat => {
-            const isCatActive = activeCategory === cat;
+            const isSelected = activeCategory === cat;
             return (
               <TouchableOpacity
                 key={cat}
                 style={[
                   styles.categoryChip,
                   {
-                    backgroundColor: isCatActive
-                      ? theme.primaryLight
-                      : theme.surface,
-                    borderColor: isCatActive ? theme.primary : theme.border,
+                    backgroundColor: isSelected
+                      ? theme.primary
+                      : isDark ? '#1E293B' : '#FFFFFF',
+                    borderColor: isSelected
+                      ? theme.primary
+                      : isDark ? '#334155' : '#E2E8F0',
+                    borderBottomColor: isSelected
+                      ? '#3730A3'
+                      : isDark ? '#0F172A' : '#CBD5E1',
                   },
                 ]}
-                onPress={() => setActiveCategory(cat)}>
+                onPress={() => setActiveCategory(cat)}
+                accessible={true}
+                accessibilityRole="button"
+                accessibilityLabel={`Category ${cat}`}>
                 <Text
                   style={[
                     styles.categoryChipText,
                     {
-                      color: isCatActive ? theme.primary : theme.textSecondary,
-                      fontFamily: isCatActive
+                      color: isSelected ? '#FFFFFF' : theme.textSecondary,
+                      fontFamily: isSelected
                         ? fontFamily.bold
                         : fontFamily.regular,
                     },
@@ -325,196 +344,238 @@ export const HabitsScreen = ({navigation}) => {
         </ScrollView>
       </View>
 
-      {/* Habit List */}
+      {/* Main Habits List */}
       <FlatList
         data={filteredHabits}
-        keyExtractor={item => item.id}
         renderItem={renderItem}
+        keyExtractor={item => item.id}
         contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <EmptyState
+            icon="zap"
             title="No Habits Found"
             message={
               searchQuery
-                ? 'No habits match your search criteria.'
+                ? `No habits match "${searchQuery}".`
                 : activeTab === 'due_today'
-                ? 'You have no more habits due today. Fantastic work! 🎉'
-                : 'Start building daily routines and track your consistency streak.'
+                ? "You've crushed all scheduled habits for today!"
+                : activeTab === 'done_today'
+                ? 'No habits completed yet today. Mark one off!'
+                : 'Start small. Define daily or weekly routines that compound into lasting results.'
             }
-            actionLabel="＋ Create Habit"
+            actionLabel="Create a Habit"
             onAction={handleCreateNew}
           />
         }
       />
 
-      {/* Habit Creation & Editing Modal */}
+      {/* Floating Action Button (FAB) safely anchored above Elevate bottom bar */}
+      <TouchableOpacity
+        onPress={handleCreateNew}
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel="Create a new habit"
+        style={[styles.fab, {backgroundColor: theme.primary}]}>
+        <Feather name="plus" size={24} color="#FFFFFF" />
+      </TouchableOpacity>
+
+      {/* Elevate 5-Tab Tactile Bottom Navigation Bar */}
+      <ElevateTabBar activeTab="habits" navigation={navigation} />
+
+      {/* Add / Edit Habit Modal */}
       <HabitModal
         visible={habitModalVisible}
-        onClose={() => {
-          setHabitModalVisible(false);
-          setSelectedHabit(null);
-        }}
+        onClose={() => setHabitModalVisible(false)}
         habitToEdit={selectedHabit}
       />
-    </SafeAreaView>
+    </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
+  habitHero: {
+    borderRadius: 22,
+    padding: 18,
+    marginHorizontal: spacing.medium,
+    marginTop: spacing.small,
+    marginBottom: spacing.medium,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderBottomWidth: 5, // Elevate 3D bevel
   },
-  headerContainer: {
+  habitHeroHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.M,
-    paddingVertical: spacing.S,
-    borderBottomWidth: 1,
+    marginBottom: 12,
   },
-  headerLeft: {
+  heroBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.S,
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
   },
-  headerTitle: {
-    fontSize: textScale(18),
-    fontFamily: fontFamily.bold,
-  },
-  addIconButton: {
-    width: moderateScale(38),
-    height: moderateScale(38),
-    borderRadius: moderateScale(19),
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  addIconText: {
+  heroBadgeText: {
     color: '#FFFFFF',
-    fontSize: textScale(20),
+    fontSize: 11,
     fontFamily: fontFamily.bold,
-    lineHeight: textScale(22),
+    letterSpacing: 0.8,
   },
-  kpiContainer: {
+  heroFlameCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroTilesRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
     alignItems: 'center',
-    marginHorizontal: spacing.M,
-    marginTop: spacing.M,
-    paddingVertical: spacing.M,
-    borderRadius: moderateScale(14),
-    borderWidth: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.15)',
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
   },
-  kpiItem: {
-    alignItems: 'center',
+  heroTile: {
     flex: 1,
+    alignItems: 'center',
   },
-  kpiValue: {
-    fontSize: textScale(18),
-    fontFamily: fontFamily.bold,
-    marginBottom: spacing.XXS,
-  },
-  kpiLabel: {
-    fontSize: textScale(11),
-    fontFamily: fontFamily.medium,
-  },
-  kpiDivider: {
+  heroTileDivider: {
     width: 1,
-    height: '60%',
+    height: 32,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  heroTileNumber: {
+    color: '#FFFFFF',
+    fontSize: 22,
+    fontFamily: fontFamily.bold,
+  },
+  heroTileLabel: {
+    color: 'rgba(255, 255, 255, 0.85)',
+    fontSize: 11,
+    fontFamily: fontFamily.medium,
+    marginTop: 2,
   },
   undoToast: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginHorizontal: spacing.M,
-    marginTop: spacing.S,
-    paddingHorizontal: spacing.M,
-    paddingVertical: spacing.S,
-    borderRadius: moderateScale(8),
+    marginHorizontal: spacing.medium,
+    marginBottom: spacing.small,
+    paddingHorizontal: spacing.medium,
+    paddingVertical: 8,
+    borderRadius: 8,
     borderWidth: 1,
   },
   undoText: {
+    fontSize: 13,
+    fontFamily: fontFamily.medium,
     flex: 1,
-    fontSize: textScale(13),
-    fontFamily: fontFamily.regular,
   },
   undoButtonText: {
-    fontSize: textScale(13),
+    fontSize: 12,
     fontFamily: fontFamily.bold,
-    marginLeft: spacing.M,
+    marginLeft: 8,
   },
   errorBanner: {
-    marginHorizontal: spacing.M,
-    marginTop: spacing.S,
-    padding: spacing.S,
-    borderRadius: moderateScale(8),
+    marginHorizontal: spacing.medium,
+    marginBottom: spacing.small,
+    padding: spacing.small,
+    borderRadius: 8,
   },
   errorText: {
-    fontSize: textScale(12),
+    fontSize: 12,
     fontFamily: fontFamily.medium,
   },
   searchWrapper: {
-    marginHorizontal: spacing.M,
-    marginTop: spacing.M,
+    paddingHorizontal: spacing.medium,
+    marginBottom: spacing.small,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    height: 48,
+    borderRadius: 14,
     borderWidth: 1,
-    borderRadius: moderateScale(12),
-    paddingHorizontal: spacing.M,
-    height: moderateScale(44),
-  },
-  searchIcon: {
-    fontSize: textScale(14),
-    marginRight: spacing.S,
+    paddingHorizontal: 14,
+    shadowColor: '#475569',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
   },
   searchInput: {
     flex: 1,
-    fontSize: textScale(14),
+    fontSize: 14,
     fontFamily: fontFamily.regular,
+    paddingVertical: 0,
   },
   clearSearchButton: {
-    padding: spacing.XXS,
+    padding: 4,
   },
   tabsWrapper: {
-    marginTop: spacing.M,
+    marginBottom: 10,
+    height: 38,
   },
-  tabsContainer: {
-    paddingHorizontal: spacing.M,
-    gap: spacing.XS,
+  tabsScrollContent: {
+    paddingHorizontal: spacing.medium,
   },
-  tabButton: {
-    paddingHorizontal: spacing.M,
-    paddingVertical: spacing.S,
-    borderRadius: moderateScale(20),
-    borderWidth: 1,
+  tabItem: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderBottomWidth: 3, // Elevate 3D bevel
+    minHeight: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
   },
-  tabButtonText: {
-    fontSize: textScale(12),
+  tabItemText: {
+    fontSize: 12,
   },
-  categoryWrapper: {
-    marginTop: spacing.S,
-    marginBottom: spacing.XS,
+  categoriesWrapper: {
+    marginBottom: 12,
+    height: 36,
   },
-  categoryContainer: {
-    paddingHorizontal: spacing.M,
-    gap: spacing.XS,
+  categoryScrollContent: {
+    paddingHorizontal: spacing.medium,
   },
   categoryChip: {
-    paddingHorizontal: spacing.M,
-    paddingVertical: spacing.XXS,
-    borderRadius: moderateScale(14),
-    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderBottomWidth: 3, // Elevate 3D bevel
+    minHeight: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
   },
   categoryChipText: {
-    fontSize: textScale(12),
+    fontSize: 11,
   },
   listContent: {
-    paddingBottom: spacing.XXL,
-    paddingTop: spacing.XS,
+    paddingHorizontal: spacing.medium,
+    paddingBottom: 150, // Clearance for FAB and Elevate bottom bar
   },
-  textWhite: {
-    color: '#FFFFFF',
+  fab: {
+    position: 'absolute',
+    right: 20,
+    bottom: 78, // Floats cleanly right above Elevate bottom bar
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottomWidth: 4, // Elevate 3D bevel
+    borderBottomColor: '#3730A3',
+    elevation: 8,
+    zIndex: 99,
   },
 });
 

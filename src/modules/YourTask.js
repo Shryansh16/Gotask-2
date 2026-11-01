@@ -1,17 +1,16 @@
 // src/modules/YourTask.js
 import React, {useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 import {useTasks} from '../context/TaskContext';
 import {useTheme} from '../context/ThemeContext';
 import TaskCard from '../components/TaskCard';
 import EmptyState from '../components/EmptyState';
 import TaskModal from './TaskModal';
-import {textScale} from '../styles/responsiveStyles';
 import {fontFamily} from '../common/fonts';
-import {spacing} from '../styles/spacing';
 
 export const YourTask = ({onOpenCreateModal}) => {
-  const {theme} = useTheme();
+  const {theme, isDark} = useTheme();
   const {filteredTasks, selectedCategory, clearCompleted, searchQuery} =
     useTasks();
 
@@ -37,20 +36,36 @@ export const YourTask = ({onOpenCreateModal}) => {
         <View style={styles.titleWithCount}>
           <Text style={[styles.sectionTitle, {color: theme.textPrimary}]}>
             {selectedCategory === 'All'
-              ? 'Your Tasks'
+              ? "Today's Agenda"
               : `${selectedCategory} Tasks`}
           </Text>
           <View
-            style={[styles.countBadge, {backgroundColor: theme.primaryLight}]}>
-            <Text style={[styles.countText, {color: theme.primary}]}>
+            style={[
+              styles.countBadge,
+              {backgroundColor: isDark ? '#1E1B4B' : '#EEF2FF'},
+            ]}>
+            <Text style={[styles.countText, {color: '#4F46E5'}]}>
               {filteredTasks.length}
             </Text>
           </View>
         </View>
 
         {hasCompleted && (
-          <TouchableOpacity onPress={clearCompleted} style={styles.clearBtn}>
-            <Text style={[styles.clearBtnText, {color: theme.danger}]}>
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Clear finished tasks"
+            onPress={clearCompleted}
+            style={[
+              styles.clearBtn,
+              {backgroundColor: isDark ? '#2C1515' : '#FEF2F2'},
+            ]}>
+            <Feather
+              name="check-circle"
+              size={12}
+              color="#EF4444"
+              style={{marginRight: 4}}
+            />
+            <Text style={[styles.clearBtnText, {color: '#EF4444'}]}>
               Clear Done
             </Text>
           </TouchableOpacity>
@@ -60,12 +75,11 @@ export const YourTask = ({onOpenCreateModal}) => {
       {/* Task List or Empty State */}
       {filteredTasks.length === 0 ? (
         <EmptyState
-          icon={searchQuery ? '🔍' : '📝'}
-          title={searchQuery ? 'No Matching Tasks' : 'All Tasks Completed!'}
+          title={searchQuery ? 'No Matching Tasks' : 'All Tasks Completed! 🎉'}
           subtitle={
             searchQuery
-              ? `No tasks found matching "${searchQuery}". Try different keywords.`
-              : 'Add your next goal or to-do item to keep your momentum going!'
+              ? `No records found matching "${searchQuery}".`
+              : 'Add your next goal or objective to maintain your daily streak.'
           }
           buttonText="+ Add New Task"
           onButtonPress={onOpenCreateModal}
@@ -90,44 +104,48 @@ export const YourTask = ({onOpenCreateModal}) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: spacing.PADDING_16,
-    marginTop: spacing.MARGIN_10,
-    paddingBottom: spacing.PADDING_40,
+    paddingHorizontal: 16,
+    marginTop: 4,
+    paddingBottom: 40,
   },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.MARGIN_12,
+    marginBottom: 12,
   },
   titleWithCount: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   sectionTitle: {
-    fontSize: textScale(18),
+    fontSize: 18,
     fontFamily: fontFamily.bold,
+    letterSpacing: -0.3,
     marginRight: 8,
   },
   countBadge: {
     paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 10,
+    paddingVertical: 3,
+    borderRadius: 12,
   },
   countText: {
-    fontSize: textScale(11),
+    fontSize: 12,
     fontFamily: fontFamily.bold,
   },
   clearBtn: {
-    paddingVertical: 4,
-    paddingHorizontal: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 12,
   },
   clearBtnText: {
-    fontSize: textScale(12),
+    fontSize: 12,
     fontFamily: fontFamily.bold,
   },
   taskList: {
-    marginTop: spacing.MARGIN_4,
+    marginTop: 4,
   },
 });
 

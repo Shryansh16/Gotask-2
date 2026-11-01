@@ -492,8 +492,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContainer: {
-    borderTopLeftRadius: moderateScale(20),
-    borderTopRightRadius: moderateScale(20),
+    borderTopLeftRadius: moderateScale(28),
+    borderTopRightRadius: moderateScale(28),
     borderTopWidth: 1,
     maxHeight: '88%',
     paddingTop: spacing.M,
@@ -559,19 +559,19 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderRadius: moderateScale(10),
+    borderRadius: moderateScale(14),
     paddingHorizontal: spacing.M,
-    paddingVertical: spacing.S,
+    height: 48,
     fontSize: textScale(14),
-    fontFamily: fontFamily.regular,
+    fontFamily: fontFamily.medium,
   },
   textArea: {
-    height: moderateScale(80),
+    height: moderateScale(85),
     textAlignVertical: 'top',
+    paddingVertical: spacing.S,
   },
   categoryRow: {
     flexDirection: 'row',
-    gap: spacing.XS,
     paddingVertical: spacing.XXS,
   },
   categoryPill: {
@@ -579,13 +579,13 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.S,
     borderRadius: moderateScale(16),
     borderWidth: 1,
+    marginRight: spacing.XS,
   },
   categoryPillText: {
     fontSize: textScale(12),
   },
   frequencyRow: {
     flexDirection: 'row',
-    gap: spacing.XS,
     marginTop: spacing.XXS,
   },
   frequencyButton: {
@@ -594,6 +594,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: moderateScale(8),
     borderWidth: 1,
+    marginHorizontal: 3,
   },
   frequencyButtonText: {
     fontSize: textScale(12),
@@ -601,7 +602,6 @@ const styles = StyleSheet.create({
   daysRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: spacing.XXS,
   },
   dayChip: {
     flex: 1,
@@ -609,6 +609,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: moderateScale(8),
     borderWidth: 1,
+    marginHorizontal: 2,
   },
   dayChipText: {
     fontSize: textScale(11),
@@ -632,7 +633,6 @@ const styles = StyleSheet.create({
   reminderInputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.M,
     marginTop: spacing.XS,
   },
   timeInput: {
@@ -644,6 +644,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.semiBold,
     width: moderateScale(80),
     textAlign: 'center',
+    marginRight: spacing.M,
   },
   modalFooter: {
     flexDirection: 'row',
@@ -652,25 +653,30 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.L,
     paddingVertical: spacing.M,
     borderTopWidth: 1,
-    gap: spacing.M,
   },
   cancelButton: {
     paddingVertical: spacing.S,
     paddingHorizontal: spacing.L,
-    borderRadius: moderateScale(10),
-    minHeight: 44,
+    borderRadius: moderateScale(14),
+    minHeight: 46,
     justifyContent: 'center',
+    marginRight: spacing.M,
+    borderWidth: 1.5,
+    borderBottomWidth: 3,
+    borderBottomColor: '#CBD5E1',
   },
   cancelButtonText: {
     fontSize: textScale(14),
-    fontFamily: fontFamily.semiBold,
+    fontFamily: fontFamily.bold,
   },
   saveButton: {
     paddingVertical: spacing.S,
     paddingHorizontal: spacing.XL,
-    borderRadius: moderateScale(10),
-    minHeight: 44,
+    borderRadius: moderateScale(14),
+    minHeight: 46,
     justifyContent: 'center',
+    borderBottomWidth: 4,
+    borderBottomColor: '#3730A3',
   },
   saveButtonText: {
     color: '#FFFFFF',

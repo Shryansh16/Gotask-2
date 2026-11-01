@@ -9,7 +9,7 @@ const THEME_STORAGE_KEY = '@gotask_theme_mode';
 
 export const ThemeProvider = ({children}) => {
   const systemScheme = useColorScheme();
-  const [themeMode, setThemeModeState] = useState('system'); // 'light' | 'dark' | 'system'
+  const [themeMode, setThemeModeState] = useState('system');
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {

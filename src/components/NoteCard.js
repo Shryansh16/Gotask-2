@@ -1,24 +1,32 @@
 // src/components/NoteCard.js
-// Verified Note Card component aligned with docs/Design.md Section 4 & 5
-
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 import {useTheme} from '../context/ThemeContext';
 import {useNotes} from '../context/NoteContext';
 import {categoryMeta} from '../styles/theme';
-import {textScale} from '../styles/responsiveStyles';
 import {fontFamily} from '../common/fonts';
-import {spacing} from '../styles/spacing';
-import {CategoryBadge} from './Badge';
+
+const CATEGORY_ICONS = {
+  All: 'layers',
+  Work: 'briefcase',
+  Personal: 'user',
+  Shopping: 'shopping-bag',
+  Health: 'activity',
+  Study: 'book-open',
+  Finance: 'dollar-sign',
+  Ideas: 'compass',
+};
 
 export const NoteCard = ({note, onEdit, onPress, linkedTaskTitle}) => {
-  const {theme} = useTheme();
+  const {theme, isDark} = useTheme();
   const {deleteNote, togglePinNote, toggleArchiveNote} = useNotes();
 
   const meta = categoryMeta[note.category] || {
-    color: theme.primary,
-    bgColor: theme.primaryLight,
+    color: '#4F46E5',
+    bgColor: '#EEF2FF',
   };
+  const categoryIcon = CATEGORY_ICONS[note.category] || 'file-text';
 
   const handleDelete = () => {
     Alert.alert(
@@ -44,7 +52,7 @@ export const NoteCard = ({note, onEdit, onPress, linkedTaskTitle}) => {
 
   return (
     <TouchableOpacity
-      activeOpacity={0.88}
+      activeOpacity={0.84}
       onPress={() => (onPress ? onPress(note) : onEdit ? onEdit(note) : null)}
       accessible={true}
       accessibilityRole="button"
@@ -53,26 +61,64 @@ export const NoteCard = ({note, onEdit, onPress, linkedTaskTitle}) => {
       }`}
       style={[
         styles.card,
-        note.isPinned ? styles.cardPinned : null,
         {
-          backgroundColor: theme.surface,
-          borderColor: note.isPinned ? theme.primary : theme.border,
+          backgroundColor: isDark ? '#151D2F' : '#FFFFFF',
+          borderColor: isDark ? '#1E293B' : '#E2E8F0',
+          borderBottomColor: isDark ? '#0F172A' : '#CBD5E1',
         },
-        theme.cardShadow,
       ]}>
+      {/* 6px Signature Category Color Accent Strip */}
+      <View
+        style={[
+          styles.accentStrip,
+          {backgroundColor: meta.color},
+        ]}
+      />
+
       {/* Top Meta Header */}
       <View style={styles.topRow}>
         <View style={styles.badgesRow}>
-          <CategoryBadge
-            category={note.category || 'General'}
-            color={meta.color}
-            bgColor={meta.bgColor}
-          />
+          <View
+            style={[
+              styles.categoryMedallion,
+              {backgroundColor: isDark ? meta.color : meta.bgColor},
+            ]}>
+            <Feather
+              name={categoryIcon}
+              size={13}
+              color={isDark ? '#FFFFFF' : meta.color}
+              style={{marginRight: 5}}
+            />
+            <Text
+              style={[
+                styles.categoryName,
+                {color: isDark ? '#FFFFFF' : meta.color},
+              ]}>
+              {note.category || 'General'}
+            </Text>
+          </View>
+
+          {note.isPinned && (
+            <View
+              style={[
+                styles.pinPill,
+                {backgroundColor: isDark ? '#2D2305' : '#FEF3C7'},
+              ]}>
+              <Feather
+                name="star"
+                size={11}
+                color="#F59E0B"
+                style={{marginRight: 3}}
+              />
+              <Text style={styles.pinPillText}>Pinned</Text>
+            </View>
+          )}
+
           {note.isArchived && (
             <View
               style={[
                 styles.archiveBadge,
-                {backgroundColor: theme.surfaceSecondary},
+                {backgroundColor: isDark ? '#1E293B' : '#F1F5F9'},
               ]}>
               <Text style={[styles.archiveBadgeText, {color: theme.textMuted}]}>
                 Archived
@@ -89,13 +135,11 @@ export const NoteCard = ({note, onEdit, onPress, linkedTaskTitle}) => {
             accessibilityRole="button"
             accessibilityLabel={note.isPinned ? 'Unpin note' : 'Pin note'}
             style={styles.actionIconBtn}>
-            <Text
-              style={[
-                styles.pinIcon,
-                {color: note.isPinned ? theme.primary : theme.textMuted},
-              ]}>
-              {note.isPinned ? '★' : '☆'}
-            </Text>
+            <Feather
+              name="star"
+              size={18}
+              color={note.isPinned ? '#F59E0B' : theme.textMuted}
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -120,86 +164,116 @@ export const NoteCard = ({note, onEdit, onPress, linkedTaskTitle}) => {
         <View
           style={[
             styles.linkedTaskBox,
-            {backgroundColor: theme.surfaceSecondary},
-          ]}
-          accessible={true}
-          accessibilityLabel={`Linked to task ${linkedTaskTitle || 'Task'}`}>
-          <Text style={styles.linkedTaskIcon}>🔗</Text>
+            {backgroundColor: isDark ? '#1E293B' : '#EEF2FF'},
+          ]}>
+          <Feather
+            name="link-2"
+            size={12}
+            color="#4F46E5"
+            style={{marginRight: 5}}
+          />
           <Text
             numberOfLines={1}
-            style={[styles.linkedTaskText, {color: theme.primary}]}>
-            {linkedTaskTitle || `Task #${note.linkedTaskId.slice(0, 8)}`}
+            style={[styles.linkedTaskText, {color: '#4F46E5'}]}>
+            Linked: {linkedTaskTitle || 'Task'}
           </Text>
         </View>
       )}
 
-      {/* Tags Row */}
-      {Array.isArray(note.tags) && note.tags.length > 0 && (
+      {/* Tags Chips */}
+      {Boolean(note.tags && note.tags.length > 0) && (
         <View style={styles.tagsRow}>
-          {note.tags.map(t => (
+          {note.tags.map(tag => (
             <View
-              key={t}
+              key={tag}
               style={[
                 styles.tagChip,
-                {backgroundColor: theme.surfaceSecondary},
+                {backgroundColor: isDark ? '#1E293B' : '#F1F5F9'},
               ]}>
               <Text style={[styles.tagText, {color: theme.textSecondary}]}>
-                #{t}
+                #{tag}
               </Text>
             </View>
           ))}
         </View>
       )}
 
-      {/* Footer Date & Actions */}
-      <View style={[styles.footerRow, {borderTopColor: theme.divider}]}>
-        <Text style={[styles.dateText, {color: theme.textMuted}]}>
-          {formattedDate}
-        </Text>
+      {/* Bottom Footer Row */}
+      <View
+        style={[
+          styles.footerRow,
+          {borderTopColor: isDark ? '#1E293B' : '#F1F5F9'},
+        ]}>
+        <View style={styles.dateContainer}>
+          <Feather name="clock" size={12} color={theme.textMuted} />
+          <Text style={[styles.dateText, {color: theme.textMuted}]}>
+            {formattedDate}
+          </Text>
+        </View>
 
         <View style={styles.footerButtons}>
           <TouchableOpacity
-            onPress={() => toggleArchiveNote(note.id)}
             accessible={true}
             accessibilityRole="button"
-            accessibilityLabel={
-              note.isArchived ? 'Unarchive note' : 'Archive note'
-            }
+            accessibilityLabel={note.isArchived ? 'Unarchive' : 'Archive'}
+            onPress={() => toggleArchiveNote(note.id)}
             style={[
-              styles.smallBtn,
-              {backgroundColor: theme.surfaceSecondary},
+              styles.actionPill,
+              {backgroundColor: isDark ? '#1E293B' : '#F1F5F9'},
             ]}>
-            <Text style={[styles.smallBtnText, {color: theme.textSecondary}]}>
+            <Feather
+              name={note.isArchived ? 'upload' : 'archive'}
+              size={12}
+              color={theme.textSecondary}
+              style={{marginRight: 4}}
+            />
+            <Text style={[styles.actionPillText, {color: theme.textSecondary}]}>
               {note.isArchived ? 'Restore' : 'Archive'}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => onEdit && onEdit(note)}
             accessible={true}
             accessibilityRole="button"
             accessibilityLabel="Edit note"
+            onPress={() => (onEdit ? onEdit(note) : null)}
             style={[
-              styles.smallBtn,
-              styles.btnSpacing,
-              {backgroundColor: theme.surfaceSecondary},
+              styles.actionPill,
+              {
+                backgroundColor: isDark ? '#1E293B' : '#EEF2FF',
+                marginLeft: 8,
+              },
             ]}>
-            <Text style={[styles.smallBtnText, {color: theme.primary}]}>
+            <Feather
+              name="edit-2"
+              size={12}
+              color="#4F46E5"
+              style={{marginRight: 4}}
+            />
+            <Text style={[styles.actionPillText, {color: '#4F46E5'}]}>
               Edit
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={handleDelete}
             accessible={true}
             accessibilityRole="button"
             accessibilityLabel="Delete note"
+            onPress={handleDelete}
             style={[
-              styles.smallBtn,
-              styles.btnSpacing,
-              {backgroundColor: theme.dangerLight},
+              styles.actionPill,
+              {
+                backgroundColor: isDark ? '#2C1515' : '#FEF2F2',
+                marginLeft: 8,
+              },
             ]}>
-            <Text style={[styles.smallBtnText, {color: theme.danger}]}>
+            <Feather
+              name="trash-2"
+              size={12}
+              color="#EF4444"
+              style={{marginRight: 4}}
+            />
+            <Text style={[styles.actionPillText, {color: '#EF4444'}]}>
               Delete
             </Text>
           </TouchableOpacity>
@@ -212,31 +286,68 @@ export const NoteCard = ({note, onEdit, onPress, linkedTaskTitle}) => {
 const styles = StyleSheet.create({
   card: {
     borderRadius: 20,
-    padding: spacing.PADDING_16,
-    marginBottom: spacing.MARGIN_14,
-    borderWidth: 1,
-  },
-  cardPinned: {
+    padding: 16,
+    paddingLeft: 20,
+    marginBottom: 14,
     borderWidth: 1.5,
+    borderBottomWidth: 4, // Elevate 3D bevel
+    overflow: 'hidden',
+    position: 'relative',
+    shadowColor: '#475569',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 3,
+  },
+  accentStrip: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    width: 6,
   },
   topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.MARGIN_10,
+    marginBottom: 10,
   },
   badgesRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
+  pinPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    marginLeft: 8,
+  },
+  pinPillText: {
+    fontSize: 11,
+    fontFamily: fontFamily.bold,
+    color: '#D97706',
+  },
+  categoryMedallion: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  categoryName: {
+    fontSize: 12,
+    fontFamily: fontFamily.bold,
+  },
   archiveBadge: {
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 10,
-    marginLeft: 6,
+    borderRadius: 8,
+    marginLeft: 8,
   },
   archiveBadgeText: {
-    fontSize: textScale(10),
+    fontSize: 11,
     fontFamily: fontFamily.medium,
   },
   actionsRow: {
@@ -246,81 +357,77 @@ const styles = StyleSheet.create({
   actionIconBtn: {
     padding: 4,
   },
-  pinIcon: {
-    fontSize: textScale(18),
-    lineHeight: 20,
-  },
   title: {
-    fontSize: textScale(16),
+    fontSize: 17,
     fontFamily: fontFamily.bold,
-    lineHeight: 22,
-    marginBottom: 4,
+    lineHeight: 23,
+    letterSpacing: -0.3,
+    marginBottom: 6,
   },
   contentPreview: {
-    fontSize: textScale(13),
+    fontSize: 13.5,
     fontFamily: fontFamily.regular,
-    lineHeight: 18,
-    marginBottom: spacing.MARGIN_10,
+    lineHeight: 20,
+    marginBottom: 10,
   },
   linkedTaskBox: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 8,
-    marginBottom: spacing.MARGIN_10,
+    borderRadius: 10,
+    marginBottom: 10,
     alignSelf: 'flex-start',
   },
-  linkedTaskIcon: {
-    fontSize: textScale(11),
-    marginRight: 6,
-  },
   linkedTaskText: {
-    fontSize: textScale(11),
+    fontSize: 12,
     fontFamily: fontFamily.medium,
   },
   tagsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: spacing.MARGIN_8,
+    marginBottom: 8,
   },
   tagChip: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: 8,
     marginRight: 6,
-    marginBottom: 4,
+    marginBottom: 6,
   },
   tagText: {
-    fontSize: textScale(10),
+    fontSize: 11,
     fontFamily: fontFamily.medium,
   },
   footerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: spacing.PADDING_10,
+    paddingTop: 12,
     borderTopWidth: 1,
-    marginTop: spacing.MARGIN_4,
+  },
+  dateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   dateText: {
-    fontSize: textScale(11),
+    fontSize: 12,
     fontFamily: fontFamily.regular,
+    marginLeft: 5,
   },
   footerButtons: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  smallBtn: {
+  actionPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 10,
   },
-  btnSpacing: {
-    marginLeft: 6,
-  },
-  smallBtnText: {
-    fontSize: textScale(11),
+  actionPillText: {
+    fontSize: 11,
     fontFamily: fontFamily.bold,
   },
 });

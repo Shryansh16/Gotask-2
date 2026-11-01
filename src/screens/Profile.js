@@ -1,7 +1,6 @@
 // src/screens/Profile.js
 import React, {useState} from 'react';
 import {
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,13 +12,16 @@ import {
   StatusBar,
   Alert,
 } from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 import {useNavigation} from '@react-navigation/native';
 import {useTheme} from '../context/ThemeContext';
 import {useTasks} from '../context/TaskContext';
-import HemburgerButton from '../modules/HemburgerButton';
-import {textScale} from '../styles/responsiveStyles';
 import {fontFamily} from '../common/fonts';
 import {spacing} from '../styles/spacing';
+import ScreenContainer from '../design-system/ScreenContainer';
+import Header from '../design-system/Header';
+import ElevateTabBar from '../components/ElevateTabBar';
+import ElevateLeagueLeaderboard from '../components/ElevateLeagueLeaderboard';
 
 const Profile = () => {
   const navigation = useNavigation();
@@ -66,205 +68,277 @@ const Profile = () => {
       ? {uri: profile.avatar}
       : require('../assets/man.png');
 
-  // Achievement logic
+  // Gamified achievements aligned with Elevate style
   const achievements = [
     {
       id: 'streak_master',
       title: 'Streak Master',
-      desc: 'Maintained 3+ days consistency',
-      icon: '🔥',
+      desc: '3+ consecutive days active',
+      icon: 'zap',
+      color: '#F59E0B',
+      bg: '#FFFBEB',
       unlocked: stats.streak >= 3,
     },
     {
       id: 'goal_crusher',
       title: 'Goal Crusher',
-      desc: `Reached daily goal of ${profile.dailyGoal || 5} tasks`,
-      icon: '🎯',
-      unlocked: stats.completed >= (profile.dailyGoal || 5),
+      desc: `Reached ${profile?.dailyGoal || 5} tasks daily target`,
+      icon: 'target',
+      color: '#10B981',
+      bg: '#ECFDF5',
+      unlocked: stats.completed >= (profile?.dailyGoal || 5),
     },
     {
       id: 'high_velocity',
       title: 'High Velocity',
-      desc: 'Achieved 75%+ completion rate',
-      icon: '⚡',
+      desc: '75%+ task completion rate',
+      icon: 'trending-up',
+      color: '#3B82F6',
+      bg: '#EFF6FF',
       unlocked: stats.completionRate >= 75 && stats.total > 0,
     },
     {
       id: 'task_veteran',
       title: 'Task Veteran',
-      desc: 'Added 5+ productive tasks',
-      icon: '🏆',
+      desc: 'Organized 5+ productive tasks',
+      icon: 'award',
+      color: '#8B5CF6',
+      bg: '#F5F3FF',
       unlocked: stats.total >= 5,
     },
   ];
 
+  const targetGoal = Math.max(profile?.dailyGoal || 5, 1);
+  const targetPercent = Math.min(
+    100,
+    Math.round((stats.completed / targetGoal) * 100),
+  );
+
   return (
-    <SafeAreaView
-      style={[styles.mainContainer, {backgroundColor: theme.background}]}>
+    <ScreenContainer scrollable={false} contentPadding={0}>
       <StatusBar
         backgroundColor={theme.background}
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
 
       {/* Header */}
-      <View style={[styles.header, {borderBottomColor: theme.divider}]}>
-        <HemburgerButton onPressButton={() => navigation.openDrawer()} />
-        <Text style={[styles.headerTitle, {color: theme.textPrimary}]}>
-          My Profile
-        </Text>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={handleOpenEdit}
-          style={[styles.editHeaderBtn, {backgroundColor: theme.primaryLight}]}>
-          <Text style={[styles.editHeaderText, {color: theme.primary}]}>
-            Edit
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <Header
+        title="My Profile"
+        subtitle="Performance, streaks & achievements"
+        navigation={navigation}
+        rightAction={{
+          icon: 'edit-2',
+          label: 'Edit',
+          onPress: handleOpenEdit,
+          accessibilityLabel: 'Edit Profile',
+        }}
+      />
 
       <ScrollView
+        style={{flex: 1}}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}>
-        {/* Profile Card Hero */}
+        {/* Elevate-Grade Profile Performance Hero */}
         <View
           style={[
-            styles.profileCard,
-            {backgroundColor: theme.surface, borderColor: theme.border},
-            theme.cardShadow,
+            styles.heroCard,
+            {
+              backgroundColor: isDark ? '#151D2F' : '#FFFFFF',
+              borderColor: isDark ? '#1E293B' : '#E2E8F0',
+              borderBottomColor: isDark ? '#0F172A' : '#CBD5E1',
+            },
           ]}>
-          <View style={styles.avatarContainer}>
-            <Image
-              source={avatarSource}
-              style={[styles.avatar, {borderColor: theme.primary}]}
-              defaultSource={require('../assets/man.png')}
-            />
-            <View
-              style={[styles.avatarBadge, {backgroundColor: theme.success}]}>
-              <Text style={styles.avatarBadgeText}>✓</Text>
+          <View style={styles.heroTopRow}>
+            <View style={styles.avatarContainer}>
+              <Image
+                source={avatarSource}
+                style={[
+                  styles.avatar,
+                  {borderColor: isDark ? '#38BDF8' : '#00A3FF'},
+                ]}
+                defaultSource={require('../assets/man.png')}
+              />
+              <View style={styles.verifiedBadge}>
+                <Feather name="check" size={11} color="#FFFFFF" />
+              </View>
+            </View>
+
+            <View style={styles.profileTextCol}>
+              <Text
+                style={[styles.userName, {color: theme.textPrimary}]}
+                numberOfLines={1}>
+                {profile?.name || 'User'}
+              </Text>
+              <View
+                style={[
+                  styles.rolePill,
+                  {backgroundColor: isDark ? '#1E1B4B' : '#EEF2FF'},
+                ]}>
+                <Text style={[styles.rolePillText, {color: '#4F46E5'}]}>
+                  {profile?.role || 'Productivity Architect'}
+                </Text>
+              </View>
+              <Text
+                style={[styles.userEmail, {color: theme.textSecondary}]}
+                numberOfLines={1}>
+                {profile?.email || 'shryansh@example.com'}
+              </Text>
             </View>
           </View>
 
-          <Text style={[styles.userName, {color: theme.textPrimary}]}>
-            {profile?.name || 'User'}
-          </Text>
-          <Text style={[styles.userRole, {color: theme.primary}]}>
-            {profile?.role || 'Productivity Enthusiast'}
-          </Text>
-          <Text style={[styles.userEmail, {color: theme.textMuted}]}>
-            {profile?.email || 'shryansh@example.com'}
-          </Text>
+          {/* Signature Elevate 3-Pill Metrics Row */}
+          <View style={styles.elevateMetricsRow}>
+            <View
+              style={[
+                styles.elevateMetricPill,
+                {
+                  backgroundColor: isDark ? '#2D2305' : '#FEF3C7',
+                  borderColor: isDark ? '#78350F' : '#FDE68A',
+                  borderBottomColor: isDark ? '#451A03' : '#F59E0B',
+                },
+              ]}>
+              <Text style={styles.elevateMetricEmoji}>🔥</Text>
+              <View>
+                <Text
+                  style={[
+                    styles.elevateMetricValue,
+                    {color: isDark ? '#FBBF24' : '#B45309'},
+                  ]}>
+                  {stats.streak}d
+                </Text>
+                <Text
+                  style={[
+                    styles.elevateMetricLabel,
+                    {color: isDark ? '#FBBF24' : '#92400E'},
+                  ]}>
+                  STREAK
+                </Text>
+              </View>
+            </View>
 
-          {/* Quick Metrics Strip */}
-          <View
-            style={[
-              styles.metricsStrip,
-              {backgroundColor: theme.surfaceSecondary},
-            ]}>
-            <View style={styles.metricColumn}>
-              <Text style={[styles.metricNumber, {color: theme.textPrimary}]}>
-                {stats.total}
-              </Text>
-              <Text style={[styles.metricLabel, {color: theme.textMuted}]}>
-                Total
-              </Text>
-            </View>
             <View
-              style={[styles.metricSep, {backgroundColor: theme.divider}]}
-            />
-            <View style={styles.metricColumn}>
-              <Text style={[styles.metricNumber, {color: theme.success}]}>
-                {stats.completed}
-              </Text>
-              <Text style={[styles.metricLabel, {color: theme.textMuted}]}>
-                Done
-              </Text>
+              style={[
+                styles.elevateMetricPill,
+                {
+                  backgroundColor: isDark ? '#064E3B' : '#DCFCE7',
+                  borderColor: isDark ? '#065F46' : '#BBF7D0',
+                  borderBottomColor: isDark ? '#022C22' : '#22C55E',
+                },
+              ]}>
+              <Text style={styles.elevateMetricEmoji}>🛡️</Text>
+              <View>
+                <Text
+                  style={[
+                    styles.elevateMetricValue,
+                    {color: isDark ? '#34D399' : '#15803D'},
+                  ]}>
+                  Emerald
+                </Text>
+                <Text
+                  style={[
+                    styles.elevateMetricLabel,
+                    {color: isDark ? '#34D399' : '#166534'},
+                  ]}>
+                  LEAGUE
+                </Text>
+              </View>
             </View>
+
             <View
-              style={[styles.metricSep, {backgroundColor: theme.divider}]}
-            />
-            <View style={styles.metricColumn}>
-              <Text style={[styles.metricNumber, {color: theme.warning}]}>
-                {stats.pending}
-              </Text>
-              <Text style={[styles.metricLabel, {color: theme.textMuted}]}>
-                Pending
-              </Text>
-            </View>
-            <View
-              style={[styles.metricSep, {backgroundColor: theme.divider}]}
-            />
-            <View style={styles.metricColumn}>
-              <Text style={[styles.metricNumber, {color: theme.primary}]}>
-                {stats.streak}d
-              </Text>
-              <Text style={[styles.metricLabel, {color: theme.textMuted}]}>
-                Streak
-              </Text>
+              style={[
+                styles.elevateMetricPill,
+                {
+                  backgroundColor: isDark ? '#1E1B4B' : '#FEF9C3',
+                  borderColor: isDark ? '#3730A3' : '#FEF08A',
+                  borderBottomColor: isDark ? '#1E1B4B' : '#EAB308',
+                },
+              ]}>
+              <Text style={styles.elevateMetricEmoji}>⭐</Text>
+              <View>
+                <Text
+                  style={[
+                    styles.elevateMetricValue,
+                    {color: isDark ? '#A5B4FC' : '#A16207'},
+                  ]}>
+                  {stats.completed * 25 + stats.streak * 50}
+                </Text>
+                <Text
+                  style={[
+                    styles.elevateMetricLabel,
+                    {color: isDark ? '#A5B4FC' : '#854D0E'},
+                  ]}>
+                  TOTAL XP
+                </Text>
+              </View>
             </View>
           </View>
         </View>
 
-        {/* Daily Goal Target Card */}
+        {/* Daily Target Momentum Card */}
         <View
           style={[
-            styles.sectionCard,
-            {backgroundColor: theme.surface, borderColor: theme.border},
-            theme.cardShadow,
+            styles.targetCard,
+            {
+              backgroundColor: isDark ? '#151D2F' : '#FFFFFF',
+              borderColor: isDark ? '#1E293B' : '#E2E8F0',
+              borderBottomColor: isDark ? '#0F172A' : '#CBD5E1',
+            },
           ]}>
-          <View style={styles.sectionHeaderRow}>
-            <View>
-              <Text style={[styles.sectionTitle, {color: theme.textPrimary}]}>
-                Daily Task Target
+          <View style={styles.targetHeaderRow}>
+            <View style={styles.targetIconCircle}>
+              <Feather name="target" size={18} color="#10B981" />
+            </View>
+            <View style={styles.targetTitleCol}>
+              <Text
+                style={[styles.targetTitle, {color: theme.textPrimary}]}>
+                Daily Target Progress
               </Text>
-              <Text style={[styles.sectionSubtitle, {color: theme.textMuted}]}>
-                Goal: {profile?.dailyGoal || 5} tasks completed / day
+              <Text style={[styles.targetSub, {color: theme.textSecondary}]}>
+                {stats.completed} of {targetGoal} tasks completed today
               </Text>
             </View>
-            <Text style={[styles.goalPercentText, {color: theme.primary}]}>
-              {Math.min(
-                100,
-                Math.round(
-                  (stats.completed / Math.max(profile?.dailyGoal || 5, 1)) *
-                    100,
-                ),
-              )}
-              %
-            </Text>
+            <View style={styles.targetPercentBadge}>
+              <Text style={styles.targetPercentText}>{targetPercent}%</Text>
+            </View>
           </View>
 
+          {/* Thick 8px rounded progress bar */}
           <View
             style={[
               styles.progressBarTrack,
-              {backgroundColor: theme.surfaceSecondary},
+              {backgroundColor: isDark ? '#1E293B' : '#F1F5F9'},
             ]}>
             <View
               style={[
                 styles.progressBarFill,
                 {
-                  backgroundColor: theme.primary,
-                  width: `${Math.min(
-                    100,
-                    Math.max(
-                      (stats.completed / Math.max(profile?.dailyGoal || 5, 1)) *
-                        100,
-                      4,
-                    ),
-                  )}%`,
+                  width: `${Math.max(targetPercent, 4)}%`,
+                  backgroundColor:
+                    targetPercent === 100 ? '#10B981' : '#4F46E5',
                 },
               ]}
             />
           </View>
         </View>
 
-        {/* Productivity Badges & Achievements */}
-        <View style={styles.achievementsSection}>
-          <Text
-            style={[
-              styles.sectionTitle,
-              {color: theme.textPrimary, marginBottom: 12},
-            ]}>
-            Productivity Badges
-          </Text>
+        {/* Elevate Emerald League & Leaderboard (Image 3) */}
+        <ElevateLeagueLeaderboard
+          userXP={stats.totalTasks * 50 + stats.completed * 100}
+        />
+
+        {/* Productivity Trophy Case (Badges Grid) */}
+        <View style={styles.trophySection}>
+          <View style={styles.sectionTitleRow}>
+            <Feather
+              name="award"
+              size={18}
+              color="#F59E0B"
+              style={{marginRight: 6}}
+            />
+            <Text style={[styles.sectionTitle, {color: theme.textPrimary}]}>
+              Productivity Trophy Case
+            </Text>
+          </View>
 
           <View style={styles.badgesGrid}>
             {achievements.map(item => (
@@ -273,38 +347,65 @@ const Profile = () => {
                 style={[
                   styles.badgeCard,
                   {
-                    backgroundColor: theme.surface,
-                    borderColor: item.unlocked ? theme.primary : theme.border,
-                    opacity: item.unlocked ? 1 : 0.55,
+                    backgroundColor: isDark ? '#151D2F' : '#FFFFFF',
+                    borderColor: item.unlocked
+                      ? item.color
+                      : isDark
+                      ? '#1E293B'
+                      : '#E2E8F0',
                   },
-                  item.unlocked ? theme.cardShadow : null,
                 ]}>
-                <Text style={styles.badgeIcon}>{item.icon}</Text>
+                <View
+                  style={[
+                    styles.badgeIconCircle,
+                    {
+                      backgroundColor: item.unlocked
+                        ? isDark
+                          ? '#1E1B4B'
+                          : item.bg
+                        : isDark
+                        ? '#1E293B'
+                        : '#F1F5F9',
+                    },
+                  ]}>
+                  <Feather
+                    name={item.icon}
+                    size={22}
+                    color={item.unlocked ? item.color : theme.textMuted}
+                  />
+                </View>
                 <Text
                   style={[styles.badgeTitle, {color: theme.textPrimary}]}
                   numberOfLines={1}>
                   {item.title}
                 </Text>
                 <Text
-                  style={[styles.badgeDesc, {color: theme.textMuted}]}
+                  style={[styles.badgeDesc, {color: theme.textSecondary}]}
                   numberOfLines={2}>
                   {item.desc}
                 </Text>
+
                 <View
                   style={[
                     styles.statusPill,
                     {
                       backgroundColor: item.unlocked
-                        ? theme.successLight
-                        : theme.surfaceSecondary,
+                        ? isDark
+                          ? '#064E3B'
+                          : '#ECFDF5'
+                        : isDark
+                        ? '#1E293B'
+                        : '#F1F5F9',
                     },
                   ]}>
                   <Text
                     style={[
                       styles.statusPillText,
-                      {color: item.unlocked ? theme.success : theme.textMuted},
+                      {
+                        color: item.unlocked ? '#10B981' : theme.textMuted,
+                      },
                     ]}>
-                    {item.unlocked ? 'Unlocked 🌟' : 'In Progress'}
+                    {item.unlocked ? '✓ UNLOCKED' : 'IN PROGRESS'}
                   </Text>
                 </View>
               </View>
@@ -312,38 +413,47 @@ const Profile = () => {
           </View>
         </View>
 
-        {/* Quick Sync & Cloud Management */}
+        {/* Cloud Backup & Sync Action Tile */}
         <View
           style={[
-            styles.syncCard,
-            {backgroundColor: theme.surface, borderColor: theme.border},
-            theme.cardShadow,
+            styles.actionCard,
+            {
+              backgroundColor: isDark ? '#151D2F' : '#FFFFFF',
+              borderColor: isDark ? '#1E293B' : '#E2E8F0',
+            },
           ]}>
-          <View style={styles.syncLeft}>
-            <Text style={[styles.syncTitle, {color: theme.textPrimary}]}>
+          <View style={[styles.actionIconCircle, {backgroundColor: '#ECFEFF'}]}>
+            <Feather name="cloud" size={18} color="#06B6D4" />
+          </View>
+          <View style={styles.actionTextCol}>
+            <Text style={[styles.actionCardTitle, {color: theme.textPrimary}]}>
               Cloud Backup & Sync
             </Text>
-            <Text style={[styles.syncSubtitle, {color: theme.textMuted}]}>
-              Status:{' '}
+            <Text style={[styles.actionCardSub, {color: theme.textSecondary}]}>
               {syncStatus === 'synced'
-                ? 'Fully Synchronized'
+                ? 'All tasks synced to cloud'
                 : syncStatus === 'syncing'
-                ? 'Syncing changes...'
+                ? 'Syncing in progress...'
                 : 'Offline mode active'}
             </Text>
           </View>
-
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={triggerSync}
-            style={[styles.syncBtn, {backgroundColor: theme.primary}]}>
-            <Text style={styles.syncBtnText}>Sync Now 🔄</Text>
+            style={styles.syncButton}>
+            <Feather
+              name="refresh-cw"
+              size={13}
+              color="#FFFFFF"
+              style={{marginRight: 4}}
+            />
+            <Text style={styles.syncButtonText}>Sync</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Restore Sample Data */}
+        {/* Load Demo Data Action Tile */}
         <TouchableOpacity
-          activeOpacity={0.7}
+          activeOpacity={0.8}
           onPress={() => {
             Alert.alert(
               'Seed Sample Tasks',
@@ -355,17 +465,30 @@ const Profile = () => {
             );
           }}
           style={[
-            styles.sampleDataBtn,
+            styles.actionCard,
             {
-              backgroundColor: theme.surfaceSecondary,
-              borderColor: theme.border,
+              backgroundColor: isDark ? '#151D2F' : '#FFFFFF',
+              borderColor: isDark ? '#1E293B' : '#E2E8F0',
+              marginTop: 10,
             },
           ]}>
-          <Text style={[styles.sampleDataText, {color: theme.primary}]}>
-            📥 Load Sample Demo Tasks
-          </Text>
+          <View style={[styles.actionIconCircle, {backgroundColor: '#EEF2FF'}]}>
+            <Feather name="download" size={18} color="#4F46E5" />
+          </View>
+          <View style={styles.actionTextCol}>
+            <Text style={[styles.actionCardTitle, {color: theme.textPrimary}]}>
+              Load Demo Productivity Data
+            </Text>
+            <Text style={[styles.actionCardSub, {color: theme.textSecondary}]}>
+              Instantly populate goals, tasks, and habits
+            </Text>
+          </View>
+          <Feather name="chevron-right" size={18} color={theme.textMuted} />
         </TouchableOpacity>
       </ScrollView>
+
+      {/* Elevate 5-Tab Tactile Bottom Navigation Bar */}
+      <ElevateTabBar activeTab="me" navigation={navigation} />
 
       {/* Edit Profile Modal */}
       <Modal
@@ -377,11 +500,21 @@ const Profile = () => {
           <View
             style={[
               styles.modalContent,
-              {backgroundColor: theme.surface, borderColor: theme.border},
+              {
+                backgroundColor: isDark ? '#151D2F' : '#FFFFFF',
+                borderColor: theme.border,
+              },
             ]}>
-            <Text style={[styles.modalTitle, {color: theme.textPrimary}]}>
-              Edit Profile
-            </Text>
+            <View style={styles.modalHeaderRow}>
+              <Text style={[styles.modalTitle, {color: theme.textPrimary}]}>
+                Edit Profile
+              </Text>
+              <TouchableOpacity
+                onPress={() => setIsEditModalOpen(false)}
+                hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}>
+                <Feather name="x" size={20} color={theme.textMuted} />
+              </TouchableOpacity>
+            </View>
 
             <Text style={[styles.inputLabel, {color: theme.textSecondary}]}>
               Full Name
@@ -390,14 +523,14 @@ const Profile = () => {
               style={[
                 styles.modalInput,
                 {
-                  backgroundColor: theme.surfaceSecondary,
                   color: theme.textPrimary,
+                  backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
                   borderColor: theme.border,
                 },
               ]}
               value={name}
               onChangeText={setName}
-              placeholder="e.g. Shryansh Shree"
+              placeholder="Your Name"
               placeholderTextColor={theme.textMuted}
             />
 
@@ -408,14 +541,14 @@ const Profile = () => {
               style={[
                 styles.modalInput,
                 {
-                  backgroundColor: theme.surfaceSecondary,
                   color: theme.textPrimary,
+                  backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
                   borderColor: theme.border,
                 },
               ]}
               value={role}
               onChangeText={setRole}
-              placeholder="e.g. Productivity Architect"
+              placeholder="e.g. Senior Designer"
               placeholderTextColor={theme.textMuted}
             />
 
@@ -426,205 +559,268 @@ const Profile = () => {
               style={[
                 styles.modalInput,
                 {
-                  backgroundColor: theme.surfaceSecondary,
                   color: theme.textPrimary,
+                  backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
                   borderColor: theme.border,
                 },
               ]}
               value={email}
               onChangeText={setEmail}
-              keyboardType="email-address"
-              placeholder="e.g. shryansh@example.com"
+              placeholder="your.email@example.com"
               placeholderTextColor={theme.textMuted}
+              keyboardType="email-address"
+              autoCapitalize="none"
             />
 
             <Text style={[styles.inputLabel, {color: theme.textSecondary}]}>
-              Daily Target (Tasks)
+              Daily Target Tasks
             </Text>
             <TextInput
               style={[
                 styles.modalInput,
                 {
-                  backgroundColor: theme.surfaceSecondary,
                   color: theme.textPrimary,
+                  backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
                   borderColor: theme.border,
                 },
               ]}
               value={dailyGoal}
               onChangeText={setDailyGoal}
-              keyboardType="numeric"
-              placeholder="e.g. 5"
+              placeholder="5"
               placeholderTextColor={theme.textMuted}
+              keyboardType="number-pad"
             />
 
-            <View style={styles.modalButtonsRow}>
+            <View style={styles.modalActionButtons}>
               <TouchableOpacity
                 onPress={() => setIsEditModalOpen(false)}
                 style={[
                   styles.modalCancelBtn,
-                  {backgroundColor: theme.surfaceSecondary},
+                  {borderColor: theme.border},
                 ]}>
                 <Text
-                  style={[
-                    styles.modalCancelText,
-                    {color: theme.textSecondary},
-                  ]}>
+                  style={[styles.modalBtnText, {color: theme.textSecondary}]}>
                   Cancel
                 </Text>
               </TouchableOpacity>
-
               <TouchableOpacity
                 onPress={handleSaveProfile}
-                style={[styles.modalSaveBtn, {backgroundColor: theme.primary}]}>
-                <Text style={styles.modalSaveText}>Save Changes</Text>
+                style={[styles.modalSaveBtn, {backgroundColor: '#4F46E5'}]}>
+                <Text style={[styles.modalBtnText, {color: '#FFFFFF'}]}>
+                  Save Changes
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
+  scrollContent: {
+    padding: 16,
+    paddingBottom: 120, // Full bottom clearance
   },
-  header: {
+  heroCard: {
+    borderRadius: 22,
+    padding: 18,
+    marginBottom: 16,
+    borderWidth: 1.5,
+    borderBottomWidth: 5, // Elevate 3D bevel
+    shadowColor: '#475569',
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
+    elevation: 4,
+  },
+  heroTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.PADDING_16,
-    paddingVertical: spacing.PADDING_12,
-    borderBottomWidth: 1,
-  },
-  headerTitle: {
-    fontSize: textScale(18),
-    fontFamily: fontFamily.bold,
-  },
-  editHeaderBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 14,
-  },
-  editHeaderText: {
-    fontSize: textScale(12),
-    fontFamily: fontFamily.bold,
-  },
-  scrollContent: {
-    padding: spacing.PADDING_16,
-    paddingBottom: spacing.PADDING_40,
-  },
-  profileCard: {
-    borderRadius: 24,
-    padding: spacing.PADDING_20,
-    alignItems: 'center',
-    borderWidth: 1,
-    marginBottom: spacing.MARGIN_16,
+    marginBottom: 16,
   },
   avatarContainer: {
     position: 'relative',
-    marginBottom: spacing.MARGIN_10,
+    marginRight: 16,
   },
   avatar: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    borderWidth: 3,
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    borderWidth: 2.5,
+    borderColor: '#00A3FF',
   },
-  avatarBadge: {
+  verifiedBadge: {
     position: 'absolute',
-    bottom: 2,
-    right: 2,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
+    bottom: 0,
+    right: 0,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#10B981',
     borderWidth: 2,
     borderColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  avatarBadgeText: {
-    color: '#FFFFFF',
-    fontSize: textScale(10),
-    fontWeight: 'bold',
+  profileTextCol: {
+    flex: 1,
   },
   userName: {
-    fontSize: textScale(20),
+    fontSize: 22,
     fontFamily: fontFamily.bold,
-    marginTop: 4,
+    letterSpacing: -0.4,
   },
-  userRole: {
-    fontSize: textScale(13),
-    fontFamily: fontFamily.medium,
-    marginTop: 2,
+  rolePill: {
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  rolePillText: {
+    fontSize: 12,
+    fontFamily: fontFamily.bold,
   },
   userEmail: {
-    fontSize: textScale(12),
+    fontSize: 12,
     fontFamily: fontFamily.regular,
-    marginTop: 2,
   },
-  metricsStrip: {
-    flexDirection: 'row',
-    width: '100%',
-    borderRadius: 16,
-    marginTop: spacing.MARGIN_16,
-    paddingVertical: spacing.PADDING_12,
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
-  metricColumn: {
-    alignItems: 'center',
-  },
-  metricNumber: {
-    fontSize: textScale(16),
-    fontFamily: fontFamily.bold,
-  },
-  metricLabel: {
-    fontSize: textScale(11),
-    fontFamily: fontFamily.medium,
-    marginTop: 2,
-  },
-  metricSep: {
-    width: 1,
-    height: 24,
-  },
-  sectionCard: {
-    borderRadius: 20,
-    padding: spacing.PADDING_16,
-    borderWidth: 1,
-    marginBottom: spacing.MARGIN_16,
-  },
-  sectionHeaderRow: {
+  elevateMetricsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginTop: 4,
   },
-  sectionTitle: {
-    fontSize: textScale(15),
+  elevateMetricPill: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderBottomWidth: 3,
+    marginHorizontal: 3,
+  },
+  elevateMetricEmoji: {
+    fontSize: 16,
+    marginRight: 6,
+  },
+  elevateMetricValue: {
+    fontSize: 13,
+    fontFamily: fontFamily.bold,
+    letterSpacing: -0.2,
+  },
+  elevateMetricLabel: {
+    fontSize: 9,
+    fontFamily: fontFamily.bold,
+    letterSpacing: 0.5,
+  },
+  heroMetricsStrip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(0, 0, 0, 0.16)',
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+  },
+  metricItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  metricNumber: {
+    fontSize: 18,
+    fontFamily: fontFamily.bold,
+    color: '#FFFFFF',
+  },
+  metricLabel: {
+    fontSize: 11,
+    fontFamily: fontFamily.medium,
+    color: 'rgba(255, 255, 255, 0.75)',
+    marginTop: 2,
+  },
+  metricDivider: {
+    width: 1,
+    height: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+  },
+  targetCard: {
+    borderRadius: 20,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1.5,
+    borderBottomWidth: 4, // Elevate 3D bevel
+    borderBottomColor: '#CBD5E1',
+    borderLeftWidth: 6,
+    borderLeftColor: '#10B981',
+    shadowColor: '#475569',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.07,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  targetHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  targetIconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#ECFDF5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  targetTitleCol: {
+    flex: 1,
+  },
+  targetTitle: {
+    fontSize: 16,
     fontFamily: fontFamily.bold,
   },
-  sectionSubtitle: {
-    fontSize: textScale(11),
+  targetSub: {
+    fontSize: 12,
     fontFamily: fontFamily.regular,
     marginTop: 2,
   },
-  goalPercentText: {
-    fontSize: textScale(16),
+  targetPercentBadge: {
+    backgroundColor: '#ECFDF5',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  targetPercentText: {
+    fontSize: 13,
     fontFamily: fontFamily.bold,
+    color: '#10B981',
   },
   progressBarTrack: {
-    height: 10,
-    borderRadius: 5,
+    height: 8,
+    borderRadius: 4,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    borderRadius: 5,
+    borderRadius: 4,
   },
-  achievementsSection: {
-    marginBottom: spacing.MARGIN_16,
+  trophySection: {
+    marginBottom: 16,
+  },
+  sectionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontFamily: fontFamily.bold,
+    letterSpacing: -0.3,
   },
   badgesGrid: {
     flexDirection: 'row',
@@ -633,140 +829,157 @@ const styles = StyleSheet.create({
   },
   badgeCard: {
     width: '48%',
-    borderRadius: 16,
-    padding: spacing.PADDING_14,
+    padding: 14,
+    borderRadius: 18,
     borderWidth: 1.5,
-    marginBottom: spacing.MARGIN_12,
+    borderBottomWidth: 4, // Elevate 3D bevel
+    borderBottomColor: '#CBD5E1',
     alignItems: 'center',
+    marginBottom: 12,
+    shadowColor: '#475569',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
   },
-  badgeIcon: {
-    fontSize: textScale(24),
-    marginBottom: 6,
+  badgeIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
   },
   badgeTitle: {
-    fontSize: textScale(13),
+    fontSize: 14,
     fontFamily: fontFamily.bold,
     textAlign: 'center',
+    marginBottom: 4,
   },
   badgeDesc: {
-    fontSize: textScale(10),
+    fontSize: 11,
     fontFamily: fontFamily.regular,
     textAlign: 'center',
-    marginTop: 4,
-    minHeight: 28,
+    lineHeight: 15,
+    marginBottom: 10,
   },
   statusPill: {
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 10,
-    marginTop: 8,
   },
   statusPillText: {
-    fontSize: textScale(9),
+    fontSize: 10,
     fontFamily: fontFamily.bold,
+    letterSpacing: 0.5,
   },
-  syncCard: {
-    borderRadius: 20,
-    padding: spacing.PADDING_16,
-    borderWidth: 1,
+  actionCard: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.MARGIN_16,
+    padding: 14,
+    borderRadius: 18,
+    borderWidth: 1,
+    shadowColor: '#475569',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
   },
-  syncLeft: {
+  actionIconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  actionTextCol: {
     flex: 1,
-    marginRight: 10,
   },
-  syncTitle: {
-    fontSize: textScale(14),
+  actionCardTitle: {
+    fontSize: 14,
     fontFamily: fontFamily.bold,
   },
-  syncSubtitle: {
-    fontSize: textScale(11),
+  actionCardSub: {
+    fontSize: 12,
     fontFamily: fontFamily.regular,
     marginTop: 2,
   },
-  syncBtn: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+  syncButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#06B6D4',
+    paddingHorizontal: 12,
+    paddingVertical: 7,
     borderRadius: 12,
   },
-  syncBtnText: {
+  syncButtonText: {
     color: '#FFFFFF',
-    fontSize: textScale(12),
-    fontFamily: fontFamily.bold,
-  },
-  sampleDataBtn: {
-    paddingVertical: 14,
-    borderRadius: 16,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sampleDataText: {
-    fontSize: textScale(13),
+    fontSize: 12,
     fontFamily: fontFamily.bold,
   },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    padding: spacing.PADDING_20,
+    justifyContent: 'flex-end',
   },
   modalContent: {
-    borderRadius: 24,
-    padding: spacing.PADDING_20,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 20,
     borderWidth: 1,
   },
+  modalHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
   modalTitle: {
-    fontSize: textScale(18),
+    fontSize: 19,
     fontFamily: fontFamily.bold,
-    marginBottom: spacing.MARGIN_16,
-    textAlign: 'center',
   },
   inputLabel: {
-    fontSize: textScale(12),
-    fontFamily: fontFamily.medium,
-    marginBottom: 4,
-    marginTop: 8,
+    fontSize: 12,
+    fontFamily: fontFamily.bold,
+    marginBottom: 6,
   },
   modalInput: {
     height: 46,
     borderRadius: 12,
-    paddingHorizontal: 12,
     borderWidth: 1,
-    fontSize: textScale(13),
-    fontFamily: fontFamily.regular,
+    paddingHorizontal: 14,
+    fontSize: 14,
+    marginBottom: 12,
   },
-  modalButtonsRow: {
+  modalActionButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: spacing.MARGIN_20,
+    marginTop: 10,
+    marginBottom: 10,
   },
   modalCancelBtn: {
     flex: 1,
-    height: 46,
-    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 8,
-  },
-  modalCancelText: {
-    fontSize: textScale(13),
-    fontFamily: fontFamily.bold,
+    height: 48,
+    borderRadius: 14,
+    borderWidth: 1,
+    marginRight: 10,
   },
   modalSaveBtn: {
     flex: 1,
-    height: 46,
-    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 8,
+    height: 48,
+    borderRadius: 14,
+    shadowColor: '#4F46E5',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 3,
   },
-  modalSaveText: {
-    color: '#FFFFFF',
-    fontSize: textScale(13),
+  modalBtnText: {
+    fontSize: 14,
     fontFamily: fontFamily.bold,
   },
 });

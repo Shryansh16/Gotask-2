@@ -7,10 +7,11 @@ import {fontFamily} from '../common/fonts';
 
 export const PriorityBadge = ({priority = 'medium'}) => {
   const meta = priorityMeta[priority] || priorityMeta.medium;
+  const dotColor = meta.dotColor || meta.color;
 
   return (
     <View style={[styles.priorityBadge, {backgroundColor: meta.bgColor}]}>
-      <View style={[styles.priorityDot, {backgroundColor: meta.dotColor}]} />
+      <View style={[styles.priorityDot, {backgroundColor: dotColor}]} />
       <Text style={[styles.priorityText, {color: meta.color}]}>
         {meta.label}
       </Text>
@@ -20,8 +21,8 @@ export const PriorityBadge = ({priority = 'medium'}) => {
 
 export const CategoryBadge = ({
   category,
-  color = '#2563EB',
-  bgColor = '#EFF6FF',
+  color = '#4F46E5',
+  bgColor = '#EEF2FF',
 }) => {
   return (
     <View style={[styles.categoryBadge, {backgroundColor: bgColor}]}>
@@ -42,12 +43,11 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    marginRight: 4,
+    marginRight: 5,
   },
   priorityText: {
     fontSize: textScale(11),
     fontFamily: fontFamily.bold,
-    textTransform: 'capitalize',
   },
   categoryBadge: {
     paddingHorizontal: 8,

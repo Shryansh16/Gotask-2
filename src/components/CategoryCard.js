@@ -1,132 +1,144 @@
 // src/components/CategoryCard.js
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import {Text, StyleSheet, TouchableOpacity, View} from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 import {useTheme} from '../context/ThemeContext';
 import {categoryMeta} from '../styles/theme';
-import {textScale} from '../styles/responsiveStyles';
 import {fontFamily} from '../common/fonts';
-import {spacing} from '../styles/spacing';
 
-const CATEGORY_ASSET_IMAGES = {
-  Work: require('../assets/suitcase.png'),
-  Personal: require('../assets/man.png'),
-  Shopping: require('../assets/shopping-cart.png'),
-  Health: require('../assets/heart-beat.png'),
-};
-
-const CATEGORY_FALLBACK_EMOJIS = {
-  All: '📁',
-  Work: '💼',
-  Personal: '👤',
-  Shopping: '🛒',
-  Health: '❤️',
-  Study: '📚',
-  Finance: '💰',
-  Ideas: '💡',
+const CATEGORY_FEATHER_ICONS = {
+  All: 'layers',
+  Work: 'briefcase',
+  Personal: 'user',
+  Shopping: 'shopping-bag',
+  Health: 'activity',
+  Study: 'book-open',
+  Finance: 'dollar-sign',
+  Ideas: 'compass',
 };
 
 export const CategoryCard = ({
   category,
   isSelected,
   taskCount = 0,
-  pendingCount = 0,
   onPress,
 }) => {
-  const {theme} = useTheme();
+  const {theme, isDark} = useTheme();
+  const iconName = CATEGORY_FEATHER_ICONS[category] || 'tag';
   const meta = categoryMeta[category] || {
-    color: theme.primary,
-    bgColor: theme.primaryLight,
+    color: '#4F46E5',
+    bgColor: '#EEF2FF',
   };
 
-  const imageSource = CATEGORY_ASSET_IMAGES[category];
-  const emoji = CATEGORY_FALLBACK_EMOJIS[category] || '📌';
+  const activeColor = meta.color;
+  const activeBg = meta.color;
+  const inactiveBg = isDark ? '#1E293B' : meta.bgColor;
+  const inactiveTextColor = isDark ? '#F8FAFC' : '#0F172A';
 
   return (
     <TouchableOpacity
-      activeOpacity={0.8}
+      accessibilityRole="button"
+      accessibilityLabel={`Category ${category}, ${taskCount} tasks`}
+      activeOpacity={0.82}
       onPress={onPress}
       style={[
-        styles.container,
+        styles.chip,
         {
-          backgroundColor: isSelected ? meta.color : theme.surface,
-          borderColor: isSelected ? meta.color : theme.border,
+          backgroundColor: isSelected ? activeBg : inactiveBg,
+          borderColor: isSelected ? activeBg : isDark ? '#334155' : '#E2E8F0',
+          borderBottomColor: isSelected ? '#1E1B4B' : isDark ? '#0F172A' : '#CBD5E1',
+          shadowColor: isSelected ? activeColor : '#475569',
+          shadowOpacity: isSelected ? 0.3 : 0.04,
+          elevation: isSelected ? 4 : 1,
         },
-        theme.cardShadow,
       ]}>
+      {/* Icon Medallion */}
       <View
         style={[
-          styles.iconBox,
+          styles.iconCircle,
           {
             backgroundColor: isSelected
-              ? 'rgba(255,255,255,0.25)'
-              : meta.bgColor,
+              ? 'rgba(255, 255, 255, 0.22)'
+              : isDark
+              ? 'rgba(255, 255, 255, 0.08)'
+              : 'rgba(255, 255, 255, 0.85)',
           },
         ]}>
-        {imageSource ? (
-          <Image
-            source={imageSource}
-            style={[styles.iconImage, isSelected && {tintColor: '#FFFFFF'}]}
-            resizeMode="contain"
-          />
-        ) : (
-          <Text style={styles.emojiText}>{emoji}</Text>
-        )}
+        <Feather
+          name={iconName}
+          size={14}
+          color={isSelected ? '#FFFFFF' : activeColor}
+        />
       </View>
 
+      {/* Category Name */}
       <Text
-        numberOfLines={1}
         style={[
           styles.categoryTitle,
-          {color: isSelected ? '#FFFFFF' : theme.textPrimary},
+          {color: isSelected ? '#FFFFFF' : inactiveTextColor},
         ]}>
         {category}
       </Text>
 
-      <Text
+      {/* Task Count Badge */}
+      <View
         style={[
-          styles.taskCount,
-          {color: isSelected ? 'rgba(255,255,255,0.85)' : theme.textMuted},
+          styles.countBadge,
+          {
+            backgroundColor: isSelected
+              ? 'rgba(255, 255, 255, 0.22)'
+              : isDark
+              ? 'rgba(255, 255, 255, 0.1)'
+              : 'rgba(0, 0, 0, 0.06)',
+          },
         ]}>
-        {taskCount} {taskCount === 1 ? 'task' : 'tasks'}
-      </Text>
+        <Text
+          style={[
+            styles.taskCount,
+            {color: isSelected ? '#FFFFFF' : activeColor},
+          ]}>
+          {taskCount}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    width: 105,
-    paddingVertical: spacing.PADDING_14,
-    paddingHorizontal: spacing.PADDING_10,
-    borderRadius: 22,
+  chip: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginRight: spacing.MARGIN_12,
-    borderWidth: 1.5,
-  },
-  iconBox: {
-    width: 48,
-    height: 48,
+    paddingVertical: 9,
+    paddingHorizontal: 14,
     borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.MARGIN_10,
+    borderWidth: 1,
+    borderBottomWidth: 3, // Elevate 3D bevel
+    marginRight: 10,
+    shadowOffset: {width: 0, height: 3},
+    shadowRadius: 8,
   },
-  iconImage: {
+  iconCircle: {
     width: 26,
     height: 26,
-  },
-  emojiText: {
-    fontSize: textScale(22),
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
   },
   categoryTitle: {
-    fontSize: textScale(13),
+    fontSize: 13,
     fontFamily: fontFamily.bold,
-    textAlign: 'center',
-    marginBottom: 2,
+    letterSpacing: -0.2,
+  },
+  countBadge: {
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 10,
+    marginLeft: 8,
   },
   taskCount: {
-    fontSize: textScale(11),
-    fontFamily: fontFamily.regular,
+    fontSize: 11,
+    fontFamily: fontFamily.bold,
   },
 });
 

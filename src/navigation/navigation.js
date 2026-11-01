@@ -7,6 +7,9 @@ import {
   CardStyleInterpolators,
   createStackNavigator,
 } from '@react-navigation/stack';
+import FunctionScreen from '../screens/FunctionScreen';
+import Profile from '../screens/Profile';
+import Settings from '../screens/Settings';
 import CategoryScreen from '../screens/CategoryScreen';
 import PlanningScreen from '../screens/PlanningScreen';
 import FocusScreen from '../screens/FocusScreen';
@@ -45,6 +48,9 @@ const Navigation = () => {
         }}>
         <Stack.Screen name="home" component={WelcomeScreen} />
         <Stack.Screen name="Drawer" component={Drawer} />
+        <Stack.Screen name="FunctionScreen" component={FunctionScreen} />
+        <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="Settings" component={Settings} />
         <Stack.Screen name="CategoryScreen" component={CategoryScreen} />
         <Stack.Screen name="PlanningScreen" component={PlanningScreen} />
         <Stack.Screen name="FocusScreen" component={FocusScreen} />
