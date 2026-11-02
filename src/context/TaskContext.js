@@ -853,4 +853,7 @@ export const useTasks = () => {
   return context;
 };
 
+// Singular alias for cross-module consistency
+export const useTask = useTasks;
+
 export default TaskContext;

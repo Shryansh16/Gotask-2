@@ -406,4 +406,7 @@ export const useNotes = () => {
   return context;
 };
 
+// Singular alias for cross-module consistency
+export const useNote = useNotes;
+
 export default NoteContext;

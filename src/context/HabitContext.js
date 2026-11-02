@@ -723,4 +723,7 @@ export const useHabits = () => {
   return context;
 };
 
+// Singular alias for cross-module consistency
+export const useHabit = useHabits;
+
 export default HabitContext;
