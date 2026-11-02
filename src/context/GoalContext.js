@@ -759,4 +759,7 @@ export const useGoal = () => {
   return context;
 };
 
+// Convenient plural alias for cross-module consistency
+export const useGoals = useGoal;
+
 export default GoalContext;

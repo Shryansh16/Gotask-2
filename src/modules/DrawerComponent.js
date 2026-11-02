@@ -17,7 +17,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useTheme} from '../context/ThemeContext';
 import {useTasks} from '../context/TaskContext';
 import {useNotes} from '../context/NoteContext';
-import {useGoals} from '../context/GoalContext';
+import {useGoal} from '../context/GoalContext';
 import {fontFamily} from '../common/fonts';
 
 const DrawerComponent = props => {
@@ -25,7 +25,7 @@ const DrawerComponent = props => {
   const {theme, isDark, toggleTheme} = useTheme();
   const {profile, stats, syncStatus} = useTasks();
   const {notes} = useNotes();
-  const {goals} = useGoals();
+  const {goals} = useGoal();
 
   const currentRouteName =
     props.state?.routeNames?.[props.state?.index] || 'FunctionScreen';
@@ -36,11 +36,11 @@ const DrawerComponent = props => {
       : require('../assets/man.png');
 
   const notesCount = notes ? notes.filter(n => !n.isArchived).length : 14;
-  const completedTasks = stats.completed || 4;
-  const totalTasks = stats.total || 5;
-  const completionPercent = stats.completionRate || 80;
-  const pendingTasks = stats.pending || 5;
-  const streakDays = stats.streak || 14;
+  const completedTasks = stats?.completed ?? 4;
+  const totalTasks = stats?.total ?? 5;
+  const completionPercent = stats?.completionRate ?? 80;
+  const pendingTasks = stats?.pending ?? 5;
+  const streakDays = stats?.streak ?? 14;
 
   const navigateTo = screenName => {
     props.navigation.navigate(screenName);
