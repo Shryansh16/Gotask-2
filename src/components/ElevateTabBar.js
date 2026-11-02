@@ -13,7 +13,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import {useTheme} from '../context/ThemeContext';
 import {fontFamily} from '../common/fonts';
 
-const TABS = [
+const DEFAULT_TABS = [
   {
     id: 'today',
     label: 'Today',
@@ -61,10 +61,65 @@ const TABS = [
   },
 ];
 
-export const ElevateTabBar = ({activeTab, navigation}) => {
+// Stitch 5-Core Screen Navigation (Today, Tasks, Vault, Goals, Habits)
+const CORE_STITCH_TABS = [
+  {
+    id: 'today',
+    label: 'Today',
+    screen: 'FunctionScreen',
+    icon: 'calendar',
+    activeColor: '#00A3FF',
+    activeBg: '#E0F2FE',
+    activeBorder: '#BAE6FD',
+  },
+  {
+    id: 'tasks',
+    label: 'Tasks',
+    screen: 'TasksScreen',
+    icon: 'check-square',
+    activeColor: '#00A3FF',
+    activeBg: '#E0F2FE',
+    activeBorder: '#BAE6FD',
+  },
+  {
+    id: 'vault',
+    label: 'Vault',
+    screen: 'NotesScreen',
+    icon: 'package',
+    activeColor: '#00A3FF',
+    activeBg: '#E0F2FE',
+    activeBorder: '#BAE6FD',
+  },
+  {
+    id: 'goals',
+    label: 'Goals',
+    screen: 'GoalsScreen',
+    icon: 'flag',
+    activeColor: '#00A3FF',
+    activeBg: '#E0F2FE',
+    activeBorder: '#BAE6FD',
+  },
+  {
+    id: 'habits',
+    label: 'Habits',
+    screen: 'HabitsScreen',
+    icon: 'zap',
+    activeColor: '#00A3FF',
+    activeBg: '#E0F2FE',
+    activeBorder: '#BAE6FD',
+  },
+];
+
+export const ElevateTabBar = ({activeTab, navigation, variant}) => {
   const {theme, isDark} = useTheme();
   const insets = useSafeAreaInsets();
   const bottomInset = Math.max(insets.bottom, Platform.OS === 'android' ? 8 : 0);
+
+  const activeTabsList =
+    variant === 'core' ||
+    ['today', 'tasks', 'vault', 'goals', 'habits'].includes(activeTab)
+      ? CORE_STITCH_TABS
+      : DEFAULT_TABS;
 
   const handleTabPress = (tab) => {
     if (!navigation) return;
@@ -83,7 +138,7 @@ export const ElevateTabBar = ({activeTab, navigation}) => {
         },
       ]}>
       <View style={styles.tabRow}>
-        {TABS.map((tab) => {
+        {activeTabsList.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
             <TouchableOpacity
@@ -113,9 +168,7 @@ export const ElevateTabBar = ({activeTab, navigation}) => {
                 style={[
                   styles.tabLabel,
                   {
-                    color: isActive
-                      ? (isDark ? '#FFFFFF' : tab.activeColor)
-                      : (isDark ? '#64748B' : '#94A3B8'),
+                    color: isActive ? tab.activeColor : (isDark ? '#64748B' : '#94A3B8'),
                     fontFamily: isActive ? fontFamily.bold : fontFamily.medium,
                   },
                 ]}>
@@ -131,18 +184,25 @@ export const ElevateTabBar = ({activeTab, navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
-    borderTopWidth: 1,
-    paddingTop: 6,
-    shadowColor: '#0F172A',
-    shadowOffset: {width: 0, height: -2},
-    shadowOpacity: 0.05,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopWidth: 1.5,
+    borderTopColor: '#E2E8F0',
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: -3},
+    shadowOpacity: 0.06,
     shadowRadius: 8,
     elevation: 8,
+    zIndex: 40,
   },
   tabRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    height: 56,
     alignItems: 'center',
+    justifyContent: 'space-around',
     paddingHorizontal: 8,
   },
   tabButton: {
@@ -152,20 +212,19 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   tabPill: {
-    paddingHorizontal: 14,
-    paddingVertical: 5,
-    borderRadius: 16,
-    borderWidth: 1.5,
-    borderColor: 'transparent',
+    width: 44,
+    height: 28,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 2,
+    borderWidth: 1.5,
+    borderColor: 'transparent',
   },
   tabLabel: {
-    fontSize: 11,
-    marginTop: 2,
+    fontSize: 10.5,
     letterSpacing: -0.2,
   },
 });
 
 export default ElevateTabBar;
-

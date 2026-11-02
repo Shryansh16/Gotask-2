@@ -660,3 +660,56 @@ The design foundation is ready for broader rollout when:
 Full requirements from both prompts have been recorded in [`docs/RedesignSpecification.md`](file:///d:/React%20Native/GOTask/docs/RedesignSpecification.md).
 Installed and verified dependency: `@shopify/restyle@2.4.2`.
 Status: All 12 screens and shared components updated with `ScreenContainer` and safe-area insets.
+
+
+---
+
+## 18. Google Stitch & Elevate Labs Tactile Momentum Redesign Specification
+
+**Version:** 2.0  
+**Status:** Approved & Actively Implemented  
+**Governing Standard:** Zero Feature Regression UI Redesign Protocol (Phases 1–5)  
+**Connected Stitch Project:** 2592934666773281786 (*"Duplicate of GoTASK Mobile UI Design"*)  
+**Design Theme:** **Tactile Momentum** (Primary: #00A3FF Elevate Sky Blue, Background: #F8F9FF, Physics: 3D Bevel order-b-4, Typography: Plus Jakarta Sans)
+
+### 18.1 Design Philosophy: "Tactile Toy Architecture"
+Surfaces feel pushable, weighted, and physical. Micro-interactions reward momentum; completing a task feels like pressing down an arcade button or slotting a physical block into place. Every card features a weighted baseline bevel (orderBottomWidth: 3-4px) that depresses on tap.
+
+### 18.2 Verified Screen Design Deliverables & Specifications
+1. **Dashboard (FunctionScreen.js / StatsOverview.js)** — COMPLETED
+   - Top status ribbon: ?? Streak, ?? XP, ?? Level in pill containers.
+   - High-Impact Sprint Hero: #00A3FF canvas with glowing ? DEEP WORK medallion, duration pill, mint progress bar, and tactile white Start Focus Session ? button.
+   - Active Sprint Streams: Horizontal 3D cards (*Architecture*, *API Schema*, *Code Review*) with level & XP rewards.
+   - Productivity Domains: Dual cards (*Engineering Velocity*, *Habit Momentum*).
+   - Productivity Insight: *Time Blocking & Dopamine Pacing* with ? Apply to Today's Agenda (+15 XP).
+
+2. **Tasks & Backlog (YourTask.js, SearchBar.js, TaskCard.js)** — COMPLETED
+   - Pinned Priority Card: Warm ivory #FFFDF5 surface, amber order-b-4 border-b-amber-500, gold ribbon, +50 XP badge.
+   - Subtask Progress: Subtasks Completed X / Y (Z%) with segmented progress bar and interactive checklist items.
+   - Live Filters: Squircle category tabs (All 12, Work 5, Personal 3, Shopping 1) with count chips and blue highlight.
+   - Priority Segmented Control: All, High ??, Med ??, Low ??.
+   - Active Backlog Header: Active Backlog [X pending] with ? Priority Sort toggle.
+   - Celebration Empty State: Green celebration medallion, encouraging dopamine victory copy, and tactile + Add New Goal (+15 XP) button.
+
+3. **Notes & Knowledge Vault (NotesScreen.js, NoteCard.js)** — IN PROGRESS
+   - Header: Tactile Knowledge Vault with cached sync status pill.
+   - Filters: All Notes, Pinned, Archived segmented pills.
+   - Hashtag Cloud: Interactive tag chips (#architecture, #sqlite, #rn-cli).
+   - Note Card: Gold star pin badge, 6px category accent strip, monospace code snippet block, and ?? Linked Task: {Task} badge.
+   - Preserves: Full Markdown editor modal, tag manager, pinning, deletion.
+
+4. **Goals & Targets (GoalsScreen.js, GoalCard.js)** — PENDING
+   - Header: Goal Mastery header with progress tracker.
+   - Goal Card: Tactile progress track, milestone checklist with XP chips, and target deadline indicator.
+   - Preserves: AI goal decomposition, milestone toggle, target editing.
+
+5. **Habits & Rituals (HabitsScreen.js, HabitCard.js)** — PENDING
+   - Header: Daily / Weekly frequency toggle tabs.
+   - Habit Card: 7-day circular tracker beads, tactile tap-to-complete button, and streak freeze action.
+   - Preserves: Streak calculation, calendar rules, reminder toggles.
+
+### 18.3 Physical Hardware Constraints (OnePlus 11R)
+- Viewport: 390 x 844 dp (compact breakpoint 360-599dp).
+- Punch-hole camera protection: Math.max(insets.top, 24) on all headers.
+- Bottom navigation clearance: FAB strictly anchored at ottom: 78 to clear ElevateTabBar.
+- Scroll padding: paddingBottom: 150 on all ScrollViews to prevent tab collision.

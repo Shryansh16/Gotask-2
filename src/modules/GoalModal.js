@@ -1,7 +1,7 @@
 // src/modules/GoalModal.js
 // Verified Goal Creation & Editing Modal (docs/PRD.md Phase 4 — P4.1 to P4.4)
 
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Modal,
   View,
@@ -14,14 +14,14 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import {useTheme} from '../context/ThemeContext';
-import {useGoal, GOAL_BOUNDS, GOAL_TYPES} from '../context/GoalContext';
-import {useTasks} from '../context/TaskContext';
-import {categoryMeta} from '../styles/theme';
-import {decomposeGoalToMilestones} from '../services/aiService';
-import {textScale, moderateScale} from '../styles/responsiveStyles';
-import {fontFamily} from '../common/fonts';
-import {spacing} from '../styles/spacing';
+import { useTheme } from '../context/ThemeContext';
+import { useGoal, GOAL_BOUNDS, GOAL_TYPES } from '../context/GoalContext';
+import { useTasks } from '../context/TaskContext';
+import { categoryMeta } from '../styles/theme';
+import { decomposeGoalToMilestones } from '../services/aiService';
+import { textScale, moderateScale } from '../styles/responsiveStyles';
+import { fontFamily } from '../common/fonts';
+import { spacing } from '../styles/spacing';
 
 const GOAL_CATEGORIES = [
   'Health',
@@ -32,9 +32,9 @@ const GOAL_CATEGORIES = [
   'Shopping',
 ];
 
-export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
-  const {theme} = useTheme();
-  const {addGoal, updateGoal} = useGoal();
+export const GoalModal = ({ visible, onClose, goalToEdit = null }) => {
+  const { theme } = useTheme();
+  const { addGoal, updateGoal } = useGoal();
   let tasks = [];
   try {
     const taskContext = useTasks();
@@ -240,11 +240,11 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.modalOverlay}>
-        <View style={[styles.modalCard, {backgroundColor: theme.surface}]}>
+        <View style={[styles.modalCard, { backgroundColor: theme.surface }]}>
           {/* Header */}
           <View
-            style={[styles.modalHeader, {borderBottomColor: theme.divider}]}>
-            <Text style={[styles.modalTitle, {color: theme.textPrimary}]}>
+            style={[styles.modalHeader, { borderBottomColor: theme.divider }]}>
+            <Text style={[styles.modalTitle, { color: theme.textPrimary }]}>
               {goalToEdit ? 'Edit Goal 🎯' : 'New Goal 🎯'}
             </Text>
             <TouchableOpacity
@@ -252,8 +252,8 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
               accessible={true}
               accessibilityRole="button"
               accessibilityLabel="Close goal dialog"
-              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Text style={[styles.closeIcon, {color: theme.textMuted}]}>
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+              <Text style={[styles.closeIcon, { color: theme.textMuted }]}>
                 ✕
               </Text>
             </TouchableOpacity>
@@ -265,10 +265,10 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
             {/* Title Input */}
             <View style={styles.inputGroup}>
               <View style={styles.labelRow}>
-                <Text style={[styles.label, {color: theme.textPrimary}]}>
+                <Text style={[styles.label, { color: theme.textPrimary }]}>
                   Goal Title *
                 </Text>
-                <Text style={[styles.charCounter, {color: theme.textMuted}]}>
+                <Text style={[styles.charCounter, { color: theme.textMuted }]}>
                   {title.length}/{GOAL_BOUNDS.TITLE_MAX_LEN}
                 </Text>
               </View>
@@ -292,10 +292,10 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
             {/* Description Input */}
             <View style={styles.inputGroup}>
               <View style={styles.labelRow}>
-                <Text style={[styles.label, {color: theme.textPrimary}]}>
+                <Text style={[styles.label, { color: theme.textPrimary }]}>
                   Description (Optional)
                 </Text>
-                <Text style={[styles.charCounter, {color: theme.textMuted}]}>
+                <Text style={[styles.charCounter, { color: theme.textMuted }]}>
                   {description.length}/{GOAL_BOUNDS.DESC_MAX_LEN}
                 </Text>
               </View>
@@ -320,7 +320,7 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
 
             {/* Category Selector */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, {color: theme.textPrimary}]}>
+              <Text style={[styles.label, { color: theme.textPrimary }]}>
                 Category
               </Text>
               <ScrollView
@@ -329,7 +329,7 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
                 contentContainerStyle={styles.categoryScroll}>
                 {GOAL_CATEGORIES.map(cat => {
                   const isSelected = category === cat;
-                  const meta = categoryMeta[cat] || {color: theme.primary};
+                  const meta = categoryMeta[cat] || { color: theme.primary };
                   return (
                     <TouchableOpacity
                       key={cat}
@@ -346,7 +346,7 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
                       <Text
                         style={[
                           styles.categoryChipText,
-                          {color: theme.textPrimary},
+                          { color: theme.textPrimary },
                           isSelected && styles.selectedWhiteText,
                         ]}>
                         {cat}
@@ -359,15 +359,15 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
 
             {/* Goal Type Picker (PRD P4.3) */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, {color: theme.textPrimary}]}>
+              <Text style={[styles.label, { color: theme.textPrimary }]}>
                 Goal Type & Measurement Method
               </Text>
               <View style={styles.typeSelectorRow}>
                 {[
-                  {key: GOAL_TYPES.TARGET_COUNT, label: '🔢 Target Count'},
-                  {key: GOAL_TYPES.PERCENTAGE, label: '📊 Percentage'},
-                  {key: GOAL_TYPES.MILESTONES, label: '🚩 Milestones'},
-                  {key: GOAL_TYPES.TASK_DERIVED, label: '🔗 Tasks Auto'},
+                  { key: GOAL_TYPES.TARGET_COUNT, label: '🔢 Target Count' },
+                  { key: GOAL_TYPES.PERCENTAGE, label: '📊 Percentage' },
+                  { key: GOAL_TYPES.MILESTONES, label: '🚩 Milestones' },
+                  { key: GOAL_TYPES.TASK_DERIVED, label: '🔗 Tasks Auto' },
                 ].map(item => {
                   const isSelected = type === item.key;
                   return (
@@ -388,7 +388,7 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
                       <Text
                         style={[
                           styles.typeChipText,
-                          {color: theme.textSecondary},
+                          { color: theme.textSecondary },
                           isSelected && styles.selectedWhiteText,
                         ]}>
                         {item.label}
@@ -403,7 +403,7 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
             {type === GOAL_TYPES.TARGET_COUNT && (
               <View style={styles.measurementRow}>
                 <View style={[styles.inputGroup, styles.measurementCol]}>
-                  <Text style={[styles.label, {color: theme.textPrimary}]}>
+                  <Text style={[styles.label, { color: theme.textPrimary }]}>
                     Target Value *
                   </Text>
                   <TextInput
@@ -423,7 +423,7 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
                   />
                 </View>
                 <View style={[styles.inputGroup, styles.measurementCol]}>
-                  <Text style={[styles.label, {color: theme.textPrimary}]}>
+                  <Text style={[styles.label, { color: theme.textPrimary }]}>
                     Unit (e.g. km, books, hrs)
                   </Text>
                   <TextInput
@@ -458,7 +458,7 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
                   <Text
                     style={[
                       styles.label,
-                      {color: theme.textPrimary, marginBottom: 0},
+                      { color: theme.textPrimary, marginBottom: 0 },
                     ]}>
                     Milestones Checklist ({milestones.length}/
                     {GOAL_BOUNDS.MAX_MILESTONES})
@@ -501,7 +501,7 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
                     onPress={handleAddMilestone}
                     style={[
                       styles.addMilestoneBtn,
-                      {backgroundColor: theme.primary},
+                      { backgroundColor: theme.primary },
                     ]}>
                     <Text style={styles.addMilestoneBtnText}>+ Add</Text>
                   </TouchableOpacity>
@@ -520,13 +520,13 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
                     <Text
                       style={[
                         styles.milestoneListText,
-                        {color: theme.textPrimary},
+                        { color: theme.textPrimary },
                       ]}>
                       🚩 {m.title}
                     </Text>
                     <TouchableOpacity
                       onPress={() => handleRemoveMilestone(m.id)}>
-                      <Text style={[styles.removeIcon, {color: theme.danger}]}>
+                      <Text style={[styles.removeIcon, { color: theme.danger }]}>
                         ✕
                       </Text>
                     </TouchableOpacity>
@@ -538,11 +538,11 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
             {/* Task-Derived Selector (PRD P4.4, P4.7) */}
             {type === GOAL_TYPES.TASK_DERIVED && (
               <View style={styles.inputGroup}>
-                <Text style={[styles.label, {color: theme.textPrimary}]}>
+                <Text style={[styles.label, { color: theme.textPrimary }]}>
                   Link Tasks (Completion auto-drives progress)
                 </Text>
                 {tasks.length === 0 ? (
-                  <Text style={[styles.emptyHint, {color: theme.textMuted}]}>
+                  <Text style={[styles.emptyHint, { color: theme.textMuted }]}>
                     No tasks found. Create tasks in the Dashboard first.
                   </Text>
                 ) : (
@@ -600,16 +600,16 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
 
             {/* Target Timeline Presets */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, {color: theme.textPrimary}]}>
+              <Text style={[styles.label, { color: theme.textPrimary }]}>
                 Target Timeline
               </Text>
               <View style={styles.timelineRow}>
                 {[
-                  {days: 14, label: '2 Weeks'},
-                  {days: 30, label: '1 Month'},
-                  {days: 90, label: '3 Months'},
-                  {days: 180, label: '6 Months'},
-                  {days: 365, label: '1 Year'},
+                  { days: 14, label: '2 Weeks' },
+                  { days: 30, label: '1 Month' },
+                  { days: 90, label: '3 Months' },
+                  { days: 180, label: '6 Months' },
+                  { days: 365, label: '1 Year' },
                 ].map(opt => {
                   const isSelected = targetDays === opt.days;
                   return (
@@ -630,7 +630,7 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
                       <Text
                         style={[
                           styles.timelineChipText,
-                          {color: theme.textPrimary},
+                          { color: theme.textPrimary },
                           isSelected && styles.selectedWhiteText,
                         ]}>
                         {opt.label}
@@ -643,12 +643,12 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
           </ScrollView>
 
           {/* Action Buttons */}
-          <View style={[styles.modalActions, {borderTopColor: theme.divider}]}>
+          <View style={[styles.modalActions, { borderTopColor: theme.divider }]}>
             <TouchableOpacity
               onPress={onClose}
-              style={[styles.cancelBtn, {borderColor: theme.border}]}>
+              style={[styles.cancelBtn, { borderColor: theme.border }]}>
               <Text
-                style={[styles.cancelBtnText, {color: theme.textSecondary}]}>
+                style={[styles.cancelBtnText, { color: theme.textSecondary }]}>
                 Cancel
               </Text>
             </TouchableOpacity>
@@ -658,15 +658,15 @@ export const GoalModal = ({visible, onClose, goalToEdit = null}) => {
               disabled={isSubmitting}
               style={[
                 styles.saveBtn,
-                {backgroundColor: theme.primary},
+                { backgroundColor: theme.primary },
                 isSubmitting && styles.btnDisabled,
               ]}>
               <Text style={styles.saveBtnText}>
                 {isSubmitting
                   ? 'Saving...'
                   : goalToEdit
-                  ? 'Save Changes'
-                  : 'Create Goal'}
+                    ? 'Save Changes'
+                    : 'Create Goal'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -902,7 +902,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 14,
     borderBottomWidth: 4,
-    borderBottomColor: '#3730A3',
+    borderBottomColor: '#00629D',
+    shadowColor: '#00A3FF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 3,
   },
   saveBtnText: {
     color: '#FFFFFF',

@@ -32,6 +32,8 @@ export const HABIT_CATEGORIES = [
   'Mindfulness',
   'Productivity',
   'Lifestyle',
+  'Study',
+  'Work',
 ];
 
 /**
@@ -39,13 +41,101 @@ export const HABIT_CATEGORIES = [
  * @param {Date} date
  * @returns {string}
  */
-export const formatDateStr = (date = new Date()) => {
+export function formatDateStr(date = new Date()) {
   const d = new Date(date);
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
+}
+
+/**
+ * Generate past N days completed history for sample habits
+ */
+export const getSamplePastHistory = (daysCount = 6) => {
+  const history = {};
+  for (let i = 1; i <= daysCount; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateKey = formatDateStr(d);
+    history[dateKey] = {
+      status: 'completed',
+      timestamp: d.toISOString(),
+      xpEarned: 50,
+    };
+  }
+  return history;
 };
+
+export const SAMPLE_HABITS = [
+  {
+    id: 'habit-1',
+    title: 'Morning Meditation',
+    description: '15 mins • Every morning routine',
+    category: 'Health',
+    frequency: 'daily',
+    targetDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    color: '#059669',
+    reminderTime: '07:30',
+    reminderEnabled: true,
+    isArchived: false,
+    currentStreak: 14,
+    bestStreak: 21,
+    totalCompleted: 42,
+    totalSkipped: 2,
+    xpReward: 50,
+    statusLabel: 'Pending today',
+    actionText: 'LOG DETAILS',
+    themeVariant: 'emerald',
+    iconName: 'smile',
+    history: getSamplePastHistory(6),
+  },
+  {
+    id: 'habit-2',
+    title: 'Read 20 Pages Tech',
+    description: 'Ch. 4 Architecture • Mon/Wed/Fri/Sat',
+    category: 'Study',
+    frequency: 'custom',
+    targetDays: ['Mon', 'Wed', 'Fri', 'Sat'],
+    color: '#7D1D58',
+    reminderTime: '21:00',
+    reminderEnabled: true,
+    isArchived: false,
+    currentStreak: 5,
+    bestStreak: 12,
+    totalCompleted: 18,
+    totalSkipped: 1,
+    xpReward: 75,
+    statusLabel: 'Scheduled tonight',
+    actionText: 'PAGE TRACKER',
+    themeVariant: 'magenta',
+    iconName: 'book-open',
+    history: getSamplePastHistory(6),
+  },
+  {
+    id: 'habit-3',
+    title: 'Standup & EOD Review',
+    description: 'Weekdays • 5:30 PM review',
+    category: 'Work',
+    frequency: 'weekdays',
+    targetDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+    color: '#D97706',
+    reminderTime: '17:30',
+    reminderEnabled: true,
+    isArchived: false,
+    currentStreak: 21,
+    bestStreak: 28,
+    totalCompleted: 65,
+    totalSkipped: 3,
+    xpReward: 50,
+    statusLabel: 'Cycle Completed',
+    isShielded: true,
+    actionText: 'SHIELDED',
+    themeVariant: 'amber',
+    iconName: 'check-circle',
+    history: getSamplePastHistory(6),
+  },
+];
 
 /**
  * Returns short 3-letter day name ('Sun', 'Mon', etc.) for a given date

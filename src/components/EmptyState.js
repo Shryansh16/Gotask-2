@@ -32,10 +32,10 @@ export const EmptyState = ({
         style={[
           styles.iconCircle,
           {
-            backgroundColor: isDark ? '#1E1B4B' : '#EEF2FF',
+            backgroundColor: isDark ? '#00375A' : '#E0F2FE',
           },
         ]}>
-        <Feather name={resolvedIcon} size={32} color="#4F46E5" />
+        <Feather name={resolvedIcon} size={32} color="#00A3FF" />
       </View>
       <Text style={[styles.title, {color: theme.textPrimary}]}>{title}</Text>
       <Text style={[styles.subtitle, {color: theme.textSecondary}]}>
@@ -48,7 +48,7 @@ export const EmptyState = ({
           accessibilityLabel={resolvedButtonText}
           activeOpacity={0.8}
           onPress={resolvedOnPress}
-          style={[styles.button, {backgroundColor: '#4F46E5'}]}>
+          style={[styles.button, {backgroundColor: '#00A3FF'}]}>
           <Text style={styles.buttonText}>{resolvedButtonText}</Text>
         </TouchableOpacity>
       )}
@@ -91,8 +91,8 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 14,
     borderBottomWidth: 4,
-    borderBottomColor: '#3730A3',
-    shadowColor: '#4F46E5',
+    borderBottomColor: '#00629D',
+    shadowColor: '#00A3FF',
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.25,
     shadowRadius: 10,

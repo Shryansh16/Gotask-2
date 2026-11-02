@@ -1241,3 +1241,51 @@ The local persistence strategy should be selected after inspecting the existing 
 Future multi-device synchronization, centralized accounts, and additional AI capabilities should build on these boundaries rather than forcing an early move to microservices or an unnecessarily complex distributed architecture.
 
 The objective is not to make GoTASK architecturally complicated. It is to make the product dependable today and straightforward to extend tomorrow.
+
+---
+
+## 21. Zero-Regression Redesign Architecture ("Skin vs. Engine")
+
+**Version:** 2.0  
+**Status:** Approved & Actively Implemented  
+**Governing Standard:** Zero Feature Regression UI Redesign Protocol  
+
+### 21.1 Architectural Boundary: Skin vs. Engine
+To ensure that visual enhancements from Google Stitch or Figma never introduce regressions, GoTASK enforces a strict architectural boundary between visual presentation and core logic:
+
+`
++-------------------------------------------------------------+
+|                  TACTILE MOMENTUM SKIN                      |
+|  - Stitch Design Tokens (Plus Jakarta Sans, #00A3FF, #F8F9FF) |
+|  - 3D Tactile Extrusion Bevels (borderBottomWidth: 3-4px)   |
+|  - Responsive Screen Wrappers (ScreenContainer, insets math) |
+|  - Presentation Components (TaskCard, NoteCard, GoalCard)   |
++-------------------------------------------------------------+
+                              | (Props, Handlers, Events)
+                              v
++-------------------------------------------------------------+
+|                     CORE APPLICATION ENGINE                 |
+|  - Context Providers (TaskContext, GoalContext, HabitContext)|
+|  - Planning & Focus State Machines (evaluateFocusTransition) |
+|  - Offline LWW Sync Engine (syncEngine.js)                  |
+|  - Persistence Layer (AsyncStorage & SQLite schema v2)       |
+|  - Restyle Token Bridge (theme.js & ThemeContext)           |
++-------------------------------------------------------------+
+                              | (Deterministic API Contracts)
+                              v
++-------------------------------------------------------------+
+|                 NODE.JS REST BACKEND & DATA                 |
+|  - 21 REST Endpoints (/api/tasks, /api/goals, /api/sync)    |
+|  - Synthetic Test Harnesses (__tests__/)                    |
+|  - Audit Trail Engine (auditLogs.js)                        |
++-------------------------------------------------------------+
+`
+
+### 21.2 Core Architectural Invariants
+1. **Zero Data Model Regressions:** No property on tasks, goals, habits, notes, or focus sessions may be renamed, removed, or made optional.
+2. **Context Engine Isolation:** Redesigns only modify presentation components; context providers, reducer logic, and SQLite operations remain untouched.
+3. **Continuous Automated Test Gates:** Every UI change must be validated against the full 113 Jest test suite and 21 REST backend tests before approval.
+4. **Hardware-Safe Layout Invariants:**
+   - Punch-hole camera protection: Math.max(insets.top, 24) on all headers.
+   - FAB clearance: ottom: 78 to clear the 5-tab ElevateTabBar.
+   - Scroll padding: paddingBottom: 150 on all ScrollViews to eliminate tab collisions on OnePlus 11R.

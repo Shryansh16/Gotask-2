@@ -1,19 +1,36 @@
 // src/components/GoalCard.js
-// Verified Goal Card Component aligned with docs/Design.md Section 4 & 5 and docs/PRD.md Phase 4
+// Verified Goal Card Component aligned with docs/Design.md Section 18 and docs/PRD.md Phase 4
+// Screen 4: Goals & Targets (Stitch & Elevate Labs Tactile Momentum Redesign)
+// Matched 1:1 against user reference media_1793624823904_3f8e5915.jpg
 
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
-import {useTheme} from '../context/ThemeContext';
-import {useGoal, GOAL_TYPES} from '../context/GoalContext';
-import {categoryMeta} from '../styles/theme';
-import {fontFamily} from '../common/fonts';
-import {spacing} from '../styles/spacing';
-import {CategoryBadge} from './Badge';
+import { useTheme } from '../context/ThemeContext';
+import { useGoal } from '../context/GoalContext';
+import { categoryMeta } from '../styles/theme';
+import { fontFamily } from '../common/fonts';
 
-export const GoalCard = ({goal, onEdit, onUpdateProgress, onViewHistory}) => {
-  const {theme} = useTheme();
-  const {deleteGoal, toggleArchiveGoal, toggleMilestone} = useGoal();
+const CATEGORY_ICONS = {
+  All: 'layers',
+  Work: 'briefcase',
+  Personal: 'user',
+  Shopping: 'shopping-bag',
+  Health: 'activity',
+  Study: 'package',
+  Finance: 'dollar-sign',
+  Ideas: 'compass',
+};
+
+export const GoalCard = ({
+  goal,
+  onEdit,
+  onUpdateProgress,
+  onViewHistory,
+  onPress,
+}) => {
+  const { theme, isDark } = useTheme();
+  const { deleteGoal, toggleMilestone } = useGoal();
 
   const stats = goal.stats || {
     progress: 0,
@@ -26,16 +43,17 @@ export const GoalCard = ({goal, onEdit, onUpdateProgress, onViewHistory}) => {
   };
 
   const meta = categoryMeta[goal.category] || {
-    color: theme.primary,
-    bgColor: theme.primaryLight,
+    color: '#00A3FF',
+    bgColor: '#E0F2FE',
   };
+  const categoryIcon = CATEGORY_ICONS[goal.category] || 'target';
 
   const handleDelete = () => {
     Alert.alert(
       'Delete Goal',
       `Are you sure you want to delete "${goal.title}"? You can undo this action immediately.`,
       [
-        {text: 'Cancel', style: 'cancel'},
+        { text: 'Cancel', style: 'cancel' },
         {
           text: 'Delete',
           style: 'destructive',
@@ -46,40 +64,84 @@ export const GoalCard = ({goal, onEdit, onUpdateProgress, onViewHistory}) => {
   };
 
   // Determine status chip styling
-  let statusBadgeBg = theme.primaryLight;
-  let statusBadgeText = theme.primary;
-  let statusLabel = 'In Progress';
-  let progressColor = theme.primary;
+  let statusBadgeBg = isDark ? '#00375A' : '#E0F2FE';
+  let statusBadgeText = '#0284C7';
+  let statusLabel = goal.category === 'Study' ? 'Active' : 'In Progress';
+  let progressColor = '#00A3FF';
 
-  if (stats.status === 'completed') {
-    statusBadgeBg = theme.successLight;
-    statusBadgeText = theme.success;
-    statusLabel = 'Completed';
-    progressColor = theme.success;
-  } else if (stats.status === 'overdue') {
-    statusBadgeBg = theme.dangerLight;
-    statusBadgeText = theme.danger;
-    statusLabel = 'Overdue';
-    progressColor = theme.danger;
-  } else if (stats.status === 'at_risk') {
-    statusBadgeBg = theme.warningLight;
-    statusBadgeText = theme.warning;
-    statusLabel = 'At Risk';
-    progressColor = theme.warning;
-  } else if (stats.status === 'archived') {
-    statusBadgeBg = theme.surfaceSecondary;
-    statusBadgeText = theme.textMuted;
-    statusLabel = 'Archived';
-    progressColor = theme.textMuted;
+  if (goal.category === 'Study') {
+    progressColor = '#D97706'; // Amber/Orange for Study
   }
 
-  const formattedTargetDate = goal.targetDate
+  if (stats.status === 'completed' || goal.isCompleted || stats.progress >= 100) {
+    statusBadgeBg = isDark ? '#064E3B' : '#DCFCE7';
+    statusBadgeText = '#15803D';
+    statusLabel = 'Completed';
+    progressColor = '#10B981';
+  } else if (stats.status === 'overdue' || stats.isOverdue) {
+    statusBadgeBg = isDark ? '#451A1A' : '#FEE2E2';
+    statusBadgeText = '#DC2626';
+    statusLabel = 'Overdue';
+    progressColor = '#EF4444';
+  } else if (stats.status === 'at_risk' || stats.isAtRisk) {
+    statusBadgeBg = isDark ? '#3B2A08' : '#FEF3C7';
+    statusBadgeText = '#D97706';
+    statusLabel = 'At Risk';
+    progressColor = '#F59E0B';
+  } else if (stats.status === 'archived' || goal.isArchived) {
+    statusBadgeBg = isDark ? '#1E293B' : '#F1F5F9';
+    statusBadgeText = '#64748B';
+    statusLabel = 'Archived';
+    progressColor = '#64748B';
+  }
+
+  const formattedTargetDate = goal.targetDateLabel
+    ? goal.targetDateLabel
+    : goal.targetDate
     ? new Date(goal.targetDate).toLocaleDateString(undefined, {
-        month: 'short',
         day: 'numeric',
+        month: 'short',
         year: 'numeric',
       })
     : null;
+
+  const completedMilestonesCount = (goal.milestones || []).filter(
+    m => m.isCompleted,
+  ).length;
+
+  // Format progress display cleanly (e.g. "22 km / 50 km (44%)" or "4 / 6 Modules (67%)")
+  const formatProgressDisplay = () => {
+    const cur = (stats.currentDisplay || `${goal.currentValue || 0}`).trim();
+    const tgt = (stats.targetDisplay || `${goal.targetValue || 1}`).trim();
+    const pct = `${stats.progress || 0}%`;
+
+    const curMatch = cur.match(/^([\d.]+)\s*(.*)$/);
+    const tgtMatch = tgt.match(/^([\d.]+)\s*(.*)$/);
+
+    if (curMatch && tgtMatch) {
+      const curVal = curMatch[1];
+      const tgtVal = tgtMatch[1];
+      const unit = tgtMatch[2] || curMatch[2] || goal.unit;
+
+      if (unit && unit.toLowerCase() === 'km') {
+        return `${curVal} km / ${tgtVal} km (${pct})`;
+      }
+      if (unit) {
+        return `${curVal} / ${tgtVal} ${unit} (${pct})`;
+      }
+      return `${curVal} / ${tgtVal} (${pct})`;
+    }
+
+    return `${cur} / ${tgt} (${pct})`;
+  };
+
+  const isStudy = goal.category === 'Study';
+  const progressLabel = goal.progressLabel || (isStudy ? 'Curriculum Completion' : 'Quantitative Progress');
+  const checkpointsHeader = goal.checkpointsTitle || 'CHECKPOINTS';
+  const checkpointsCountText =
+    checkpointsHeader === 'ARCHITECTURE MODULES'
+      ? `${completedMilestonesCount} / ${(goal.milestones || []).length} Cleared`
+      : `${completedMilestonesCount} / ${(goal.milestones || []).length} Done`;
 
   return (
     <View
@@ -89,237 +151,315 @@ export const GoalCard = ({goal, onEdit, onUpdateProgress, onViewHistory}) => {
       style={[
         styles.card,
         {
-          backgroundColor: theme.surface,
-          borderColor: theme.border,
+          backgroundColor: isDark ? '#151D2F' : '#FFFFFF',
+          borderColor: isDark ? '#1E293B' : '#E2E8F0',
           borderBottomColor: isDark ? '#0F172A' : '#CBD5E1',
         },
       ]}>
-      {/* 6px Signature Category Color Accent Strip */}
-      <View
-        style={[
-          styles.accentStrip,
-          {backgroundColor: meta.color},
-        ]}
-      />
-
-      {/* Top Meta Header */}
-      <View style={styles.topRow}>
-        <View style={styles.badgesRow}>
-          <CategoryBadge
-            category={goal.category || 'General'}
-            color={meta.color}
-            bgColor={meta.bgColor}
-          />
-          <View style={[styles.statusBadge, {backgroundColor: statusBadgeBg}]}>
-            <Text style={[styles.statusBadgeText, {color: statusBadgeText}]}>
-              {statusLabel}
-            </Text>
-          </View>
-        </View>
-
-        <TouchableOpacity
-          onPress={() => onEdit(goal)}
-          accessible={true}
-          accessibilityRole="button"
-          accessibilityLabel="Edit goal"
-          style={styles.iconButton}
-          hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}>
-          <Feather name="edit-2" size={15} color={theme.textMuted} />
-        </TouchableOpacity>
-      </View>
-
-      {/* Title & Description */}
-      <Text
-        style={[styles.title, {color: theme.textPrimary}]}
-        numberOfLines={2}>
-        {goal.title}
-      </Text>
-
-      {goal.description ? (
-        <Text
-          style={[styles.description, {color: theme.textSecondary}]}
-          numberOfLines={2}>
-          {goal.description}
-        </Text>
-      ) : null}
-
-      {/* Target Date & Type Info */}
-      <View style={styles.infoRow}>
-        {formattedTargetDate && (
-          <View style={styles.infoPill}>
-            <Feather
-              name="calendar"
-              size={12}
-              color={theme.textMuted}
-              style={{marginRight: 4}}
-            />
-            <Text style={[styles.targetDateText, {color: theme.textMuted}]}>
-              Due {formattedTargetDate}
-            </Text>
-          </View>
-        )}
-        {goal.linkedTaskIds && goal.linkedTaskIds.length > 0 && (
-          <View style={styles.infoPill}>
-            <Feather
-              name="link-2"
-              size={12}
-              color={theme.primary}
-              style={{marginRight: 4}}
-            />
-            <Text style={[styles.linkedTasksText, {color: theme.primary}]}>
-              {goal.linkedTaskIds.length} tasks linked
-            </Text>
-          </View>
-        )}
-      </View>
-
-      {/* Visual Progress Bar (PRD P4.8) */}
-      <View style={styles.progressContainer}>
-        <View style={styles.progressHeader}>
-          <Text style={[styles.progressValues, {color: theme.textPrimary}]}>
-            {stats.currentDisplay} / {stats.targetDisplay}
-          </Text>
-          <Text style={[styles.progressPercent, {color: progressColor}]}>
-            {stats.progress}%
-          </Text>
-        </View>
-        <View
-          style={[
-            styles.progressBarTrack,
-            {backgroundColor: theme.surfaceSecondary},
-          ]}>
-          <View
-            style={[
-              styles.progressBarFill,
-              {
-                width: `${stats.progress}%`,
-                backgroundColor: progressColor,
-              },
-            ]}
-          />
-        </View>
-      </View>
-
-      {/* Interactive Milestones Checklist (PRD P4.4) */}
-      {goal.milestones && goal.milestones.length > 0 && (
-        <View style={styles.milestonesSection}>
-          <Text
-            style={[styles.milestonesSectionTitle, {color: theme.textMuted}]}>
-            Milestones ({goal.milestones.filter(m => m.isCompleted).length}/
-            {goal.milestones.length})
-          </Text>
-          {goal.milestones.map(milestone => (
-            <TouchableOpacity
-              key={milestone.id}
-              activeOpacity={0.7}
-              onPress={() => toggleMilestone(goal.id, milestone.id)}
-              accessible={true}
-              accessibilityRole="checkbox"
-              accessibilityState={{checked: milestone.isCompleted}}
-              accessibilityLabel={`Milestone ${milestone.title}, ${
-                milestone.isCompleted ? 'completed' : 'not completed'
-              }`}
-              style={styles.milestoneItem}>
-              <View
-                style={[
-                  styles.milestoneCheckbox,
-                  {
-                    borderColor: milestone.isCompleted
-                      ? theme.success
-                      : theme.border,
-                  },
-                  milestone.isCompleted && {
-                    backgroundColor: theme.success,
-                  },
-                ]}>
-                {milestone.isCompleted && (
-                  <Feather name="check" size={12} color="#FFFFFF" />
-                )}
-              </View>
+      {/* Clickable Header & Quantitative Progress Area -> Opens Stepper Track */}
+      <TouchableOpacity
+        activeOpacity={0.85}
+        onPress={() => onPress && onPress(goal)}
+        accessibilityRole="button"
+        accessibilityLabel={`View milestones and details for ${goal.title}`}>
+        {/* 1. Top Row: Badges & Target Date */}
+        <View style={styles.topRow}>
+          <View style={styles.badgesRow}>
+            {/* Category Pill */}
+            <View
+              style={[
+                styles.categoryMedallion,
+                {
+                  backgroundColor: isDark
+                    ? '#1E293B'
+                    : isStudy
+                    ? '#FFEDD5'
+                    : meta.bgColor || '#DCFCE7',
+                },
+              ]}>
+              <Feather
+                name={categoryIcon}
+                size={12}
+                color={isStudy ? '#C2410C' : meta.color || '#15803D'}
+                style={{ marginRight: 4 }}
+              />
               <Text
                 style={[
-                  styles.milestoneTitle,
-                  {
-                    color: milestone.isCompleted
-                      ? theme.textMuted
-                      : theme.textPrimary,
-                  },
-                  milestone.isCompleted && styles.milestoneTitleCompleted,
-                ]}
-                numberOfLines={1}>
-                {milestone.title}
+                  styles.categoryName,
+                  { color: isStudy ? '#C2410C' : meta.color || '#15803D' },
+                ]}>
+                {goal.category || 'General'}
               </Text>
-            </TouchableOpacity>
-          ))}
+            </View>
+
+            {/* Status Badge */}
+            <View style={[styles.statusBadge, { backgroundColor: statusBadgeBg }]}>
+              <Text style={[styles.statusBadgeText, { color: statusBadgeText }]}>
+                {statusLabel}
+              </Text>
+            </View>
+          </View>
+
+          {/* Target Date / Sprint Pill */}
+          {formattedTargetDate && (
+            <View style={styles.datePill}>
+              <Feather
+                name="calendar"
+                size={12}
+                color={isDark ? '#64748B' : '#475569'}
+                style={{ marginRight: 4 }}
+              />
+              <Text
+                style={[
+                  styles.targetDateText,
+                  { color: isDark ? '#CBD5E1' : '#1E293B' },
+                ]}>
+                {formattedTargetDate}
+              </Text>
+            </View>
+          )}
+        </View>
+
+        {/* 2. Title & Emoji */}
+        <Text
+          style={[
+            styles.title,
+            { color: isDark ? '#F8F9FF' : '#0B1C30' },
+          ]}
+          numberOfLines={2}>
+          {goal.title} {goal.emoji && !isStudy ? '' : goal.emoji || ''}
+        </Text>
+
+        {/* Emoji below title if running challenge */}
+        {goal.emoji && !isStudy && (
+          <Text style={styles.titleEmojiBelow}>{goal.emoji}</Text>
+        )}
+
+        {/* 3. Description / Synopsis */}
+        {goal.description ? (
+          <Text
+            style={[
+              styles.description,
+              { color: isDark ? '#CBD5E1' : '#475569' },
+            ]}
+            numberOfLines={2}>
+            {goal.description}
+          </Text>
+        ) : null}
+
+        {/* 4. Quantitative / Curriculum Progress Box */}
+        <View
+          style={[
+            styles.progressBox,
+            {
+              backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
+              borderColor: isDark ? '#334155' : '#E2E8F0',
+            },
+          ]}>
+          <View style={styles.progressHeader}>
+            <Text
+              numberOfLines={1}
+              style={[
+                styles.progressTitle,
+                { color: isDark ? '#94A3B8' : '#64748B' },
+              ]}>
+              {progressLabel}
+            </Text>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={[styles.progressValues, { color: progressColor }]}>
+              {formatProgressDisplay()}
+            </Text>
+          </View>
+          <View
+            style={[
+              styles.progressBarTrack,
+              { backgroundColor: isDark ? '#0F172A' : '#E2E8F0' },
+            ]}>
+            <View
+              style={[
+                styles.progressBarFill,
+                {
+                  width: `${Math.min(Math.max(stats.progress, 4), 100)}%`,
+                  backgroundColor: progressColor,
+                },
+              ]}
+            />
+          </View>
+        </View>
+      </TouchableOpacity>
+
+      {/* 5. Checkpoints / Architecture Modules Checklist */}
+      {goal.milestones && goal.milestones.length > 0 && (
+        <View style={styles.milestonesSection}>
+          <View style={styles.milestonesHeaderRow}>
+            <Text
+              style={[
+                styles.milestonesSectionTitle,
+                { color: isDark ? '#94A3B8' : '#64748B' },
+              ]}>
+              {checkpointsHeader}
+            </Text>
+            <Text style={styles.milestonesCount}>
+              {checkpointsCountText}
+            </Text>
+          </View>
+
+          {goal.milestones.map(milestone => {
+            const isPassedBadge = milestone.badgeText === 'Passed';
+            return (
+              <TouchableOpacity
+                key={milestone.id}
+                activeOpacity={0.75}
+                onPress={() => toggleMilestone(goal.id, milestone.id)}
+                accessible={true}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: milestone.isCompleted }}
+                accessibilityLabel={`Milestone ${milestone.title}, ${
+                  milestone.isCompleted ? 'completed' : 'not completed'
+                }`}
+                style={[
+                  styles.milestoneItem,
+                  {
+                    backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
+                    borderColor: isDark ? '#334155' : '#E2E8F0',
+                  },
+                ]}>
+                <View
+                  style={[
+                    styles.milestoneCheckbox,
+                    milestone.isCompleted
+                      ? {
+                          backgroundColor: '#047857',
+                          borderColor: '#047857',
+                        }
+                      : {
+                          backgroundColor: isDark ? '#0F172A' : '#E0F2FE',
+                          borderColor: isDark ? '#334155' : '#BAE6FD',
+                        },
+                  ]}>
+                  {milestone.isCompleted && (
+                    <Feather name="check" size={13} color="#FFFFFF" />
+                  )}
+                </View>
+
+                <Text
+                  style={[
+                    styles.milestoneTitle,
+                    milestone.isCompleted
+                      ? [
+                          styles.milestoneTitleCompleted,
+                          { color: isDark ? '#64748B' : '#94A3B8' },
+                        ]
+                      : { color: isDark ? '#F8F9FF' : '#0B1C30' },
+                  ]}
+                  numberOfLines={1}>
+                  {milestone.title}
+                </Text>
+
+                {/* Milestone Badge (Passed, +50 XP, Lab 3, etc.) */}
+                <View
+                  style={[
+                    styles.milestoneBadgePill,
+                    isPassedBadge || milestone.isCompleted
+                      ? { backgroundColor: '#DCFCE7' }
+                      : { backgroundColor: isDark ? '#334155' : '#F1F5F9' },
+                  ]}>
+                  <Text
+                    style={[
+                      styles.milestoneBadgeText,
+                      isPassedBadge || milestone.isCompleted
+                        ? { color: '#15803D' }
+                        : { color: isDark ? '#94A3B8' : '#64748B' },
+                    ]}>
+                    {milestone.badgeText
+                      ? milestone.badgeText
+                      : milestone.rewardText
+                      ? milestone.rewardText
+                      : milestone.isCompleted
+                      ? '+50 XP'
+                      : '+75 XP'}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
         </View>
       )}
 
-      {/* Action Bar */}
-      <View style={[styles.bottomBar, {borderTopColor: theme.divider}]}>
-        <View style={styles.actionButtons}>
-          {goal.type !== GOAL_TYPES.MILESTONES && (
-            <TouchableOpacity
-              onPress={() => onUpdateProgress(goal)}
-              style={[
-                styles.quickActionButton,
-                {backgroundColor: theme.primaryLight},
-              ]}
-              accessible={true}
-              accessibilityRole="button"
-              accessibilityLabel="Update progress">
-              <Text style={[styles.quickActionText, {color: theme.primary}]}>
-                + Update Progress
-              </Text>
-            </TouchableOpacity>
-          )}
-
-          {goal.progressUpdates && goal.progressUpdates.length > 0 && (
-            <TouchableOpacity
-              onPress={() => onViewHistory(goal)}
-              style={[
-                styles.quickActionButton,
-                {backgroundColor: theme.surfaceSecondary},
-              ]}
-              accessible={true}
-              accessibilityRole="button"
-              accessibilityLabel="View history">
-              <Feather
-                name="clock"
-                size={12}
-                color={theme.textSecondary}
-                style={{marginRight: 4}}
-              />
+      {/* 6. Bottom Action Row */}
+      <View style={styles.bottomActionRow}>
+        {/* Left Indicator (Arch Level 4 Specialist or Avatars) */}
+        <View style={styles.bottomLeftGroup}>
+          {goal.bottomLeftBadge ? (
+            <View style={styles.specialistRow}>
+              <Text style={styles.specialistEmoji}>🎖️</Text>
               <Text
-                style={[styles.quickActionText, {color: theme.textSecondary}]}>
-                History
+                style={[
+                  styles.specialistText,
+                  { color: isDark ? '#CBD5E1' : '#0F172A' },
+                ]}>
+                {goal.bottomLeftBadge}
               </Text>
-            </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.avatarBadgesRow}>
+              <View style={styles.avatarBadge}>
+                <Text style={styles.avatarEmoji}>🏃</Text>
+              </View>
+              <View style={[styles.avatarBadge, { marginLeft: 4 }]}>
+                <Text style={styles.avatarEmoji}>🔥</Text>
+              </View>
+            </View>
           )}
         </View>
 
-        <View style={styles.secondaryActions}>
-          <TouchableOpacity
-            onPress={() => toggleArchiveGoal(goal.id)}
-            style={styles.iconButton}
-            accessible={true}
-            accessibilityRole="button"
-            accessibilityLabel={
-              goal.isArchived ? 'Restore goal' : 'Archive goal'
-            }>
-            <Feather
-              name={goal.isArchived ? 'rotate-ccw' : 'archive'}
-              size={15}
-              color={theme.textMuted}
-            />
-          </TouchableOpacity>
+        {/* Right CTA Button & Quick Actions */}
+        <View style={styles.bottomRightGroup}>
+          {goal.actionVariant === 'outline' ? (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => onUpdateProgress(goal)}
+              style={styles.outlineActionBtn}>
+              <Feather
+                name="terminal"
+                size={13}
+                color="#0082CC"
+                style={{ marginRight: 5 }}
+              />
+              <Text style={styles.outlineActionText}>
+                {goal.actionText || 'Launch Lab'}
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={() => onUpdateProgress(goal)}
+              style={styles.solidActionBtn}>
+              <Feather
+                name="plus-circle"
+                size={14}
+                color="#FFFFFF"
+                style={{ marginRight: 5 }}
+              />
+              <Text style={styles.solidActionText}>
+                {goal.actionText || 'Log Progress +2.5km'}
+              </Text>
+            </TouchableOpacity>
+          )}
 
+          {/* Quick Edit / Delete Menu Trigger */}
           <TouchableOpacity
-            onPress={handleDelete}
-            style={styles.iconButton}
-            accessible={true}
             accessibilityRole="button"
-            accessibilityLabel="Delete goal">
-            <Feather name="trash-2" size={15} color={theme.danger} />
+            accessibilityLabel="Edit goal"
+            onPress={() => onEdit(goal)}
+            style={styles.cardSettingsBtn}>
+            <Feather
+              name="more-horizontal"
+              size={15}
+              color={isDark ? '#64748B' : '#94A3B8'}
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -329,177 +469,228 @@ export const GoalCard = ({goal, onEdit, onUpdateProgress, onViewHistory}) => {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 20,
-    borderWidth: 1.5,
-    borderBottomWidth: 4, // Elevate 3D bevel
-    borderBottomColor: '#CBD5E1',
+    borderRadius: 22,
     padding: 16,
-    paddingLeft: 20,
     marginBottom: 14,
+    borderWidth: 1.5,
+    borderBottomWidth: 4, // 3D tactile bevel
     overflow: 'hidden',
-    position: 'relative',
-    shadowColor: '#475569',
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 3,
-  },
-  accentStrip: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    width: 6,
   },
   topRow: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: spacing.small,
+    alignItems: 'center',
+    marginBottom: 10,
   },
   badgesRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    flexWrap: 'wrap',
+    gap: 6,
+  },
+  categoryMedallion: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 3.5,
+    borderRadius: 8,
+  },
+  categoryName: {
+    fontSize: 11,
+    fontFamily: fontFamily.bold,
   },
   statusBadge: {
     paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 10,
-    marginLeft: 6,
+    paddingVertical: 3.5,
+    borderRadius: 8,
   },
   statusBadgeText: {
     fontSize: 11,
-    fontFamily: fontFamily.semiBold,
-  },
-  title: {
-    fontSize: 16,
     fontFamily: fontFamily.bold,
-    marginTop: 4,
-    marginBottom: 4,
-    lineHeight: 22,
   },
-  description: {
-    fontSize: 13,
-    fontFamily: fontFamily.regular,
-    lineHeight: 18,
-    marginBottom: 6,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginVertical: 4,
-  },
-  infoPill: {
+  datePill: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   targetDateText: {
-    fontSize: 12,
-    fontFamily: fontFamily.medium,
+    fontSize: 11,
+    fontFamily: fontFamily.bold,
   },
-  linkedTasksText: {
-    fontSize: 12,
-    fontFamily: fontFamily.medium,
+  title: {
+    fontSize: 17,
+    fontFamily: fontFamily.bold,
+    lineHeight: 22,
+    letterSpacing: -0.3,
   },
-  progressContainer: {
-    marginTop: 6,
-    marginBottom: 6,
+  titleEmojiBelow: {
+    fontSize: 18,
+    marginTop: 2,
+    marginBottom: 4,
+  },
+  description: {
+    fontSize: 12,
+    fontFamily: fontFamily.regular,
+    lineHeight: 17,
+    marginTop: 4,
+    marginBottom: 12,
+  },
+  progressBox: {
+    borderRadius: 14,
+    padding: 12,
+    borderWidth: 1,
+    marginBottom: 12,
   },
   progressHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: 8,
+  },
+  progressTitle: {
+    fontSize: 11,
+    fontFamily: fontFamily.bold,
   },
   progressValues: {
-    fontSize: 12,
-    fontFamily: fontFamily.medium,
-  },
-  progressPercent: {
-    fontSize: 13,
+    fontSize: 11,
     fontFamily: fontFamily.bold,
   },
   progressBarTrack: {
-    height: 6,
-    borderRadius: 3,
+    height: 8,
+    borderRadius: 4,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    borderRadius: 3,
+    borderRadius: 4,
   },
   milestonesSection: {
-    marginTop: 6,
-    paddingTop: 6,
+    marginBottom: 12,
+  },
+  milestonesHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
   },
   milestonesSectionTitle: {
+    fontSize: 10,
+    fontFamily: fontFamily.bold,
+    letterSpacing: 0.8,
+  },
+  milestonesCount: {
     fontSize: 11,
-    fontFamily: fontFamily.semiBold,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 6,
+    fontFamily: fontFamily.bold,
+    color: '#047857',
   },
   milestoneItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 4,
-    minHeight: 32,
+    padding: 9,
+    borderRadius: 10,
+    borderWidth: 1,
+    marginBottom: 6,
   },
   milestoneCheckbox: {
     width: 20,
     height: 20,
-    borderRadius: 4,
+    borderRadius: 6,
     borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 8,
-    backgroundColor: 'transparent',
+    marginRight: 9,
   },
   milestoneTitle: {
-    fontSize: 13,
-    fontFamily: fontFamily.regular,
     flex: 1,
+    fontSize: 12.5,
+    fontFamily: fontFamily.medium,
   },
   milestoneTitleCompleted: {
     textDecorationLine: 'line-through',
   },
-  bottomBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderTopWidth: 1,
-    paddingTop: 8,
-    marginTop: 8,
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  quickActionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+  milestoneBadgePill: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     borderRadius: 6,
-    marginRight: 6,
-    minHeight: 30,
+    marginLeft: 6,
   },
-  quickActionText: {
-    fontSize: 12,
-    fontFamily: fontFamily.semiBold,
+  milestoneBadgeText: {
+    fontSize: 10,
+    fontFamily: fontFamily.bold,
   },
-  secondaryActions: {
+  bottomActionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 2,
+    paddingTop: 8,
+  },
+  bottomLeftGroup: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  iconButton: {
-    padding: 6,
-    minWidth: 32,
-    minHeight: 32,
+  avatarBadgesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarBadge: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: '#EFF6FF',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  avatarEmoji: {
+    fontSize: 13,
+  },
+  specialistRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  specialistEmoji: {
+    fontSize: 14,
+    marginRight: 4,
+  },
+  specialistText: {
+    fontSize: 11,
+    fontFamily: fontFamily.bold,
+  },
+  bottomRightGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  solidActionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#0082CC',
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 10,
+    borderBottomWidth: 2,
+    borderBottomColor: '#00629D',
+  },
+  solidActionText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontFamily: fontFamily.bold,
+  },
+  outlineActionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#EFF6FF',
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#BAE6FD',
+  },
+  outlineActionText: {
+    color: '#0082CC',
+    fontSize: 12,
+    fontFamily: fontFamily.bold,
+  },
+  cardSettingsBtn: {
+    padding: 6,
+    marginLeft: 6,
   },
 });
 

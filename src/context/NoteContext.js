@@ -82,30 +82,55 @@ export const validateNoteInput = input => {
   };
 };
 
-const SAMPLE_NOTES = [
+export const SAMPLE_NOTES = [
   {
     id: 'note_demo_1',
     title: 'Welcome to GoTASK Notes 📝',
     content:
-      'Capture fleeting thoughts, project ideas, and documentation. You can link notes directly to your tasks, organize them by category, or pin essential notes to the top.',
+      'Capture fleeting thoughts, project ideas, and documentation. You can link notes directly to your tasks, organize them by category, or pin critical guides to the top.',
     category: 'Work',
     tags: ['guide', 'overview'],
     isPinned: true,
     isArchived: false,
-    linkedTaskId: null,
-    createdAt: Date.now() - 3600000 * 24,
-    updatedAt: Date.now() - 3600000 * 24,
+    linkedTaskId: 'task_demo_1',
+    linkedTaskCount: 1,
+    headerBadge: 'PINNED GUIDE',
+    headerSub: 'Work Knowledge • Core',
+    headerGradient: 'amber',
+    createdAt: Date.now() - 3600000 * 48,
+    updatedAt: Date.now() - 3600000 * 48,
   },
   {
     id: 'note_demo_2',
     title: 'Sprint Retrospective & Action Items',
     content:
-      'Key takeaways: \n1. Complete Phase 3 Notes implementation.\n2. Keep accessibility labels on all interactive touchpoints.\n3. Validate zero ESLint warnings.',
+      'Key takeaways: 1. Complete Phase 3 Notes implementation. 2. Keep accessibility labels on all interactive buttons. 3. Audit battery consumption on OnePlus 11R.',
     category: 'Work',
     tags: ['sprint', 'retro'],
     isPinned: false,
     isArchived: false,
-    linkedTaskId: null,
+    linkedTaskId: 'task_demo_2',
+    linkedTaskCount: 3,
+    headerBadge: 'ENGINEERING',
+    headerSub: 'Sprint 42 Retrospective',
+    headerGradient: 'indigo',
+    createdAt: Date.now() - 3600000 * 24,
+    updatedAt: Date.now() - 3600000 * 24,
+  },
+  {
+    id: 'note_demo_3',
+    title: 'UI Design Inspirations (Elevate + Duolingo 3D Tactile)',
+    content:
+      'Use border-b-4 bevels, tactile bouncy feedback, 44dp touch targets, and offline-first reactive states.',
+    category: 'Design',
+    tags: ['ideas', 'design'],
+    isPinned: false,
+    isArchived: false,
+    linkedTaskId: 'task_demo_3',
+    linkedTaskCount: 1,
+    headerBadge: 'DESIGN SYSTEM',
+    headerSub: 'Tactile & 3D Gamification',
+    headerGradient: 'cyan',
     createdAt: Date.now() - 3600000 * 12,
     updatedAt: Date.now() - 3600000 * 12,
   },

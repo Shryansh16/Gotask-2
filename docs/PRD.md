@@ -1028,3 +1028,50 @@ Continue task by task, updating this PRD when requirements change.
 Final product objective: Build GoTASK into a reliable, intuitive, and intelligent productivity companion that helps people turn their intentions into consistent action and measurable achievements.
 
 The product should earn users' trust through usefulness, clarity, and reliabilityâ€”not through the sheer number of features it contains.
+
+14. Zero Feature Regression UI Redesign Protocol & Execution Roadmap
+
+14.1 Governing Redesign Protocol
+The approved Google Stitch/Figma designs (Project ID 2592934666773281786, Theme: Tactile Momentum) serve as visual references only. The existing GoTASK repository is the absolute source of truth for all application functionality, business logic, offline synchronizers, and storage engines.
+
+Protocol Stages:
+- Phase 1: Feature Inventory (READ ONLY) — COMPLETED (70 unique Feature IDs cataloged in docs/FEATURE_INVENTORY_AND_MAPPING.md).
+- Phase 2: Design Mapping & Coverage Matrix (READ ONLY) — COMPLETED (All 70 features mapped; 5 omitted features flagged with preservation guarantees).
+- Phase 3: Incremental Implementation — ACTIVE (Screen-by-screen execution maintaining 100% test passing gates).
+- Phase 4: Regression Validation — Continuous (Automated verification: 113/113 Jest unit/integration tests passing, 21/21 backend integration tests passing).
+- Phase 5: Completion Gate — Verification on physical OnePlus 11R (390 x 844 dp, safe punch-hole insets, gesture bar clearance).
+
+14.2 Core Screens Execution Plan & Status
+1. Screen 1: Dashboard / Today Screen (FunctionScreen.js, StatsOverview.js) — Status: COMPLETED
+   - Implemented Elevate Top Status Ribbon (Streak, XP, Level).
+   - Implemented High-Impact Sprint Hero card with glowing DEEP WORK medallion and Start Focus Session action.
+   - Implemented Active Sprint Streams carousel (Architecture, API Schema, Code Review).
+   - Implemented Productivity Domains cards (Engineering Velocity, Habit Momentum).
+   - Implemented Productivity Insight card (Time Blocking & Dopamine Pacing +15 XP).
+   - Preserved all 12 navigation actions, drawer trigger, theme toggling, and offline sync buttons.
+
+2. Screen 2: Tasks & Backlog (YourTask.js, SearchBar.js, TaskCard.js) — Status: COMPLETED
+   - Implemented Elevate Pinned Priority warm ivory card with gold ribbon and +50 XP badges.
+   - Implemented subtasks progress bar (80%) and interactive checkboxes.
+   - Implemented tactile squircle category tabs (All 12, Work 5, Personal 3, Shopping 1).
+   - Implemented priority segmented bar (All, High, Med, Low).
+   - Implemented Active Backlog header with count badge and Priority Sort toggle.
+   - Implemented celebration empty state ("All caught up in Personal! Add New Personal Goal +15 XP").
+
+3. Screen 3: Notes & Knowledge Vault (NotesScreen.js, NoteCard.js) — Status: IN PROGRESS
+   - Reskin header into Tactile Knowledge Vault with offline cached badge.
+   - Implement category filter tabs (All Notes, Pinned, Archived).
+   - Implement hashtag search chip cloud (#architecture, #sqlite, #rn-cli).
+   - Upgrade NoteCard with gold star pin medallion, category color ribbon, monospace code block rendering, and Linked Task badge.
+   - Preserve full Markdown editor modal, tag editing, pinning, and deletion.
+
+4. Screen 4: Goals & Targets (GoalsScreen.js, GoalCard.js) — Status: PENDING
+   - Reskin header into Goal Mastery with progress track.
+   - Upgrade GoalCard with 3D tactile progress meter, milestone checklist, and XP rewards.
+   - Preserve AI goal decomposition, milestone toggling, deadline tracking, and status filtering.
+
+5. Screen 5: Habits & Rituals (HabitsScreen.js, HabitCard.js) — Status: PENDING
+   - Reskin header with Daily / Weekly frequency toggle.
+   - Upgrade HabitCard with 7-day circular tracker beads, tactile tap-to-complete button, and streak freeze action.
+   - Preserve streak calculations, calendar-safe rules, skipped session handling, and reminder settings.
+

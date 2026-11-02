@@ -4,6 +4,7 @@ import {StyleSheet, View} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import DrawerComponent from '../modules/DrawerComponent';
 import FunctionScreen from '../screens/FunctionScreen';
+import TasksScreen from '../screens/TasksScreen';
 import PlanningScreen from '../screens/PlanningScreen';
 import FocusScreen from '../screens/FocusScreen';
 import NotesScreen from '../screens/NotesScreen';
@@ -44,15 +45,27 @@ const Drawer = () => {
             fontFamily: fontFamily.medium,
           },
           drawerStyle: {
-            backgroundColor: theme.background,
-            width: 290,
+            backgroundColor: 'transparent',
+            width: '84%',
+            borderTopRightRadius: 32,
+            borderBottomRightRadius: 32,
           },
         }}>
         <DrawerNav.Screen
           name="FunctionScreen"
           component={FunctionScreen}
           options={{
-            title: 'Tasks',
+            title: 'Today Dashboard',
+            drawerIcon: ({color, size}) => (
+              <Feather name="calendar" size={size || 18} color={color} />
+            ),
+          }}
+        />
+        <DrawerNav.Screen
+          name="TasksScreen"
+          component={TasksScreen}
+          options={{
+            title: 'Tasks Backlog',
             drawerIcon: ({color, size}) => (
               <Feather name="check-square" size={size || 18} color={color} />
             ),
