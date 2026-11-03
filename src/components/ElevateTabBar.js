@@ -116,10 +116,9 @@ export const ElevateTabBar = ({activeTab, navigation, variant}) => {
   const bottomInset = Math.max(insets.bottom, Platform.OS === 'android' ? 8 : 0);
 
   const activeTabsList =
-    variant === 'core' ||
-    ['today', 'tasks', 'vault', 'goals', 'habits'].includes(activeTab)
-      ? CORE_STITCH_TABS
-      : DEFAULT_TABS;
+    variant === 'legacy'
+      ? DEFAULT_TABS
+      : CORE_STITCH_TABS;
 
   const handleTabPress = (tab) => {
     if (!navigation) return;

@@ -127,7 +127,7 @@ const FunctionScreen = () => {
 
           <TouchableOpacity
             accessibilityRole="button"
-            accessibilityLabel="Open settings or drawer"
+            accessibilityLabel="Open navigation drawer"
             activeOpacity={0.7}
             onPress={() => navigation.openDrawer()}
             style={[
@@ -139,9 +139,9 @@ const FunctionScreen = () => {
               },
             ]}>
             <Feather
-              name="settings"
-              size={16}
-              color={isDark ? '#94A3B8' : '#64748B'}
+              name="menu"
+              size={18}
+              color={isDark ? '#F8FAFC' : '#0F172A'}
             />
           </TouchableOpacity>
         </View>

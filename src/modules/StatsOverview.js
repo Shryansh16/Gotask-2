@@ -1,13 +1,16 @@
 // src/modules/StatsOverview.js
 // Screen 1: Dashboard Focus & Sprint Analytics (Stitch & Elevate Labs Tactile Momentum Redesign)
 
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Modal,
+  TextInput,
+  Platform,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import {useNavigation} from '@react-navigation/native';
@@ -19,6 +22,74 @@ export const StatsOverview = () => {
   const navigation = useNavigation();
   const {theme, isDark} = useTheme();
   const {stats, addTask} = useTasks();
+
+  const [isSprintModalVisible, setIsSprintModalVisible] = useState(false);
+  const [isAddSprintMode, setIsAddSprintMode] = useState(false);
+  const [newSprintTitle, setNewSprintTitle] = useState('');
+  const [newSprintTag, setNewSprintTag] = useState('');
+  const [newSprintXp, setNewSprintXp] = useState('+35 XP');
+
+  const [sprintStreams, setSprintStreams] = useState([
+    {
+      id: 'sp_1',
+      title: 'Architecture',
+      tag: 'OFFLINE SYNC',
+      level: 'Level 4',
+      xp: '⚡ +35 XP',
+      icon: 'cpu',
+      bgLight: '#831843',
+      bgDark: '#4A0E1C',
+      border: '#9F1239',
+      borderBottom: '#4C0519',
+    },
+    {
+      id: 'sp_2',
+      title: 'API Schema',
+      tag: 'SQLITE ENGINE',
+      level: 'Level 7',
+      xp: '⚡ +50 XP',
+      icon: 'code',
+      bgLight: '#1D4ED8',
+      bgDark: '#1E3A8A',
+      border: '#2563EB',
+      borderBottom: '#172554',
+    },
+    {
+      id: 'sp_3',
+      title: 'Code Review',
+      tag: 'PULL REQUESTS',
+      level: 'Level 2',
+      xp: '⚡ +20 XP',
+      icon: 'git-pull-request',
+      bgLight: '#047857',
+      bgDark: '#064E3B',
+      border: '#059669',
+      borderBottom: '#022C22',
+    },
+  ]);
+
+  const handleCreateSprint = () => {
+    if (!newSprintTitle.trim()) return;
+    const colors = [
+      {bgLight: '#7C3AED', bgDark: '#3B0764', border: '#8B5CF6', borderBottom: '#2E1065'},
+      {bgLight: '#EA580C', bgDark: '#431407', border: '#F97316', borderBottom: '#270A03'},
+      {bgLight: '#0284C7', bgDark: '#082F49', border: '#00A3FF', borderBottom: '#034E7B'},
+    ];
+    const picked = colors[sprintStreams.length % colors.length];
+    const newSprint = {
+      id: `sp_${Date.now()}`,
+      title: newSprintTitle.trim(),
+      tag: (newSprintTag || 'ACTIVE SPRINT').toUpperCase(),
+      level: 'Level 1',
+      xp: `⚡ ${newSprintXp}`,
+      icon: 'zap',
+      ...picked,
+    };
+    setSprintStreams([newSprint, ...sprintStreams]);
+    setNewSprintTitle('');
+    setNewSprintTag('');
+    setIsAddSprintMode(false);
+  };
 
   const handleApplyInsight = () => {
     addTask({
@@ -102,7 +173,7 @@ export const StatsOverview = () => {
           accessibilityRole="button"
           accessibilityLabel="Start Focus Session"
           activeOpacity={0.85}
-          onPress={() => navigation.navigate('Focus')}
+          onPress={() => navigation.navigate('FocusScreen')}
           style={styles.startSessionButton}>
           <Text style={styles.startSessionText}>Start Focus Session</Text>
           <Feather name="arrow-right" size={16} color="#0284C7" />
@@ -121,7 +192,7 @@ export const StatsOverview = () => {
         <TouchableOpacity
           accessibilityRole="button"
           accessibilityLabel="View all sprint streams"
-          onPress={() => navigation.navigate('PlanningScreen')}>
+          onPress={() => setIsSprintModalVisible(true)}>
           <View style={styles.viewAllRow}>
             <Text style={[styles.viewAllText, {color: '#00A3FF'}]}>View all</Text>
             <Feather
@@ -138,70 +209,34 @@ export const StatsOverview = () => {
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.streamsScroll}>
-        {/* Stream 1: Architecture (Wine/Maroon) */}
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={[
-            styles.streamCard,
-            {
-              backgroundColor: isDark ? '#4A0E1C' : '#831843',
-              borderColor: '#9F1239',
-              borderBottomColor: '#4C0519',
-            },
-          ]}>
-          <View style={styles.streamIconBox}>
-            <Feather name="cpu" size={16} color="#FFFFFF" />
-          </View>
-          <Text style={styles.streamTitle}>Architecture</Text>
-          <Text style={styles.streamSubtitle}>OFFLINE SYNC</Text>
-          <View style={styles.streamBottomRow}>
-            <Text style={styles.streamLevel}>Level 4</Text>
-            <Text style={styles.streamXp}>⚡ +35 XP</Text>
-          </View>
-        </TouchableOpacity>
-
-        {/* Stream 2: API Schema (Royal Blue) */}
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={[
-            styles.streamCard,
-            {
-              backgroundColor: isDark ? '#1E3A8A' : '#1D4ED8',
-              borderColor: '#2563EB',
-              borderBottomColor: '#172554',
-            },
-          ]}>
-          <View style={styles.streamIconBox}>
-            <Feather name="code" size={16} color="#FFFFFF" />
-          </View>
-          <Text style={styles.streamTitle}>API Schema</Text>
-          <Text style={styles.streamSubtitle}>SQLITE ENGINE</Text>
-          <View style={styles.streamBottomRow}>
-            <Text style={styles.streamLevel}>Level 7</Text>
-            <Text style={styles.streamXp}>⚡ +50 XP</Text>
-          </View>
-        </TouchableOpacity>
-
-        {/* Stream 3: Code Review (Emerald Green) */}
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={[
-            styles.streamCard,
-            {
-              backgroundColor: isDark ? '#064E3B' : '#047857',
-              borderColor: '#059669',
-              borderBottomColor: '#022C22',
-            },
-          ]}>
-          <View style={styles.streamIconBox}>
-            <Feather name="git-pull-request" size={16} color="#FFFFFF" />
-          </View>
-          <Text style={styles.streamTitle}>Code Review</Text>
-          <Text style={styles.streamSubtitle}>PULL REQUESTS</Text>
-          <View style={styles.streamBottomRow}>
-            <Text style={styles.streamLevel}>Level 2</Text>
-          </View>
-        </TouchableOpacity>
+        {sprintStreams.map(stream => (
+          <TouchableOpacity
+            key={stream.id}
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate('FocusScreen')}
+            style={[
+              styles.streamCard,
+              {
+                backgroundColor: isDark ? stream.bgDark : stream.bgLight,
+                borderColor: stream.border,
+                borderBottomColor: stream.borderBottom,
+              },
+            ]}>
+            <View style={styles.streamIconBox}>
+              <Feather name={stream.icon || 'zap'} size={16} color="#FFFFFF" />
+            </View>
+            <Text style={styles.streamTitle} numberOfLines={1}>
+              {stream.title}
+            </Text>
+            <Text style={styles.streamSubtitle} numberOfLines={1}>
+              {stream.tag}
+            </Text>
+            <View style={styles.streamBottomRow}>
+              <Text style={styles.streamLevel}>{stream.level}</Text>
+              <Text style={styles.streamXp}>{stream.xp}</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
       </ScrollView>
 
       {/* 4. PRODUCTIVITY DOMAINS Section */}
@@ -315,6 +350,237 @@ export const StatsOverview = () => {
           </Text>
         </TouchableOpacity>
       </View>
+
+      {/* 6. Active Sprint Streams Bottom Sheet Modal */}
+      <Modal
+        visible={isSprintModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => {
+          setIsSprintModalVisible(false);
+          setIsAddSprintMode(false);
+        }}>
+        <View style={styles.modalBackdrop}>
+          <View
+            style={[
+              styles.sprintModalContent,
+              {backgroundColor: isDark ? '#0F172A' : '#FFFFFF'},
+            ]}>
+            {/* Grab Handle */}
+            <View style={styles.modalGrabHandle} />
+
+            {/* Modal Header */}
+            <View style={styles.modalHeaderRow}>
+              <View style={{flex: 1}}>
+                <View style={styles.modalTitleRow}>
+                  <Text
+                    style={[
+                      styles.modalTitleText,
+                      {color: isDark ? '#FFFFFF' : '#0F172A'},
+                    ]}>
+                    Active Sprint Streams
+                  </Text>
+                  <View style={styles.liveStreamBadge}>
+                    <Text style={styles.liveStreamBadgeText}>
+                      {sprintStreams.length} ACTIVE
+                    </Text>
+                  </View>
+                </View>
+                <Text
+                  style={[
+                    styles.modalSubtitleText,
+                    {color: isDark ? '#94A3B8' : '#64748B'},
+                  ]}>
+                  High-velocity focus tracks & engineering sprints
+                </Text>
+              </View>
+
+              <TouchableOpacity
+                onPress={() => {
+                  setIsSprintModalVisible(false);
+                  setIsAddSprintMode(false);
+                }}
+                style={[
+                  styles.closeModalBtn,
+                  {backgroundColor: isDark ? '#1E293B' : '#F1F5F9'},
+                ]}>
+                <Feather
+                  name="x"
+                  size={18}
+                  color={isDark ? '#94A3B8' : '#64748B'}
+                />
+              </TouchableOpacity>
+            </View>
+
+            {/* Top Action: + New Sprint Button */}
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => setIsAddSprintMode(!isAddSprintMode)}
+              style={[
+                styles.addSprintToggleBtn,
+                isAddSprintMode && styles.addSprintToggleBtnActive,
+              ]}>
+              <Feather
+                name={isAddSprintMode ? 'minus' : 'plus'}
+                size={16}
+                color="#FFFFFF"
+                style={{marginRight: 6}}
+              />
+              <Text style={styles.addSprintToggleText}>
+                {isAddSprintMode ? 'Close Sprint Form' : '+ Create New Sprint'}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Inline Add Sprint Form */}
+            {isAddSprintMode && (
+              <View
+                style={[
+                  styles.addSprintCard,
+                  {
+                    backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
+                    borderColor: isDark ? '#334155' : '#E2E8F0',
+                  },
+                ]}>
+                <Text
+                  style={[
+                    styles.formLabel,
+                    {color: isDark ? '#E2E8F0' : '#334155'},
+                  ]}>
+                  Sprint Name
+                </Text>
+                <TextInput
+                  value={newSprintTitle}
+                  onChangeText={setNewSprintTitle}
+                  placeholder="e.g. Design System Polish"
+                  placeholderTextColor={isDark ? '#64748B' : '#94A3B8'}
+                  style={[
+                    styles.formInput,
+                    {
+                      backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
+                      borderColor: isDark ? '#334155' : '#CBD5E1',
+                      color: isDark ? '#FFFFFF' : '#0F172A',
+                    },
+                  ]}
+                />
+
+                <Text
+                  style={[
+                    styles.formLabel,
+                    {color: isDark ? '#E2E8F0' : '#334155', marginTop: 10},
+                  ]}>
+                  Domain / Focus Tag
+                </Text>
+                <TextInput
+                  value={newSprintTag}
+                  onChangeText={setNewSprintTag}
+                  placeholder="e.g. CORE TOKENS"
+                  placeholderTextColor={isDark ? '#64748B' : '#94A3B8'}
+                  style={[
+                    styles.formInput,
+                    {
+                      backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
+                      borderColor: isDark ? '#334155' : '#CBD5E1',
+                      color: isDark ? '#FFFFFF' : '#0F172A',
+                    },
+                  ]}
+                />
+
+                {/* XP Reward Chips */}
+                <Text
+                  style={[
+                    styles.formLabel,
+                    {color: isDark ? '#E2E8F0' : '#334155', marginTop: 10},
+                  ]}>
+                  Sprint XP Reward
+                </Text>
+                <View style={styles.xpChipsRow}>
+                  {['+25 XP', '+35 XP', '+50 XP', '+100 XP'].map(xp => (
+                    <TouchableOpacity
+                      key={xp}
+                      onPress={() => setNewSprintXp(xp)}
+                      style={[
+                        styles.xpChip,
+                        newSprintXp === xp && styles.xpChipActive,
+                      ]}>
+                      <Text
+                        style={[
+                          styles.xpChipText,
+                          newSprintXp === xp && styles.xpChipTextActive,
+                        ]}>
+                        {xp}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+
+                {/* Save Sprint Button */}
+                <TouchableOpacity
+                  activeOpacity={0.85}
+                  onPress={handleCreateSprint}
+                  style={styles.saveSprintBtn}>
+                  <Text style={styles.saveSprintText}>+ Add Sprint Stream ➔</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* Sprints List */}
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{paddingBottom: 24, paddingTop: 4}}>
+              {sprintStreams.map(stream => (
+                <View
+                  key={stream.id}
+                  style={[
+                    styles.sprintModalCard,
+                    {
+                      backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
+                      borderColor: isDark ? '#334155' : '#E2E8F0',
+                      borderLeftColor: stream.border,
+                    },
+                  ]}>
+                  <View style={styles.sprintModalLeft}>
+                    <View
+                      style={[
+                        styles.sprintModalIcon,
+                        {backgroundColor: stream.border},
+                      ]}>
+                      <Feather
+                        name={stream.icon || 'zap'}
+                        size={16}
+                        color="#FFFFFF"
+                      />
+                    </View>
+                    <View style={{flex: 1}}>
+                      <Text
+                        style={[
+                          styles.sprintModalTitle,
+                          {color: isDark ? '#FFFFFF' : '#0F172A'},
+                        ]}>
+                        {stream.title}
+                      </Text>
+                      <Text style={styles.sprintModalTag}>{stream.tag}</Text>
+                      <View style={styles.sprintMetaRow}>
+                        <Text style={styles.sprintLevelText}>{stream.level}</Text>
+                        <Text style={styles.sprintXpText}>{stream.xp}</Text>
+                      </View>
+                    </View>
+                  </View>
+
+                  <TouchableOpacity
+                    activeOpacity={0.85}
+                    onPress={() => {
+                      setIsSprintModalVisible(false);
+                      navigation.navigate('FocusScreen');
+                    }}
+                    style={styles.startSprintFocusBtn}>
+                    <Text style={styles.startSprintFocusText}>Focus ➔</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -624,6 +890,212 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: fontFamily.bold,
     color: '#00A3FF',
+  },
+  // 6. Sprint Streams Modal Styles
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+    justifyContent: 'flex-end',
+  },
+  sprintModalContent: {
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    maxHeight: '88%',
+  },
+  modalGrabHandle: {
+    width: 44,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#CBD5E1',
+    alignSelf: 'center',
+    marginBottom: 14,
+  },
+  modalHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+  },
+  modalTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 3,
+  },
+  modalTitleText: {
+    fontSize: 18,
+    fontFamily: fontFamily.black || fontFamily.bold,
+  },
+  liveStreamBadge: {
+    backgroundColor: '#ECFDF5',
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#A7F3D0',
+  },
+  liveStreamBadgeText: {
+    fontSize: 9.5,
+    fontFamily: fontFamily.bold,
+    color: '#047857',
+  },
+  modalSubtitleText: {
+    fontSize: 12,
+    fontFamily: fontFamily.regular,
+  },
+  closeModalBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addSprintToggleBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: '#00A3FF',
+    borderBottomWidth: 3,
+    borderBottomColor: '#006AB0',
+    marginBottom: 12,
+  },
+  addSprintToggleBtnActive: {
+    backgroundColor: '#64748B',
+    borderBottomColor: '#334155',
+  },
+  addSprintToggleText: {
+    fontSize: 13,
+    fontFamily: fontFamily.bold,
+    color: '#FFFFFF',
+  },
+  addSprintCard: {
+    padding: 14,
+    borderRadius: 16,
+    borderWidth: 1,
+    marginBottom: 14,
+  },
+  formLabel: {
+    fontSize: 11,
+    fontFamily: fontFamily.bold,
+    marginBottom: 6,
+  },
+  formInput: {
+    height: 42,
+    borderRadius: 12,
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    fontSize: 13,
+    fontFamily: fontFamily.regular,
+  },
+  xpChipsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 14,
+  },
+  xpChip: {
+    flex: 1,
+    height: 36,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  xpChipActive: {
+    backgroundColor: '#00A3FF',
+    borderColor: '#007ACC',
+  },
+  xpChipText: {
+    fontSize: 11,
+    fontFamily: fontFamily.bold,
+    color: '#334155',
+  },
+  xpChipTextActive: {
+    color: '#FFFFFF',
+  },
+  saveSprintBtn: {
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: '#10B981',
+    borderBottomWidth: 3,
+    borderBottomColor: '#059669',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  saveSprintText: {
+    fontSize: 13,
+    fontFamily: fontFamily.bold,
+    color: '#FFFFFF',
+  },
+  sprintModalCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderLeftWidth: 4,
+    marginBottom: 10,
+  },
+  sprintModalLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
+    marginRight: 8,
+  },
+  sprintModalIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sprintModalTitle: {
+    fontSize: 13.5,
+    fontFamily: fontFamily.bold,
+    marginBottom: 2,
+  },
+  sprintModalTag: {
+    fontSize: 10,
+    fontFamily: fontFamily.medium,
+    color: '#94A3B8',
+    marginBottom: 4,
+  },
+  sprintMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  sprintLevelText: {
+    fontSize: 10,
+    fontFamily: fontFamily.bold,
+    color: '#00A3FF',
+  },
+  sprintXpText: {
+    fontSize: 10,
+    fontFamily: fontFamily.bold,
+    color: '#F59E0B',
+  },
+  startSprintFocusBtn: {
+    backgroundColor: '#00A3FF',
+    paddingHorizontal: 12,
+    height: 34,
+    borderRadius: 10,
+    borderBottomWidth: 2,
+    borderBottomColor: '#006AB0',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  startSprintFocusText: {
+    fontSize: 11.5,
+    fontFamily: fontFamily.bold,
+    color: '#FFFFFF',
   },
 });
 

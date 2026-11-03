@@ -68,7 +68,12 @@ const DrawerComponent = props => {
         ]}>
         {/* Top Profile Avatar & Close Button Row */}
         <View style={styles.topActionRow}>
-          <View style={styles.avatarWrap}>
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Open user profile"
+            activeOpacity={0.8}
+            onPress={() => navigateTo('Profile')}
+            style={styles.avatarWrap}>
             <Image
               source={avatarSource}
               style={styles.avatarImage}
@@ -78,7 +83,7 @@ const DrawerComponent = props => {
             <View style={styles.onlineDotBorder}>
               <View style={styles.onlineDot} />
             </View>
-          </View>
+          </TouchableOpacity>
 
           {/* Close Chevron Button */}
           <TouchableOpacity
@@ -92,7 +97,12 @@ const DrawerComponent = props => {
         </View>
 
         {/* User Name & Level */}
-        <View style={styles.userMetaContainer}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel="Open user profile"
+          activeOpacity={0.8}
+          onPress={() => navigateTo('Profile')}
+          style={styles.userMetaContainer}>
           <View style={styles.nameRow}>
             <Text style={styles.userName} numberOfLines={1}>
               {profile?.name || 'Shryansh Shree'}
@@ -110,7 +120,7 @@ const DrawerComponent = props => {
               <Text style={styles.lvlBadgeText}>LVL 14</Text>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
 
         {/* Dual Stat Badges (Streak & XP) */}
         <View style={styles.statBadgesGrid}>
@@ -511,6 +521,75 @@ const DrawerComponent = props => {
                   {color: isDark ? '#94A3B8' : '#475569'},
                 ]}>
                 {notesCount} notes
+              </Text>
+            </View>
+          </TouchableOpacity>
+
+          {/* Item 6: Profile & Trophies */}
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Go to Profile & Trophies"
+            activeOpacity={0.75}
+            onPress={() => navigateTo('Profile')}
+            style={[
+              styles.navItem,
+              currentRouteName === 'Profile' && [
+                styles.activeNavItem,
+                {
+                  backgroundColor: isDark ? '#2E1065' : '#F3E8FF',
+                  borderColor: isDark ? '#7E22CE' : '#E9D5FF',
+                },
+              ],
+            ]}>
+            <View style={styles.navItemLeft}>
+              <View
+                style={[
+                  styles.navIconBox,
+                  {
+                    backgroundColor:
+                      currentRouteName === 'Profile'
+                        ? '#8B5CF6'
+                        : isDark
+                        ? '#2E1065'
+                        : '#F3E8FF',
+                  },
+                ]}>
+                <Feather
+                  name="user"
+                  size={16}
+                  color={
+                    currentRouteName === 'Profile' ? '#FFFFFF' : '#8B5CF6'
+                  }
+                />
+              </View>
+              <Text
+                style={[
+                  styles.navItemLabel,
+                  {
+                    color:
+                      currentRouteName === 'Profile'
+                        ? isDark
+                        ? '#D8B4FE'
+                        : '#6B21A8'
+                        : isDark
+                        ? '#E2E8F0'
+                        : '#334155',
+                    fontFamily:
+                      currentRouteName === 'Profile'
+                        ? fontFamily.black || fontFamily.bold
+                        : fontFamily.bold,
+                  },
+                ]}>
+                Profile & Trophies
+              </Text>
+            </View>
+            <View
+              style={[
+                styles.countBadge,
+                {backgroundColor: isDark ? '#2E1065' : '#EDE9FE'},
+              ]}>
+              <Text style={[styles.countBadgeText, {color: '#8B5CF6'}]}>
+                LVL 14
               </Text>
             </View>
           </TouchableOpacity>
